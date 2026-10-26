@@ -11,6 +11,8 @@
       user-select: none;
       -webkit-user-select: none;
       -webkit-touch-callout: none;
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
     }
     html, body {
       margin: 0;
@@ -333,13 +335,14 @@
       background: rgba(239, 68, 68, 0.25);
       border-color: #f87171;
       color: #fee2e2;
-      box-shadow: 0 0 12px rgba(248, 113, 113, 0.35);
     }
     #gameCanvas {
       display: block;
       width: 100%;
       height: 100%;
       cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
     }
   </style>
 </head>
@@ -355,22 +358,22 @@
     <div class="absolute top-0 left-0 right-0 p-2.5 sm:p-4 flex flex-wrap items-center justify-between gap-2 pointer-events-none z-20">
       
       <!-- Left: Live Multi-Input Status Badges (Keyboard & Touch) -->
-      <div class="flex items-center gap-1.5 sm:gap-2 bg-black/50 backdrop-blur-md px-2.5 py-1.5 rounded-full border border-white/10 pointer-events-auto">
+      <div class="flex items-center gap-1.5 sm:gap-2 bg-black/65 px-2.5 py-1.5 rounded-full border border-white/10 pointer-events-auto">
         <!-- Keyboard Badge -->
-        <div id="badgeKeyboard" class="flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-medium border border-transparent text-emerald-100/70 transition-all duration-200" title="Space, W, or Up Arrow to Flap">
+        <div id="badgeKeyboard" class="flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-medium border border-transparent text-emerald-100/70" title="Space, W, or Up Arrow to Flap">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M8 13h8"/></svg>
           <span class="hidden sm:inline">Keys</span>
         </div>
 
         <!-- Touch / Mouse Badge -->
-        <div id="badgeTouch" class="flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-medium border border-transparent text-emerald-100/70 transition-all duration-200" title="Tap or Click anywhere to Flap">
+        <div id="badgeTouch" class="flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-medium border border-transparent text-emerald-100/70" title="Tap or Click anywhere to Flap">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11V6a2 2 0 0 1 4 0v5m-4 0a2 2 0 1 0-4 0v5a6 6 0 0 0 12 0v-3a2 2 0 1 0-4 0"/></svg>
           <span class="hidden sm:inline">Touch/Click</span>
         </div>
       </div>
 
       <!-- Center: Live Score & Biome Pill (Visible during play) -->
-      <div id="hudCenter" class="hidden items-center gap-3 bg-black/50 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/15">
+      <div id="hudCenter" class="hidden items-center gap-3 bg-black/65 px-4 py-1.5 rounded-full border border-white/15">
         <div class="hidden lg:flex items-center gap-1 text-xs font-semibold text-red-400">
           <span>🦜</span>
           <span>Aloha</span>
@@ -869,6 +872,7 @@
      *************************************************************************/
     const SpriteCache = {
       parrotFrames: [[], []], // [0: eyes open (16 wing frames), 1: blinking (16 wing frames)]
+      parrotSheet: null,      // Unified single-texture sprite sheet (1344x128) to prevent GPU texture swap flashes
       fruits: [],             // [0: MANGO, 1: GUAVA, 2: PALM_NUT]
       obstacles: [],          // [0: HOLLOW_TREE, 1: BAMBOO, 2: STONE_TOTEM, 3: HANGING_VINES]
       feathers: [],           // Pre-rendered grey, silver & crimson feather sprites
@@ -904,6 +908,9 @@
         const SPRITE_H = 64;
         const cx = 44;
         const cy = 32;
+
+        this.parrotSheet = this.createCanvas(SPRITE_W * WING_STEPS, SPRITE_H * 2);
+        const sheetCtx = this.parrotSheet.getContext("2d");
 
         for (let blink = 0; blink < 2; blink++) {
           this.parrotFrames[blink] = [];
@@ -1098,6 +1105,7 @@
             c.lineTo(1, 19);
             c.stroke();
 
+            sheetCtx.drawImage(canvas, i * SPRITE_W, blink * SPRITE_H);
             this.parrotFrames[blink].push(canvas);
             this.totalCachedSprites++;
           }
@@ -1425,7 +1433,7 @@
       updateSkyBuffer(w, playAreaH, prevB, activeB, mix) {
         if (!this.skyBuffer || this.skyBuffer.width !== w || this.skyBuffer.height !== playAreaH) {
           this.skyBuffer = this.createCanvas(w, playAreaH);
-          this.skyBufferCtx = this.skyBuffer.getContext("2d", { alpha: false });
+          this.skyBufferCtx = this.skyBuffer.getContext("2d");
           this.lastSkyMixHash = "";
         }
 
@@ -1534,7 +1542,7 @@
      * 6. MAIN GAME ENGINE & CANVAS PIPELINE
      *************************************************************************/
     const canvas = document.getElementById("gameCanvas");
-    const ctx = canvas.getContext("2d", { alpha: false });
+    const ctx = canvas.getContext("2d");
     const sound = new SoundEngine();
     const rng = new SeededRNG("ALOHA-777");
 
@@ -1619,7 +1627,7 @@
         this.lastFlapTime = now;
 
         this.vy = this.flapImpulse;
-        this.wingFlapTimer = 0.26;
+        this.wingFlapTimer = 0.24;
         spawnFeatherBurst(this.x - 10, this.y + 4, ultraFastMode ? 2 : 4, false);
         sound.playFlap();
         return true;
@@ -1657,7 +1665,7 @@
 
         if (this.wingFlapTimer > 0) {
           this.wingFlapTimer -= dt;
-          this.wingAngle = Math.sin((0.26 - this.wingFlapTimer) * 34) * 1.05;
+          this.wingAngle = Math.sin((0.24 - this.wingFlapTimer) * 20) * 0.95;
         } else {
           this.wingAngle += (-0.18 - this.wingAngle) * Math.min(1, dt * 8);
         }
@@ -1671,15 +1679,23 @@
 
     function drawAfricanGreyParrotCached(ctx, p) {
       const blinkIdx = p.isBlinking ? 1 : 0;
-      const frames = SpriteCache.parrotFrames[blinkIdx];
       const norm = Math.max(0, Math.min(1, (p.wingAngle + 1.05) / 2.1));
       const frameIdx = (norm * 15 + 0.5) | 0;
-      const sprite = frames[frameIdx];
 
       ctx.save();
       ctx.translate((p.x + 0.5) | 0, (p.y + 0.5) | 0);
       ctx.rotate(p.rotation);
-      ctx.drawImage(sprite, -44, -32);
+      ctx.drawImage(
+        SpriteCache.parrotSheet,
+        frameIdx * 84,
+        blinkIdx * 64,
+        84,
+        64,
+        -44,
+        -32,
+        84,
+        64
+      );
       ctx.restore();
     }
 
@@ -2202,10 +2218,10 @@
 
     function focusGameWindow() {
       try {
-        if (document.activeElement && document.activeElement !== document.getElementById("seedInput")) {
-          document.activeElement.blur();
+        const seedEl = document.getElementById("seedInput");
+        if (document.activeElement && document.activeElement === seedEl) {
+          seedEl.blur();
         }
-        window.focus();
       } catch (_) {}
     }
 
@@ -2259,12 +2275,6 @@
         togglePerfHud();
       }
     });
-
-    window.addEventListener("pointerdown", (e) => {
-      if (e.target !== document.getElementById("seedInput")) {
-        focusGameWindow();
-      }
-    }, { passive: true });
 
     canvas.addEventListener(
       "pointerdown",
@@ -2666,6 +2676,7 @@
     }
 
     function renderGame() {
+      ctx.globalAlpha = 1.0;
       drawBackgroundCached(ctx);
 
       for (let i = 0; i < MAX_OBSTACLES; i++) {
