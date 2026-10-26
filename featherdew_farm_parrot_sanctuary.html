@@ -1,0 +1,2417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Featherdew Farm: Parrot Sanctuary</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --font-display: 'Fredoka', sans-serif;
+            --font-body: 'Nunito', sans-serif;
+        }
+        body {
+            font-family: var(--font-body);
+            background: #1a2e1a;
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        h1, h2, h3, .font-display {
+            font-family: var(--font-display);
+        }
+        /* Custom Game Buttons */
+        .game-btn {
+            transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 4px 0 rgba(0,0,0,0.25);
+        }
+        .game-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 rgba(0,0,0,0.25);
+        }
+        .game-btn:active, .game-btn.active-tool {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 rgba(0,0,0,0.25);
+        }
+        .active-tool {
+            ring: 3px solid #facc15;
+            background: linear-gradient(135deg, #fef08a 0%, #facc15 100%) !important;
+            color: #422006 !important;
+        }
+        /* Custom Scrollbar for Modals */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(254, 243, 199, 0.4);
+            border-radius: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d97706;
+            border-radius: 8px;
+        }
+        .wood-panel {
+            background: linear-gradient(180deg, #92400e 0%, #78350f 100%);
+            border: 3px solid #451a03;
+            box-shadow: inset 0 2px 0 rgba(255,255,255,0.2), 0 6px 16px rgba(0,0,0,0.45);
+        }
+        .parchment-panel {
+            background: #fffbeb;
+            border: 3px solid #b45309;
+            box-shadow: inset 0 0 15px rgba(217, 119, 6, 0.12);
+        }
+    </style>
+</head>
+<body class="h-screen w-screen flex flex-col bg-amber-950 text-amber-950 overflow-hidden">
+
+    <!-- TOP HUD BAR -->
+    <header class="wood-panel text-amber-50 px-3 py-2 flex flex-wrap items-center justify-between gap-2 z-20 shrink-0">
+        <!-- Left: Parrot Identity & Growth Stage -->
+        <div class="flex items-center gap-2 sm:gap-3">
+            <div class="relative bg-amber-900/90 border-2 border-amber-400 rounded-xl px-3 py-1 flex items-center gap-2 shadow-inner">
+                <span id="stageEmoji" class="text-2xl">🐣</span>
+                <div>
+                    <div class="flex items-center gap-1.5">
+                        <span id="parrotNameDisplay" class="font-display font-bold text-base sm:text-lg tracking-wide text-amber-200">Mango</span>
+                        <button onclick="openModal('wardrobeModal')" title="Customize & Rename Parrot" class="text-xs bg-amber-700 hover:bg-amber-600 px-1.5 py-0.5 rounded text-amber-100">✏️</button>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-amber-300">
+                        <span id="stageNameDisplay" class="font-semibold">Hatchling</span>
+                        <span>•</span>
+                        <span>Lv.<span id="levelDisplay">1</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- XP / Growth Progress -->
+            <div class="hidden md:flex flex-col w-32 bg-amber-950/80 p-1.5 rounded-xl border border-amber-700">
+                <div class="flex justify-between text-[11px] font-bold text-amber-200 mb-0.5">
+                    <span>GROWTH XP</span>
+                    <span id="xpText">0 / 100</span>
+                </div>
+                <div class="w-full h-2.5 bg-amber-950 rounded-full overflow-hidden border border-amber-800">
+                    <div id="xpBar" class="h-full bg-gradient-to-r from-emerald-400 to-lime-300 transition-all duration-300" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Center: Stats Summary Bars -->
+        <div class="flex items-center gap-2 sm:gap-3 bg-amber-950/75 px-3 py-1.5 rounded-xl border border-amber-800/80 overflow-x-auto max-w-full">
+            <!-- Hunger -->
+            <div class="flex flex-col w-16 sm:w-20" title="Hunger: Feed fruits and seeds!">
+                <div class="flex justify-between text-[10px] sm:text-xs font-bold text-orange-300">
+                    <span>🍓 Full</span>
+                    <span id="statHungerVal">85%</span>
+                </div>
+                <div class="w-full h-2 bg-stone-900 rounded-full overflow-hidden">
+                    <div id="statHungerBar" class="h-full bg-orange-400 transition-all duration-300" style="width: 85%"></div>
+                </div>
+            </div>
+            <!-- Happiness -->
+            <div class="flex flex-col w-16 sm:w-20" title="Happiness: Pet, play with toys, or feed favorite treats!">
+                <div class="flex justify-between text-[10px] sm:text-xs font-bold text-pink-300">
+                    <span>💖 Joy</span>
+                    <span id="statHappyVal">80%</span>
+                </div>
+                <div class="w-full h-2 bg-stone-900 rounded-full overflow-hidden">
+                    <div id="statHappyBar" class="h-full bg-pink-400 transition-all duration-300" style="width: 80%"></div>
+                </div>
+            </div>
+            <!-- Energy -->
+            <div class="flex flex-col w-16 sm:w-20" title="Energy: Rest on the perch or advance to the next day!">
+                <div class="flex justify-between text-[10px] sm:text-xs font-bold text-sky-300">
+                    <span>⚡ Pep</span>
+                    <span id="statEnergyVal">90%</span>
+                </div>
+                <div class="w-full h-2 bg-stone-900 rounded-full overflow-hidden">
+                    <div id="statEnergyBar" class="h-full bg-sky-400 transition-all duration-300" style="width: 90%"></div>
+                </div>
+            </div>
+            <!-- Hygiene -->
+            <div class="flex flex-col w-16 sm:w-20" title="Cleanliness: Use the Brush tool to clean feathers and perch messes!">
+                <div class="flex justify-between text-[10px] sm:text-xs font-bold text-teal-300">
+                    <span>✨ Clean</span>
+                    <span id="statCleanVal">100%</span>
+                </div>
+                <div class="w-full h-2 bg-stone-900 rounded-full overflow-hidden">
+                    <div id="statCleanBar" class="h-full bg-teal-400 transition-all duration-300" style="width: 100%"></div>
+                </div>
+            </div>
+            <!-- Intelligence / Bond -->
+            <div class="flex flex-col w-16 sm:w-20" title="Intelligence & Bond: Teach words and tricks!">
+                <div class="flex justify-between text-[10px] sm:text-xs font-bold text-purple-300">
+                    <span>🎓 IQ</span>
+                    <span id="statSmartVal">10</span>
+                </div>
+                <div class="w-full h-2 bg-stone-900 rounded-full overflow-hidden">
+                    <div id="statSmartBar" class="h-full bg-purple-400 transition-all duration-300" style="width: 15%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Day/Time, Coins, & Menu Buttons -->
+        <div class="flex items-center gap-2">
+            <!-- Day & Clock -->
+            <div class="bg-amber-950/90 border border-amber-700 rounded-xl px-2.5 py-1 flex items-center gap-2 text-xs sm:text-sm">
+                <span id="timeIcon" class="text-lg">☀️</span>
+                <div>
+                    <div class="font-display font-bold text-amber-200 leading-tight">Day <span id="dayCount">1</span></div>
+                    <div id="timePhaseText" class="text-[10px] text-amber-400 leading-tight">Morning</div>
+                </div>
+            </div>
+
+            <!-- Coins -->
+            <div class="bg-amber-950/90 border-2 border-yellow-500 rounded-xl px-3 py-1 flex items-center gap-1.5 shadow-inner">
+                <span class="text-lg">🪙</span>
+                <span id="coinDisplay" class="font-display font-bold text-yellow-300 text-base sm:text-lg">120</span>
+            </div>
+
+            <!-- Sound Toggle -->
+            <button id="soundBtn" onclick="toggleSound()" class="game-btn bg-amber-700 hover:bg-amber-600 text-amber-100 p-2 rounded-xl border border-amber-500 text-sm" title="Toggle Sound Effects">
+                🔊
+            </button>
+            <!-- Help Button -->
+            <button onclick="openModal('helpModal')" class="game-btn bg-amber-700 hover:bg-amber-600 text-amber-100 px-2.5 py-1.5 rounded-xl border border-amber-500 font-display font-bold text-sm" title="How to Play">
+                ?
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN INTERACTIVE CANVAS AREA -->
+    <main class="relative flex-1 w-full overflow-hidden bg-sky-200">
+        <canvas id="gameCanvas" class="w-full h-full block cursor-pointer"></canvas>
+
+        <!-- Floating Status Toast / Hint Banner -->
+        <div id="toastBanner" class="pointer-events-none absolute top-3 left-1/2 -translate-x-1/2 bg-amber-950/90 text-amber-100 border-2 border-amber-400 px-4 py-1.5 rounded-full font-display text-sm sm:text-base shadow-lg transition-all duration-300 opacity-0 -translate-y-3 z-10">
+            Welcome to Featherdew Farm!
+        </div>
+
+        <!-- Active Tool & Selected Item Helper Pill -->
+        <div class="pointer-events-none absolute top-3 left-3 bg-amber-950/80 backdrop-blur-sm text-amber-100 border border-amber-600 px-3 py-1.5 rounded-xl text-xs sm:text-sm flex items-center gap-2 shadow-md">
+            <span id="activeToolIcon" class="text-lg">🤚</span>
+            <div>
+                <div class="font-bold text-amber-300 leading-none" id="activeToolName">Pet & Interact</div>
+                <div class="text-[11px] text-amber-100/90 mt-0.5" id="activeToolHint">Click your parrot to pet, or click ripe crops to harvest!</div>
+            </div>
+        </div>
+
+        <!-- Daily Visitor Request Banner (Right Floating Card) -->
+        <div id="visitorCard" class="absolute top-3 right-3 bg-amber-50/95 border-2 border-amber-700 rounded-2xl p-2.5 shadow-xl max-w-[230px] sm:max-w-xs transition-all duration-300">
+            <div class="flex items-start gap-2">
+                <div id="visitorEmoji" class="text-2xl bg-amber-200 p-1.5 rounded-xl border border-amber-400">👩‍🌾</div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-extrabold uppercase tracking-wider text-amber-800">Farm Order</span>
+                        <span id="questRewardText" class="text-xs font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">+45 🪙</span>
+                    </div>
+                    <p id="questDescText" class="text-xs text-amber-950 font-semibold mt-0.5 leading-snug">Harvest 2 Sunflower Seeds & teach a word!</p>
+                    <button id="claimQuestBtn" onclick="claimDailyQuest()" class="hidden mt-1.5 w-full game-btn bg-emerald-500 hover:bg-emerald-400 text-white font-display font-bold text-xs py-1 rounded-lg">
+                        Claim Reward! 🎉
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- BOTTOM CONTROL DOCK: TOOLS, INVENTORY & SHOP/ACADEMY BUTTONS -->
+    <footer class="wood-panel text-amber-50 px-3 py-2 z-20 shrink-0 flex flex-col lg:flex-row items-center justify-between gap-2">
+        
+        <!-- 1. Tool Selector Row -->
+        <div class="flex items-center gap-1.5 sm:gap-2 overflow-x-auto w-full lg:w-auto pb-1 lg:pb-0 justify-center">
+            <button id="tool-pet" onclick="selectTool('pet')" class="game-btn active-tool bg-amber-800 hover:bg-amber-700 text-amber-100 px-3 py-1.5 rounded-xl border border-amber-600 flex items-center gap-1.5 text-xs sm:text-sm font-display font-semibold shrink-0">
+                <span class="text-base sm:text-lg">🤚</span>
+                <span>Pet / Harvest</span>
+            </button>
+
+            <button id="tool-plant" onclick="selectTool('plant')" class="game-btn bg-amber-800 hover:bg-amber-700 text-amber-100 px-3 py-1.5 rounded-xl border border-amber-600 flex items-center gap-1.5 text-xs sm:text-sm font-display font-semibold shrink-0">
+                <span class="text-base sm:text-lg">🌱</span>
+                <span>Plant Seed</span>
+            </button>
+
+            <button id="tool-water" onclick="selectTool('water')" class="game-btn bg-amber-800 hover:bg-amber-700 text-amber-100 px-3 py-1.5 rounded-xl border border-amber-600 flex items-center gap-1.5 text-xs sm:text-sm font-display font-semibold shrink-0">
+                <span class="text-base sm:text-lg">🚿</span>
+                <span>Water</span>
+            </button>
+
+            <button id="tool-feed" onclick="selectTool('feed')" class="game-btn bg-amber-800 hover:bg-amber-700 text-amber-100 px-3 py-1.5 rounded-xl border border-amber-600 flex items-center gap-1.5 text-xs sm:text-sm font-display font-semibold shrink-0">
+                <span class="text-base sm:text-lg">🍓</span>
+                <span>Feed Parrot</span>
+            </button>
+
+            <button id="tool-clean" onclick="selectTool('clean')" class="game-btn bg-amber-800 hover:bg-amber-700 text-amber-100 px-3 py-1.5 rounded-xl border border-amber-600 flex items-center gap-1.5 text-xs sm:text-sm font-display font-semibold shrink-0">
+                <span class="text-base sm:text-lg">🧹</span>
+                <span>Clean</span>
+            </button>
+
+            <button id="tool-play" onclick="selectTool('play')" class="game-btn bg-amber-800 hover:bg-amber-700 text-amber-100 px-3 py-1.5 rounded-xl border border-amber-600 flex items-center gap-1.5 text-xs sm:text-sm font-display font-semibold shrink-0">
+                <span class="text-base sm:text-lg">🎾</span>
+                <span>Toss Toy</span>
+            </button>
+        </div>
+
+        <!-- 2. Seed & Harvest Pouch (Quick Selector) -->
+        <div class="flex items-center gap-1.5 bg-amber-950/85 px-2.5 py-1.5 rounded-xl border border-amber-800 overflow-x-auto max-w-full">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-amber-400 mr-1 shrink-0">Pouch:</span>
+            <div id="inventoryBar" class="flex items-center gap-1.5">
+                <!-- Dynamically populated by JS -->
+            </div>
+        </div>
+
+        <!-- 3. Special Feature Modals & Sleep Button -->
+        <div class="flex items-center gap-2 shrink-0">
+            <button onclick="openModal('academyModal')" class="game-btn bg-purple-700 hover:bg-purple-600 text-white px-3 py-1.5 rounded-xl border border-purple-400 font-display font-semibold text-xs sm:text-sm flex items-center gap-1.5">
+                <span>🗣️</span>
+                <span>Words & Tricks</span>
+            </button>
+
+            <button onclick="openModal('shopModal')" class="game-btn bg-emerald-700 hover:bg-emerald-600 text-white px-3 py-1.5 rounded-xl border border-emerald-400 font-display font-semibold text-xs sm:text-sm flex items-center gap-1.5">
+                <span>🏪</span>
+                <span>Farm Shop</span>
+            </button>
+
+            <button onclick="openModal('wardrobeModal')" class="game-btn bg-pink-700 hover:bg-pink-600 text-white px-3 py-1.5 rounded-xl border border-pink-400 font-display font-semibold text-xs sm:text-sm flex items-center gap-1.5">
+                <span>🎩</span>
+                <span>Style</span>
+            </button>
+
+            <button onclick="restAndNextDay()" class="game-btn bg-indigo-800 hover:bg-indigo-700 text-indigo-100 px-3 py-1.5 rounded-xl border border-indigo-400 font-display font-semibold text-xs sm:text-sm flex items-center gap-1.5" title="Rest your parrot and advance crops to the next morning">
+                <span>🌙</span>
+                <span class="hidden sm:inline">Sleep</span>
+            </button>
+        </div>
+    </footer>
+
+    <!-- ================= MODALS ================= -->
+
+    <!-- 1. FARM SHOP MODAL -->
+    <div id="shopModal" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+        <div class="parchment-panel rounded-3xl max-w-2xl w-full max-h-[85vh] flex flex-col overflow-hidden shadow-2xl">
+            <div class="bg-amber-800 text-amber-50 px-6 py-4 flex items-center justify-between border-b-4 border-amber-950">
+                <div class="flex items-center gap-2.5">
+                    <span class="text-2xl">🏪</span>
+                    <div>
+                        <h2 class="text-xl font-bold leading-none">Featherdew General Store</h2>
+                        <p class="text-xs text-amber-200 mt-0.5">Buy tropical seeds, perch upgrades, toys, and sell surplus harvest!</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="bg-amber-950 px-3 py-1 rounded-xl border border-yellow-500 font-display font-bold text-yellow-300">
+                        🪙 <span id="shopCoinDisplay">120</span>
+                    </div>
+                    <button onclick="closeModal('shopModal')" class="bg-amber-950 hover:bg-red-800 text-white w-8 h-8 rounded-full font-bold">✕</button>
+                </div>
+            </div>
+
+            <!-- Shop Tabs -->
+            <div class="flex border-b-2 border-amber-300 bg-amber-100 px-4 pt-2 gap-2">
+                <button onclick="switchShopTab('seeds')" id="shopTab-seeds" class="px-4 py-2 font-display font-bold text-sm rounded-t-xl bg-amber-50 border-t-2 border-x-2 border-amber-400 text-amber-900">🌱 Crop Seeds</button>
+                <button onclick="switchShopTab('upgrades')" id="shopTab-upgrades" class="px-4 py-2 font-display font-bold text-sm rounded-t-xl text-amber-700 hover:bg-amber-200/60">🔔 Toys & Perches</button>
+                <button onclick="switchShopTab('sell')" id="shopTab-sell" class="px-4 py-2 font-display font-bold text-sm rounded-t-xl text-amber-700 hover:bg-amber-200/60">🧺 Sell Harvest</button>
+            </div>
+
+            <div id="shopContent" class="p-5 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 gap-3 flex-1">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. WORD & TRICK ACADEMY MODAL -->
+    <div id="academyModal" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+        <div class="parchment-panel rounded-3xl max-w-2xl w-full max-h-[85vh] flex flex-col overflow-hidden shadow-2xl">
+            <div class="bg-purple-900 text-purple-50 px-6 py-4 flex items-center justify-between border-b-4 border-purple-950">
+                <div class="flex items-center gap-2.5">
+                    <span class="text-2xl">🎓</span>
+                    <div>
+                        <h2 class="text-xl font-bold leading-none">Parrot Word & Trick Academy</h2>
+                        <p class="text-xs text-purple-200 mt-0.5">Teach your parrot vocabulary and dazzling tricks to boost IQ & earn tips!</p>
+                    </div>
+                </div>
+                <button onclick="closeModal('academyModal')" class="bg-purple-950 hover:bg-red-800 text-white w-8 h-8 rounded-full font-bold">✕</button>
+            </div>
+
+            <div class="p-5 overflow-y-auto space-y-5 flex-1">
+                <!-- Teach a Custom Word Section -->
+                <div class="bg-purple-100/80 border-2 border-purple-300 rounded-2xl p-4">
+                    <h3 class="font-display font-bold text-purple-950 text-base flex items-center gap-2">
+                        <span>💬 Teach a New Word or Phrase</span>
+                        <span class="text-xs bg-purple-200 text-purple-800 px-2 py-0.5 rounded-full font-sans">Costs 15 ⚡ Energy</span>
+                    </h3>
+                    <p class="text-xs text-purple-800 mt-1">Your parrot will chirp and repeat learned phrases on the farm!</p>
+                    <div class="flex flex-col sm:flex-row gap-2 mt-3">
+                        <input id="customWordInput" type="text" maxlength="28" placeholder="e.g., Howdy Farmer! or Polly wants mango!" class="flex-1 bg-white border-2 border-purple-300 rounded-xl px-3 py-2 text-sm font-bold text-purple-950 focus:outline-none focus:border-purple-600">
+                        <button onclick="teachCustomWord()" class="game-btn bg-purple-600 hover:bg-purple-500 text-white font-display font-bold px-4 py-2 rounded-xl text-sm shrink-0">
+                            Teach Phrase (+15 XP)
+                        </button>
+                    </div>
+                    <!-- Quick Preset Phrases -->
+                    <div class="flex flex-wrap gap-1.5 mt-2.5">
+                        <span class="text-xs font-bold text-purple-700 self-center mr-1">Quick ideas:</span>
+                        <button onclick="setWordInput('Aloha Berry!')" class="text-xs bg-white hover:bg-purple-200 text-purple-900 border border-purple-300 px-2 py-1 rounded-lg">"Aloha Berry!"</button>
+                        <button onclick="setWordInput('Squawk! More seeds!')" class="text-xs bg-white hover:bg-purple-200 text-purple-900 border border-purple-300 px-2 py-1 rounded-lg">"Squawk! More seeds!"</button>
+                        <button onclick="setWordInput('Pretty Bird!')" class="text-xs bg-white hover:bg-purple-200 text-purple-900 border border-purple-300 px-2 py-1 rounded-lg">"Pretty Bird!"</button>
+                        <button onclick="setWordInput('Golden Mango time!')" class="text-xs bg-white hover:bg-purple-200 text-purple-900 border border-purple-300 px-2 py-1 rounded-lg">"Golden Mango time!"</button>
+                    </div>
+                    <!-- Learned Vocabulary List -->
+                    <div class="mt-3 pt-3 border-t border-purple-200">
+                        <div class="text-xs font-bold text-purple-900 mb-1.5">Learned Vocabulary (Click to make parrot speak!):</div>
+                        <div id="vocabularyList" class="flex flex-wrap gap-1.5"></div>
+                    </div>
+                </div>
+
+                <!-- Tricks Section -->
+                <div>
+                    <h3 class="font-display font-bold text-amber-950 text-base mb-2 flex items-center justify-between">
+                        <span>🎪 Acrobatics & Musical Tricks</span>
+                        <span class="text-xs font-bold text-purple-800">Current IQ: <span id="academyIqDisplay">10</span></span>
+                    </h3>
+                    <div id="tricksGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. WARDROBE & CUSTOMIZATION MODAL -->
+    <div id="wardrobeModal" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+        <div class="parchment-panel rounded-3xl max-w-xl w-full max-h-[85vh] flex flex-col overflow-hidden shadow-2xl">
+            <div class="bg-pink-800 text-pink-50 px-6 py-4 flex items-center justify-between border-b-4 border-pink-950">
+                <div class="flex items-center gap-2.5">
+                    <span class="text-2xl">🎩</span>
+                    <div>
+                        <h2 class="text-xl font-bold leading-none">Parrot Plumage & Wardrobe</h2>
+                        <p class="text-xs text-pink-200 mt-0.5">Customize your parrot's name, feather colors, and farm hats!</p>
+                    </div>
+                </div>
+                <button onclick="closeModal('wardrobeModal')" class="bg-pink-950 hover:bg-red-800 text-white w-8 h-8 rounded-full font-bold">✕</button>
+            </div>
+
+            <div class="p-5 overflow-y-auto space-y-5 flex-1">
+                <!-- Rename Parrot -->
+                <div class="bg-amber-100/80 border-2 border-amber-300 rounded-2xl p-3.5 flex flex-col sm:flex-row items-center gap-3">
+                    <div class="flex-1 w-full">
+                        <label class="text-xs font-bold text-amber-900 uppercase">Parrot Name</label>
+                        <input id="parrotNameInput" type="text" maxlength="16" value="Mango" class="w-full mt-1 bg-white border-2 border-amber-400 rounded-xl px-3 py-1.5 font-display font-bold text-amber-950">
+                    </div>
+                    <button onclick="saveParrotName()" class="game-btn bg-amber-600 hover:bg-amber-500 text-white font-display font-bold px-4 py-2 rounded-xl text-sm self-end sm:self-center mt-2 sm:mt-4">
+                        Save Name
+                    </button>
+                </div>
+
+                <!-- Plumage Breed Colors -->
+                <div>
+                    <h3 class="font-display font-bold text-amber-950 text-base mb-2">🦜 Parrot Plumage Species</h3>
+                    <div id="plumageGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Hats & Accessories -->
+                <div>
+                    <h3 class="font-display font-bold text-amber-950 text-base mb-2">👒 Farm Hats & Accessories</h3>
+                    <div id="hatGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. HELP / GUIDE MODAL -->
+    <div id="helpModal" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+        <div class="parchment-panel rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between border-b-2 border-amber-300 pb-3">
+                <h2 class="text-2xl font-display font-bold text-amber-900">🦜 Welcome to Featherdew Farm!</h2>
+                <button onclick="closeModal('helpModal')" class="bg-amber-800 text-white w-8 h-8 rounded-full font-bold">✕</button>
+            </div>
+            <div class="space-y-3 text-sm text-amber-950 leading-relaxed">
+                <p><strong>🌱 1. Grow Tropical Crops:</strong> Select a seed from your bottom Pouch, choose the <strong>Plant Seed</strong> tool, and click any soil plot. Use the <strong>Water</strong> can so crops grow over time or when you sleep!</p>
+                <p><strong>🍓 2. Care for Your Parrot:</strong> Harvest ripe crops and use <strong>Feed Parrot</strong> to keep your feathered friend full and gain Growth XP. Pet your parrot, clean up messes on the perch with <strong>Clean</strong>, and toss toys with <strong>Toss Toy</strong>!</p>
+                <p><strong>🎓 3. Teach Words & Tricks:</strong> Open <strong>Words & Tricks</strong> to teach custom phrases and acrobatic tricks. Performing tricks earns Visitor Tips (Coins) and raises Intelligence!</p>
+                <p><strong>🦋 4. Growth Stages:</strong> As your parrot levels up, it grows from a fluffy <em>Hatchling</em> (Lv.1) into a <em>Fledgling</em> (Lv.3), a vibrant <em>Adult Parrot</em> (Lv.6), and a <em>Majestic Elder</em> (Lv.10) with a golden aura!</p>
+            </div>
+            <button onclick="closeModal('helpModal')" class="w-full game-btn bg-emerald-600 hover:bg-emerald-500 text-white font-display font-bold py-2.5 rounded-xl text-base">
+                Let's Farm & Squawk!
+            </button>
+        </div>
+    </div>
+
+    <script>
+        /**************************************************************
+         * 1. SOUND ENGINE (Web Audio API Synthesizer - No external URLs)
+         **************************************************************/
+        const Sound = {
+            ctx: null,
+            muted: false,
+            init() {
+                if (!this.ctx) {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    if (AudioCtx) this.ctx = new AudioCtx();
+                }
+                if (this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            },
+            playTone(freq, type, duration, vol = 0.12, slideFreq = null) {
+                if (this.muted) return;
+                this.init();
+                if (!this.ctx) return;
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, now);
+                if (slideFreq) {
+                    osc.frequency.exponentialRampToValueAtTime(slideFreq, now + duration);
+                }
+                gain.gain.setValueAtTime(vol, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + duration);
+            },
+            chirp(happy = true) {
+                if (this.muted) return;
+                const base = happy ? 750 + Math.random() * 250 : 420;
+                this.playTone(base, 'sine', 0.11, 0.14, base * 1.45);
+                setTimeout(() => {
+                    this.playTone(base * 1.25, 'triangle', 0.14, 0.12, base * 1.65);
+                }, 90);
+            },
+            whistle() {
+                if (this.muted) return;
+                this.playTone(660, 'sine', 0.16, 0.12, 990);
+                setTimeout(() => this.playTone(990, 'sine', 0.12, 0.10, 780), 170);
+                setTimeout(() => this.playTone(880, 'sine', 0.22, 0.13, 1320), 300);
+            },
+            plant() {
+                this.playTone(240, 'triangle', 0.09, 0.14, 380);
+            },
+            water() {
+                this.playTone(480, 'sine', 0.12, 0.1, 260);
+                setTimeout(() => this.playTone(580, 'sine', 0.12, 0.09, 320), 70);
+            },
+            harvest() {
+                this.playTone(523.25, 'triangle', 0.1, 0.14, 659.25);
+                setTimeout(() => this.playTone(783.99, 'triangle', 0.16, 0.14, 1046.5), 85);
+            },
+            coin() {
+                this.playTone(987.77, 'sine', 0.09, 0.13);
+                setTimeout(() => this.playTone(1318.5, 'sine', 0.22, 0.14), 80);
+            },
+            levelUp() {
+                const notes = [523.25, 659.25, 783.99, 1046.5];
+                notes.forEach((n, idx) => {
+                    setTimeout(() => this.playTone(n, 'triangle', 0.22, 0.15), idx * 95);
+                });
+            },
+            clean() {
+                this.playTone(620, 'sine', 0.08, 0.1, 880);
+                setTimeout(() => this.playTone(740, 'sine', 0.1, 0.1, 1020), 80);
+            }
+        };
+
+        function toggleSound() {
+            Sound.muted = !Sound.muted;
+            document.getElementById('soundBtn').textContent = Sound.muted ? '🔇' : '🔊';
+            showToast(Sound.muted ? 'Sound Muted' : 'Sound Enabled!');
+        }
+
+        /**************************************************************
+         * 2. GAME DATA & CATALOGS (Crops, Plumages, Hats, Tricks, Upgrades)
+         **************************************************************/
+        const CROPS = {
+            sunflower: {
+                id: 'sunflower',
+                name: 'Sunflower Seed',
+                icon: '🌻',
+                seedCost: 10,
+                sellPrice: 18,
+                growTime: 18, // seconds of growth (watered)
+                hungerRestore: 16,
+                happyRestore: 8,
+                xpGain: 12,
+                color: '#facc15',
+                desc: 'Crunchy farm classic! Fast growing and loved by young parrots.'
+            },
+            berry: {
+                id: 'berry',
+                name: 'Ruby Berry',
+                icon: '🍓',
+                seedCost: 20,
+                sellPrice: 35,
+                growTime: 28,
+                hungerRestore: 24,
+                happyRestore: 16,
+                xpGain: 20,
+                color: '#f43f5e',
+                desc: 'Sweet, juicy woodland berries bursting with energy.'
+            },
+            chili: {
+                id: 'chili',
+                name: 'Fiery Chili',
+                icon: '🌶️',
+                seedCost: 32,
+                sellPrice: 56,
+                growTime: 36,
+                hungerRestore: 26,
+                happyRestore: 24,
+                xpGain: 28,
+                color: '#ef4444',
+                desc: 'Fun fact: Parrots love spicy peppers and cannot feel capsaicin heat!'
+            },
+            mango: {
+                id: 'mango',
+                name: 'Tropi-Mango',
+                icon: '🥭',
+                seedCost: 50,
+                sellPrice: 88,
+                growTime: 46,
+                hungerRestore: 38,
+                happyRestore: 32,
+                xpGain: 42,
+                color: '#fb923c',
+                desc: 'Lush island delicacy that makes feathers gleam!'
+            },
+            starfruit: {
+                id: 'starfruit',
+                name: 'Golden Starfruit',
+                icon: '⭐',
+                seedCost: 80,
+                sellPrice: 145,
+                growTime: 60,
+                hungerRestore: 50,
+                happyRestore: 50,
+                xpGain: 68,
+                color: '#fde047',
+                desc: 'Legendary celestial fruit! Huge XP and Happiness boost.'
+            }
+        };
+
+        const PLUMAGES = [
+            { id: 'scarlet', name: 'Scarlet Macaw', body: '#ef4444', wing: '#2563eb', trim: '#facc15', belly: '#f87171', cost: 0, unlocked: true },
+            { id: 'bluegold', name: 'Blue & Gold', body: '#0284c7', wing: '#f59e0b', trim: '#38bdf8', belly: '#facc15', cost: 0, unlocked: true },
+            { id: 'emerald', name: 'Emerald Amazon', body: '#16a34a', wing: '#dc2626', trim: '#86efac', belly: '#4ade80', cost: 80, unlocked: false },
+            { id: 'cockatiel', name: 'Sunset Tiel', body: '#fbbf24', wing: '#f97316', trim: '#fef08a', belly: '#fde68a', cost: 120, unlocked: false },
+            { id: 'hyacinth', name: 'Royal Hyacinth', body: '#4f46e5', wing: '#312e81', trim: '#facc15', belly: '#6366f1', cost: 200, unlocked: false },
+            { id: 'rose', name: 'Rose Galah', body: '#ec4899', wing: '#9ca3af', trim: '#fbcfe8', belly: '#f472b6', cost: 250, unlocked: false }
+        ];
+
+        const HATS = [
+            { id: 'none', name: 'No Hat', icon: '🦜', cost: 0, unlocked: true },
+            { id: 'straw', name: 'Farmer Straw Hat', icon: '👒', cost: 65, unlocked: false },
+            { id: 'flower', name: 'Hibiscus Crown', icon: '🌺', cost: 95, unlocked: false },
+            { id: 'pirate', name: 'Captain Tricorn', icon: '🏴‍☠️', cost: 150, unlocked: false },
+            { id: 'crown', name: 'Golden Crown', icon: '👑', cost: 260, unlocked: false }
+        ];
+
+        const UPGRADES = [
+            { id: 'bell', name: 'Golden Chiming Bell', icon: '🔔', cost: 75, purchased: false, desc: 'Hangs on the perch! Parrot rings it for automatic joy.' },
+            { id: 'sprinkler', name: 'Dewdrop Sprinkler', icon: '⛲', cost: 160, purchased: false, desc: 'Automatically waters newly planted seeds every morning!' },
+            { id: 'tikiPerch', name: 'Tropical Tiki Perch', icon: '🌴', cost: 140, purchased: false, desc: 'Upgrades the wooden stand with tropical blossoms & vines.' },
+            { id: 'musicBox', name: 'Barnhouse Melodica', icon: '🎶', cost: 210, purchased: false, desc: 'Boosts trick coin rewards & parrot XP by +25%!' }
+        ];
+
+        const TRICKS = [
+            { id: 'wave', name: 'Wing Wave', icon: '👋', reqIq: 10, energyCost: 10, coinReward: 18, xpReward: 18, anim: 'wave', desc: 'A friendly wing salute for farm visitors!' },
+            { id: 'spin', name: 'Perch Pirouette', icon: '🌀', reqIq: 22, energyCost: 14, coinReward: 30, xpReward: 28, anim: 'spin', desc: 'Dazzling 360-degree twirl on the perch!' },
+            { id: 'samba', name: 'Tropical Samba', icon: '💃', reqIq: 38, energyCost: 18, coinReward: 46, xpReward: 40, anim: 'dance', desc: 'Rhythmic head bobs and joyful whistling!' },
+            { id: 'flip', name: 'Sky Backflip', icon: '🤸', reqIq: 60, energyCost: 24, coinReward: 75, xpReward: 65, anim: 'flip', desc: 'Show-stopping mid-air acrobatics!' }
+        ];
+
+        /**************************************************************
+         * 3. GAME STATE
+         **************************************************************/
+        const state = {
+            coins: 120,
+            day: 1,
+            timeOfDay: 0.22, // 0.0 = dawn, 0.25 = noon, 0.65 = sunset, 0.85 = night
+            activeTool: 'pet',
+            selectedItem: 'sunflower', // crop key in pouch
+            shopTab: 'seeds',
+
+            parrot: {
+                name: 'Mango',
+                level: 1,
+                xp: 0,
+                xpToNext: 100,
+                hunger: 85,
+                happy: 85,
+                energy: 95,
+                clean: 100,
+                iq: 12,
+                plumage: 'scarlet',
+                hat: 'none',
+                words: ['Hello Farmer!', 'Squawk!', 'Fresh Berries!'],
+                currentSpeech: 'Welcome to Featherdew Farm! 🦜',
+                speechTimer: 5.5,
+                // Animation & Flight state
+                x: 260,
+                y: 280,
+                flightState: 'perched', // 'perched' | 'to_crop' | 'returning'
+                flightAngle: 0,
+                harvestQueue: [],
+                carriedCrops: [],
+                bouncePhase: 0,
+                wingFlap: 0,
+                blinkTimer: 2,
+                isBlinking: false,
+                headTilt: 0,
+                trickAnim: null,
+                trickTimer: 0,
+                sleeping: false
+            },
+
+            inventory: {
+                seeds: { sunflower: 4, berry: 2, chili: 1, mango: 0, starfruit: 0 },
+                crops: { sunflower: 2, berry: 1, chili: 0, mango: 0, starfruit: 0 }
+            },
+
+            // 6 Farm Soil Plots (2 rows x 3 columns)
+            plots: Array.from({ length: 6 }, (_, i) => ({
+                id: i,
+                crop: i === 0 ? 'sunflower' : (i === 1 ? 'berry' : null),
+                progress: i === 0 ? 1.0 : (i === 1 ? 0.55 : 0), // 0..1
+                watered: i === 0 || i === 1,
+                swayOffset: Math.random() * Math.PI * 2
+            })),
+
+            // Perch messes to clean
+            messes: [],
+
+            // Tossed toy physics
+            toyBall: {
+                active: false,
+                x: 0,
+                y: 0,
+                vx: 0,
+                vy: 0
+            },
+
+            // Visual particles & floating text
+            particles: [],
+            floatingTexts: [],
+            clouds: [
+                { x: 120, y: 65, scale: 1.0, speed: 12 },
+                { x: 480, y: 45, scale: 0.8, speed: 9 },
+                { x: 820, y: 80, scale: 1.15, speed: 15 }
+            ],
+
+            // Daily Visitor Order Quest
+            quest: {
+                cropKey: 'sunflower',
+                requiredHarvest: 2,
+                currentHarvest: 0,
+                wordRequired: true,
+                wordDone: false,
+                reward: 55,
+                completed: false
+            }
+        };
+
+        /**************************************************************
+         * 4. GROWTH STAGES HELPER
+         **************************************************************/
+        function getGrowthStage(level) {
+            if (level < 3) {
+                return { name: 'Hatchling', emoji: '🐣', scale: 0.72, tailLen: 0.5, crest: 0.6 };
+            } else if (level < 6) {
+                return { name: 'Fledgling', emoji: '🐥', scale: 0.88, tailLen: 0.8, crest: 0.85 };
+            } else if (level < 10) {
+                return { name: 'Adult Parrot', emoji: '🦜', scale: 1.05, tailLen: 1.15, crest: 1.05 };
+            } else {
+                return { name: 'Majestic Elder', emoji: '👑', scale: 1.16, tailLen: 1.35, crest: 1.25, aura: true };
+            }
+        }
+
+        function addXp(amount) {
+            const bonus = UPGRADES.find(u => u.id === 'musicBox').purchased ? 1.25 : 1.0;
+            const total = Math.round(amount * bonus);
+            state.parrot.xp += total;
+
+            while (state.parrot.xp >= state.parrot.xpToNext) {
+                state.parrot.xp -= state.parrot.xpToNext;
+                state.parrot.level++;
+                state.parrot.xpToNext = Math.round(state.parrot.xpToNext * 1.35);
+                state.parrot.iq += 5;
+                Sound.levelUp();
+                const stage = getGrowthStage(state.parrot.level);
+                spawnParticles(state.parrot.x, state.parrot.y - 30, '#facc15', 28, 'star');
+                addFloatingText(state.parrot.x, state.parrot.y - 80, `LEVEL UP! Lv.${state.parrot.level} (${stage.name})`, '#fde047');
+                makeParrotSpeak(`Squawk!! I grew to Level ${state.parrot.level}! 🎉`);
+            }
+            updateHUD();
+        }
+
+        /**************************************************************
+         * 5. UI & HUD UPDATES
+         **************************************************************/
+        function updateHUD() {
+            const p = state.parrot;
+            const stage = getGrowthStage(p.level);
+
+            document.getElementById('stageEmoji').textContent = stage.emoji;
+            document.getElementById('parrotNameDisplay').textContent = p.name;
+            document.getElementById('stageNameDisplay').textContent = stage.name;
+            document.getElementById('levelDisplay').textContent = p.level;
+
+            const xpPct = Math.min(100, Math.round((p.xp / p.xpToNext) * 100));
+            document.getElementById('xpText').textContent = `${p.xp} / ${p.xpToNext}`;
+            document.getElementById('xpBar').style.width = `${xpPct}%`;
+
+            // Stats
+            document.getElementById('statHungerVal').textContent = `${Math.round(p.hunger)}%`;
+            document.getElementById('statHungerBar').style.width = `${p.hunger}%`;
+
+            document.getElementById('statHappyVal').textContent = `${Math.round(p.happy)}%`;
+            document.getElementById('statHappyBar').style.width = `${p.happy}%`;
+
+            document.getElementById('statEnergyVal').textContent = `${Math.round(p.energy)}%`;
+            document.getElementById('statEnergyBar').style.width = `${p.energy}%`;
+
+            document.getElementById('statCleanVal').textContent = `${Math.round(p.clean)}%`;
+            document.getElementById('statCleanBar').style.width = `${p.clean}%`;
+
+            document.getElementById('statSmartVal').textContent = p.iq;
+            document.getElementById('statSmartBar').style.width = `${Math.min(100, p.iq)}%`;
+
+            // Coins & Day
+            document.getElementById('coinDisplay').textContent = state.coins;
+            const shopCoin = document.getElementById('shopCoinDisplay');
+            if (shopCoin) shopCoin.textContent = state.coins;
+            document.getElementById('dayCount').textContent = state.day;
+
+            // Time of Day label
+            const t = state.timeOfDay;
+            let phase = 'Morning', icon = '☀️';
+            if (t < 0.18) { phase = 'Sunrise'; icon = '🌅'; }
+            else if (t < 0.52) { phase = 'Sunny Day'; icon = '☀️'; }
+            else if (t < 0.75) { phase = 'Golden Hour'; icon = '🌇'; }
+            else { phase = 'Starry Night'; icon = '🌙'; }
+            document.getElementById('timePhaseText').textContent = phase;
+            document.getElementById('timeIcon').textContent = icon;
+
+            renderInventoryBar();
+            updateQuestUI();
+        }
+
+        function renderInventoryBar() {
+            const bar = document.getElementById('inventoryBar');
+            bar.innerHTML = '';
+
+            Object.keys(CROPS).forEach(key => {
+                const crop = CROPS[key];
+                const seedCount = state.inventory.seeds[key] || 0;
+                const fruitCount = state.inventory.crops[key] || 0;
+                const isSelected = state.selectedItem === key;
+
+                const btn = document.createElement('button');
+                btn.onclick = () => {
+                    state.selectedItem = key;
+                    renderInventoryBar();
+                    showToast(`Selected ${crop.icon} ${crop.name} (Seeds: ${seedCount} | Harvested: ${fruitCount})`);
+                };
+                btn.className = `px-2.5 py-1 rounded-xl border text-xs flex items-center gap-1.5 transition shrink-0 ${
+                    isSelected
+                        ? 'bg-amber-300 text-amber-950 border-yellow-400 font-extrabold ring-2 ring-yellow-300'
+                        : 'bg-amber-900/80 text-amber-100 border-amber-700 hover:bg-amber-800'
+                }`;
+                btn.innerHTML = `
+                    <span class="text-base">${crop.icon}</span>
+                    <div class="text-left leading-tight">
+                        <div class="text-[10px] opacity-85">🌱${seedCount} • 🧺${fruitCount}</div>
+                    </div>
+                `;
+                bar.appendChild(btn);
+            });
+        }
+
+        function selectTool(tool) {
+            state.activeTool = tool;
+            document.querySelectorAll('[id^="tool-"]').forEach(b => b.classList.remove('active-tool'));
+            const activeBtn = document.getElementById(`tool-${tool}`);
+            if (activeBtn) activeBtn.classList.add('active-tool');
+
+            const meta = {
+                pet: { icon: '🤚', name: 'Pet & Harvest', hint: 'Click your parrot for love, or click ripe glowing crops to harvest!' },
+                plant: { icon: '🌱', name: 'Plant Seeds', hint: `Click an empty soil plot to plant ${CROPS[state.selectedItem].icon} ${CROPS[state.selectedItem].name}!` },
+                water: { icon: '🚿', name: 'Watering Can', hint: 'Click dry planted soil plots so your crops grow lush and fast!' },
+                feed: { icon: '🍓', name: 'Feed Parrot', hint: `Click your parrot to feed harvested ${CROPS[state.selectedItem].icon} ${CROPS[state.selectedItem].name}!` },
+                clean: { icon: '🧹', name: 'Feather & Perch Brush', hint: 'Click messes on the perch or click your parrot to preen its feathers!' },
+                play: { icon: '🎾', name: 'Toss Berry Ball', hint: 'Click anywhere in the sky to toss a bouncy toy for your parrot!' }
+            }[tool];
+
+            if (meta) {
+                document.getElementById('activeToolIcon').textContent = meta.icon;
+                document.getElementById('activeToolName').textContent = meta.name;
+                document.getElementById('activeToolHint').textContent = meta.hint;
+            }
+        }
+
+        let toastTimeout = null;
+        function showToast(msg) {
+            const banner = document.getElementById('toastBanner');
+            banner.textContent = msg;
+            banner.classList.remove('opacity-0', '-translate-y-3');
+            banner.classList.add('opacity-100', 'translate-y-0');
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                banner.classList.add('opacity-0', '-translate-y-3');
+                banner.classList.remove('opacity-100', 'translate-y-0');
+            }, 2600);
+        }
+
+        function makeParrotSpeak(text) {
+            state.parrot.currentSpeech = text;
+            state.parrot.speechTimer = 4.5;
+            state.parrot.wingFlap = 1.0;
+        }
+
+        /**************************************************************
+         * 6. DAILY VISITOR QUEST SYSTEM
+         **************************************************************/
+        function generateDailyQuest() {
+            const keys = Object.keys(CROPS);
+            const maxIdx = Math.min(keys.length - 1, Math.floor(state. parrot.level / 2) + 1);
+            const cropKey = keys[Math.floor(Math.random() * (maxIdx + 1))];
+            const req = 1 + Math.floor(Math.random() * 2);
+            const reward = CROPS[cropKey].sellPrice * req + 35;
+
+            state.quest = {
+                cropKey,
+                requiredHarvest: req,
+                currentHarvest: 0,
+                wordRequired: Math.random() > 0.4,
+                wordDone: false,
+                reward,
+                completed: false
+            };
+            updateQuestUI();
+        }
+
+        function updateQuestUI() {
+            const q = state.quest;
+            const crop = CROPS[q.cropKey];
+            const rewardEl = document.getElementById('questRewardText');
+            const descEl = document.getElementById('questDescText');
+            const btn = document.getElementById('claimQuestBtn');
+
+            rewardEl.textContent = `+${q.reward} 🪙`;
+
+            if (q.completed) {
+                descEl.textContent = 'Daily order complete! Rest for a new visitor tomorrow.';
+                btn.classList.add('hidden');
+                return;
+            }
+
+            let text = `Harvest ${q.currentHarvest}/${q.requiredHarvest} ${crop.icon} ${crop.name}`;
+            if (q.wordRequired) {
+                text += ` & practice 1 Trick/Word (${q.wordDone ? '✅' : '0/1'})`;
+            }
+            descEl.textContent = text;
+
+            const ready = q.currentHarvest >= q.requiredHarvest && (!q.wordRequired || q.wordDone);
+            if (ready) {
+                btn.classList.remove('hidden');
+            } else {
+                btn.classList.add('hidden');
+            }
+        }
+
+        function claimDailyQuest() {
+            const q = state.quest;
+            if (q.completed) return;
+            q.completed = true;
+            state.coins += q.reward;
+            Sound.coin();
+            addXp(30);
+            spawnParticles(state.parrot.x, state.parrot.y - 40, '#facc15', 22, 'star');
+            showToast(`Visitor thrilled! Earned +${q.reward} Coins & +30 XP!`);
+            updateHUD();
+        }
+
+        /**************************************************************
+         * 7. SHOP, ACADEMY & WARDROBE MODALS
+         **************************************************************/
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+            if (id === 'shopModal') renderShop();
+            if (id === 'academyModal') renderAcademy();
+            if (id === 'wardrobeModal') renderWardrobe();
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        function switchShopTab(tab) {
+            state.shopTab = tab;
+            ['seeds', 'upgrades', 'sell'].forEach(t => {
+                const el = document.getElementById(`shopTab-${t}`);
+                if (t === tab) {
+                    el.className = 'px-4 py-2 font-display font-bold text-sm rounded-t-xl bg-amber-50 border-t-2 border-x-2 border-amber-400 text-amber-900';
+                } else {
+                    el.className = 'px-4 py-2 font-display font-bold text-sm rounded-t-xl text-amber-700 hover:bg-amber-200/60';
+                }
+            });
+            renderShop();
+        }
+
+        function renderShop() {
+            document.getElementById('shopCoinDisplay').textContent = state.coins;
+            const container = document.getElementById('shopContent');
+            container.innerHTML = '';
+
+            if (state.shopTab === 'seeds') {
+                Object.values(CROPS).forEach(crop => {
+                    const owned = state.inventory.seeds[crop.id] || 0;
+                    const card = document.createElement('div');
+                    card.className = 'bg-white border-2 border-amber-300 rounded-2xl p-3.5 flex flex-col justify-between shadow-xs';
+                    card.innerHTML = `
+                        <div class="flex items-start gap-3">
+                            <div class="text-3xl bg-amber-100 p-2.5 rounded-2xl border border-amber-300">${crop.icon}</div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="font-display font-bold text-amber-950">${crop.name}</h4>
+                                    <span class="text-xs font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">In Bag: ${owned}</span>
+                                </div>
+                                <p class="text-xs text-amber-700 mt-1">${crop.desc}</p>
+                                <div class="text-[11px] font-bold text-emerald-700 mt-1.5">
+                                    🍓 +${crop.hungerRestore} Full • 💖 +${crop.happyRestore} Joy • ⭐ +${crop.xpGain} XP
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="buySeed('${crop.id}')" class="mt-3 w-full game-btn bg-amber-500 hover:bg-amber-400 text-amber-950 font-display font-bold py-1.5 rounded-xl text-sm flex items-center justify-center gap-1">
+                            <span>Buy Seed</span>
+                            <span>• 🪙 ${crop.seedCost}</span>
+                        </button>
+                    `;
+                    container.appendChild(card);
+                });
+            } else if (state.shopTab === 'upgrades') {
+                UPGRADES.forEach(up => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-white border-2 border-amber-300 rounded-2xl p-3.5 flex flex-col justify-between shadow-xs';
+                    card.innerHTML = `
+                        <div class="flex items-start gap-3">
+                            <div class="text-3xl bg-amber-100 p-2.5 rounded-2xl border border-amber-300">${up.icon}</div>
+                            <div class="flex-1">
+                                <h4 class="font-display font-bold text-amber-950">${up.name}</h4>
+                                <p class="text-xs text-amber-700 mt-1">${up.desc}</p>
+                            </div>
+                        </div>
+                        <button onclick="buyUpgrade('${up.id}')" ${up.purchased ? 'disabled' : ''} class="mt-3 w-full game-btn ${
+                            up.purchased ? 'bg-emerald-200 text-emerald-900 cursor-default' : 'bg-emerald-600 hover:bg-emerald-500 text-white'
+                        } font-display font-bold py-1.5 rounded-xl text-sm">
+                            ${up.purchased ? '✅ Installed on Farm' : `Purchase • 🪙 ${up.cost}`}
+                        </button>
+                    `;
+                    container.appendChild(card);
+                });
+            } else if (state.shopTab === 'sell') {
+                Object.values(CROPS).forEach(crop => {
+                    const count = state.inventory.crops[crop.id] || 0;
+                    const card = document.createElement('div');
+                    card.className = 'bg-white border-2 border-amber-300 rounded-2xl p-3.5 flex items-center justify-between gap-3 shadow-xs';
+                    card.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <div class="text-3xl bg-amber-100 p-2 rounded-xl border border-amber-300">${crop.icon}</div>
+                            <div>
+                                <h4 class="font-display font-bold text-amber-950">${crop.name}</h4>
+                                <div class="text-xs text-amber-700 font-bold">Harvested: ${count} | Value: 🪙 ${crop.sellPrice} each</div>
+                            </div>
+                        </div>
+                        <button onclick="sellCrop('${crop.id}')" ${count <= 0 ? 'disabled' : ''} class="game-btn ${
+                            count > 0 ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-stone-200 text-stone-400 cursor-not-allowed'
+                        } font-display font-bold px-3.5 py-2 rounded-xl text-xs shrink-0">
+                            Sell 1 (+🪙${crop.sellPrice})
+                        </button>
+                    `;
+                    container.appendChild(card);
+                });
+            }
+        }
+
+        function buySeed(cropId) {
+            const crop = CROPS[cropId];
+            if (state.coins < crop.seedCost) {
+                showToast('Not enough coins! Sell harvested fruit or perform tricks.');
+                return;
+            }
+            state.coins -= crop.seedCost;
+            state.inventory.seeds[cropId] = (state.inventory.seeds[cropId] || 0) + 1;
+            state.selectedItem = cropId;
+            Sound.coin();
+            renderShop();
+            updateHUD();
+        }
+
+        function buyUpgrade(upId) {
+            const up = UPGRADES.find(u => u.id === upId);
+            if (!up || up.purchased) return;
+            if (state.coins < up.cost) {
+                showToast('Not enough coins for this upgrade!');
+                return;
+            }
+            state.coins -= up.cost;
+            up.purchased = true;
+            Sound.levelUp();
+            showToast(`Installed ${up.name} on Featherdew Farm!`);
+            renderShop();
+            updateHUD();
+        }
+
+        function sellCrop(cropId) {
+            if ((state.inventory.crops[cropId] || 0) <= 0) return;
+            const crop = CROPS[cropId];
+            state.inventory.crops[cropId]--;
+            state.coins += crop.sellPrice;
+            Sound.coin();
+            renderShop();
+            updateHUD();
+        }
+
+        // ACADEMY FUNCTIONS
+        function renderAcademy() {
+            document.getElementById('academyIqDisplay').textContent = state.parrot.iq;
+            const vocab = document.getElementById('vocabularyList');
+            vocab.innerHTML = '';
+            state.parrot.words.forEach(word => {
+                const pill = document.createElement('button');
+                pill.onclick = () => {
+                    makeParrotSpeak(word);
+                    Sound.whistle();
+                    closeModal('academyModal');
+                };
+                pill.className = 'text-xs font-bold bg-purple-600 hover:bg-purple-500 text-white px-2.5 py-1 rounded-full shadow-xs transition';
+                pill.textContent = `🗣️ "${word}"`;
+                vocab.appendChild(pill);
+            });
+
+            const grid = document.getElementById('tricksGrid');
+            grid.innerHTML = '';
+            TRICKS.forEach(t => {
+                const unlocked = state.parrot.iq >= t.reqIq;
+                const card = document.createElement('div');
+                card.className = `border-2 rounded-2xl p-3.5 flex flex-col justify-between ${
+                    unlocked ? 'bg-white border-purple-300' : 'bg-stone-100 border-stone-300 opacity-75'
+                }`;
+                card.innerHTML = `
+                    <div class="flex items-start gap-2.5">
+                        <div class="text-2xl bg-purple-100 p-2 rounded-xl border border-purple-300">${t.icon}</div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h4 class="font-display font-bold text-purple-950">${t.name}</h4>
+                                <span class="text-[11px] font-bold px-2 py-0.5 rounded-full ${
+                                    unlocked ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-200 text-amber-900'
+                                }">Req IQ: ${t.reqIq}</span>
+                            </div>
+                            <p class="text-xs text-purple-800 mt-0.5">${t.desc}</p>
+                            <div class="text-[11px] font-bold text-amber-700 mt-1">
+                                ⚡ -${t.energyCost} Pep • 🪙 +${t.coinReward} Tip • ⭐ +${t.xpReward} XP
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="performTrick('${t.id}')" ${!unlocked ? 'disabled' : ''} class="mt-3 w-full game-btn ${
+                        unlocked ? 'bg-purple-600 hover:bg-purple-500 text-white' : 'bg-stone-300 text-stone-600 cursor-not-allowed'
+                    } font-display font-bold py-1.5 rounded-xl text-xs">
+                        ${unlocked ? 'Perform Trick Now! 🎪' : `Locked (Need ${t.reqIq} IQ)`}
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function setWordInput(val) {
+            document.getElementById('customWordInput').value = val;
+        }
+
+        function teachCustomWord() {
+            const input = document.getElementById('customWordInput');
+            const phrase = input.value.trim();
+            if (!phrase) {
+                showToast('Type a fun word or phrase first!');
+                return;
+            }
+            if (state.parrot.energy < 15) {
+                showToast(`${state.parrot.name} is too sleepy! Feed a berry or Sleep until morning.`);
+                return;
+            }
+            state.parrot.energy = Math.max(0, state.parrot.energy - 15);
+            state.parrot.iq += 4;
+            if (!state.parrot.words.includes(phrase)) {
+                state.parrot.words.push(phrase);
+            }
+            state.quest.wordDone = true;
+            input.value = '';
+            Sound.whistle();
+            addXp(18);
+            makeParrotSpeak(`"${phrase}" 🎶`);
+            spawnParticles(state.parrot.x, state.parrot.y - 40, '#c084fc', 18, 'heart');
+            renderAcademy();
+            updateHUD();
+        }
+
+        function performTrick(trickId) {
+            const trick = TRICKS.find(t => t.id === trickId);
+            if (!trick) return;
+            if (state.parrot.iq < trick.reqIq) return;
+            if (state.parrot.energy < trick.energyCost) {
+                showToast(`${state.parrot.name} needs more Energy! Feed fruit or rest.`);
+                return;
+            }
+            state.parrot.energy -= trick.energyCost;
+            state.parrot.happy = Math.min(100, state.parrot.happy + 12);
+            state.parrot.iq += 3;
+
+            const bonus = UPGRADES.find(u => u.id === 'musicBox').purchased ? 1.25 : 1.0;
+            const coinsEarned = Math.round(trick.coinReward * bonus);
+            state.coins += coinsEarned;
+            state.quest.wordDone = true;
+
+            state.parrot.trickAnim = trick.anim;
+            state.parrot.trickTimer = 1.8;
+
+            closeModal('academyModal');
+            Sound.levelUp();
+            addXp(trick.xpReward);
+            makeParrotSpeak(`*Performs ${trick.name}!* +${coinsEarned} 🪙`);
+            spawnParticles(state.parrot.x, state.parrot.y - 30, '#facc15', 24, 'star');
+            addFloatingText(state.parrot.x, state.parrot.y - 70, `+${coinsEarned} 🪙 Visitor Tip!`, '#fde047');
+            updateHUD();
+        }
+
+        // WARDROBE FUNCTIONS
+        function renderWardrobe() {
+            document.getElementById('parrotNameInput').value = state.parrot.name;
+
+            const pGrid = document.getElementById('plumageGrid');
+            pGrid.innerHTML = '';
+            PLUMAGES.forEach(pl => {
+                const active = state.parrot.plumage === pl.id;
+                const btn = document.createElement('button');
+                btn.onclick = () => selectOrBuyPlumage(pl.id);
+                btn.className = `p-3 rounded-2xl border-2 text-left transition flex flex-col justify-between ${
+                    active ? 'bg-pink-100 border-pink-600 ring-2 ring-pink-400' : 'bg-white border-amber-300 hover:bg-amber-50'
+                }`;
+                btn.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full border border-black/20 inline-block" style="background: linear-gradient(135deg, ${pl.body} 50%, ${pl.wing} 50%)"></span>
+                        <span class="font-display font-bold text-xs text-amber-950">${pl.name}</span>
+                    </div>
+                    <div class="mt-2 text-[11px] font-bold ${pl.unlocked ? 'text-emerald-700' : 'text-amber-700'}">
+                        ${active ? '✅ Active' : (pl.unlocked ? 'Select Style' : `Unlock • 🪙 ${pl.cost}`)}
+                    </div>
+                `;
+                pGrid.appendChild(btn);
+            });
+
+            const hGrid = document.getElementById('hatGrid');
+            hGrid.innerHTML = '';
+            HATS.forEach(h => {
+                const active = state.parrot.hat === h.id;
+                const btn = document.createElement('button');
+                btn.onclick = () => selectOrBuyHat(h.id);
+                btn.className = `p-3 rounded-2xl border-2 text-left transition flex flex-col justify-between ${
+                    active ? 'bg-pink-100 border-pink-600 ring-2 ring-pink-400' : 'bg-white border-amber-300 hover:bg-amber-50'
+                }`;
+                btn.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="text-xl">${h.icon}</span>
+                        <span class="font-display font-bold text-xs text-amber-950">${h.name}</span>
+                    </div>
+                    <div class="mt-2 text-[11px] font-bold ${h.unlocked ? 'text-emerald-700' : 'text-amber-700'}">
+                        ${active ? '✅ Equipped' : (h.unlocked ? 'Equip Hat' : `Buy • 🪙 ${h.cost}`)}
+                    </div>
+                `;
+                hGrid.appendChild(btn);
+            });
+        }
+
+        function saveParrotName() {
+            const val = document.getElementById('parrotNameInput').value.trim();
+            if (val) {
+                state.parrot.name = val;
+                updateHUD();
+                showToast(`Parrot named ${val}!`);
+            }
+        }
+
+        function selectOrBuyPlumage(id) {
+            const pl = PLUMAGES.find(p => p.id === id);
+            if (!pl) return;
+            if (!pl.unlocked) {
+                if (state.coins < pl.cost) {
+                    showToast('Not enough coins for this plumage!');
+                    return;
+                }
+                state.coins -= pl.cost;
+                pl.unlocked = true;
+                Sound.coin();
+            }
+            state.parrot.plumage = id;
+            Sound.chirp(true);
+            renderWardrobe();
+            updateHUD();
+        }
+
+        function selectOrBuyHat(id) {
+            const hat = HATS.find(h => h.id === id);
+            if (!hat) return;
+            if (!hat.unlocked) {
+                if (state.coins < hat.cost) {
+                    showToast('Not enough coins for this hat!');
+                    return;
+                }
+                state.coins -= hat.cost;
+                hat.unlocked = true;
+                Sound.coin();
+            }
+            state.parrot.hat = id;
+            Sound.chirp(true);
+            renderWardrobe();
+            updateHUD();
+        }
+
+        /**************************************************************
+         * 8. SLEEP / ADVANCE DAY MECHANIC
+         **************************************************************/
+        function restAndNextDay() {
+            // Complete any in-progress flying harvests before sleeping
+            const p = state.parrot;
+            p.harvestQueue.forEach(task => {
+                const plot = state.plots[task.plotIdx];
+                if (plot && plot.crop) {
+                    p.carriedCrops.push(plot.crop);
+                    plot.crop = null;
+                    plot.progress = 0;
+                    plot.watered = false;
+                    plot.beingHarvested = false;
+                }
+            });
+            p.harvestQueue = [];
+            p.carriedCrops.forEach(cropKey => {
+                state.inventory.crops[cropKey] = (state.inventory.crops[cropKey] || 0) + 1;
+                if (!state.quest.completed && state.quest.cropKey === cropKey) {
+                    state.quest.currentHarvest++;
+                }
+            });
+            p.carriedCrops = [];
+            p.flightState = 'perched';
+            p.flightAngle = 0;
+            p.x = layout.perchX;
+            p.y = layout.perchY - 68;
+
+            state.day++;
+            state.timeOfDay = 0.16; // Fresh sunrise
+            state.parrot.energy = 100;
+            state.parrot.hunger = Math.max(25, state.parrot.hunger - 15);
+
+            const hasSprinkler = UPGRADES.find(u => u.id === 'sprinkler').purchased;
+
+            // Advance watered crops significantly overnight
+            state.plots.forEach(plot => {
+                if (plot.crop) {
+                    if (plot.watered || hasSprinkler) {
+                        plot.progress = Math.min(1.0, plot.progress + 0.65);
+                    }
+                    plot.watered = hasSprinkler;
+                }
+            });
+
+            // Generate a fresh daily order if completed
+            if (state.quest.completed) {
+                generateDailyQuest();
+            }
+
+            Sound.whistle();
+            spawnParticles(state.parrot.x, state.parrot.y - 30, '#38bdf8', 18, 'star');
+            makeParrotSpeak(`Good morning! Day ${state.day} on the farm! ☀️`);
+            showToast(`Day ${state.day} dawned! Energy restored & watered crops grew!`);
+            updateHUD();
+        }
+
+        /**************************************************************
+         * 9. CANVAS RENDERING & INTERACTION HITBOXES
+         **************************************************************/
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Layout coordinates computed dynamically on resize
+        let layout = {
+            width: 1000,
+            height: 600,
+            perchX: 250,
+            perchY: 340,
+            plotRects: []
+        };
+
+        function resizeCanvas() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            layout.width = canvas.width;
+            layout.height = canvas.height;
+
+            const isCompact = layout.width < 700;
+            layout.perchX = isCompact ? layout.width * 0.28 : layout.width * 0.27;
+            layout.perchY = isCompact ? layout.height * 0.56 : layout.height * 0.58;
+
+            if (state.parrot.flightState === 'perched') {
+                state.parrot.x = layout.perchX;
+                state.parrot.y = layout.perchY - 68;
+            }
+
+            // Compute 6 farm plot rectangles on the right half of the screen
+            const gridStartX = isCompact ? layout.width * 0.50 : layout.width * 0.48;
+            const gridWidth = layout.width - gridStartX - (isCompact ? 16 : 48);
+            const cols = 3;
+            const rows = 2;
+            const gap = isCompact ? 10 : 18;
+            const cellW = Math.min(150, (gridWidth - gap * (cols - 1)) / cols);
+            const cellH = Math.min(105, Math.max(72, layout.height * 0.17));
+            const gridStartY = layout.height * 0.57;
+
+            layout.plotRects = state.plots.map((p, idx) => {
+                const col = idx % cols;
+                const row = Math.floor(idx / cols);
+                return {
+                    x: gridStartX + col * (cellW + gap),
+                    y: gridStartY + row * (cellH + gap),
+                    w: cellW,
+                    h: cellH
+                };
+            });
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+
+        // Particle & Floating Text Spawners
+        function spawnParticles(x, y, color, count = 12, shape = 'circle') {
+            for (let i = 0; i < count; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = 40 + Math.random() * 110;
+                state.particles.push({
+                    x,
+                    y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed - 40,
+                    color,
+                    shape,
+                    size: 4 + Math.random() * 5,
+                    life: 0.7 + Math.random() * 0.5,
+                    maxLife: 1.1
+                });
+            }
+        }
+
+        function addFloatingText(x, y, text, color = '#ffffff') {
+            state.floatingTexts.push({
+                x,
+                y,
+                text,
+                color,
+                life: 1.4
+            });
+        }
+
+        // Canvas Click / Touch Handler
+        canvas.addEventListener('pointerdown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mx = e.clientX - rect.left;
+            const my = e.clientY - rect.top;
+
+            Sound.init();
+
+            // 1. Check if clicked a perch mess first
+            for (let i = state.messes.length - 1; i >= 0; i--) {
+                const m = state.messes[i];
+                const dist = Math.hypot(mx - m.x, my - m.y);
+                if (dist < 28) {
+                    state.messes.splice(i, 1);
+                    state.parrot.clean = Math.min(100, state.parrot.clean + 20);
+                    state.coins += 5;
+                    Sound.clean();
+                    spawnParticles(m.x, m.y, '#5eead4', 14, 'star');
+                    addFloatingText(m.x, m.y - 15, 'Sparkling Clean! +5 🪙', '#5eead4');
+                    addXp(8);
+                    updateHUD();
+                    return;
+                }
+            }
+
+            // 2. Check if clicked Hanging Golden Bell (if owned)
+            const bellOwned = UPGRADES.find(u => u.id === 'bell').purchased;
+            if (bellOwned) {
+                const bellX = layout.perchX - 78;
+                const bellY = layout.perchY - 95;
+                if (Math.hypot(mx - bellX, my - bellY) < 28) {
+                    Sound.coin();
+                    state.parrot.happy = Math.min(100, state.parrot.happy + 8);
+                    makeParrotSpeak('Ding-a-ling! I love my golden bell! 🔔');
+                    spawnParticles(bellX, bellY, '#facc15', 12, 'star');
+                    updateHUD();
+                    return;
+                }
+            }
+
+            // 3. Check if clicked Parrot Hitbox
+            const parrotDist = Math.hypot(mx - state.parrot.x, my - state.parrot.y);
+            if (parrotDist < 68) {
+                handleParrotClick(mx, my);
+                return;
+            }
+
+            // 4. Check if clicked any of the 6 Farm Plots
+            for (let i = 0; i < layout.plotRects.length; i++) {
+                const r = layout.plotRects[i];
+                if (mx >= r.x && mx <= r.x + r.w && my >= r.y && my <= r.y + r.h) {
+                    handlePlotClick(i, r.x + r.w / 2, r.y + r.h / 2);
+                    return;
+                }
+            }
+
+            // 5. If Play Tool is active, toss the bouncy berry ball!
+            if (state.activeTool === 'play') {
+                tossBall(mx, my);
+            }
+        });
+
+        function handleParrotClick(mx, my) {
+            const p = state.parrot;
+            const tool = state.activeTool;
+
+            if (tool === 'feed') {
+                const cropKey = state.selectedItem;
+                const count = state.inventory.crops[cropKey] || 0;
+                const crop = CROPS[cropKey];
+
+                if (count <= 0) {
+                    showToast(`No harvested ${crop.icon} ${crop.name} in your pouch! Harvest or buy seeds first.`);
+                    Sound.chirp(false);
+                    return;
+                }
+
+                state.inventory.crops[cropKey]--;
+                p.hunger = Math.min(100, p.hunger + crop.hungerRestore);
+                p.happy = Math.min(100, p.happy + crop.happyRestore);
+                p.energy = Math.min(100, p.energy + 12);
+                Sound.harvest();
+                spawnParticles(mx, my, crop.color, 18, 'heart');
+                addFloatingText(p.x, p.y - 60, `Yum! +${crop.hungerRestore}🍓 +${crop.xpGain} XP`, '#fde047');
+                makeParrotSpeak(`Mmm! Delicious ${crop.name}! ${crop.icon}`);
+                addXp(crop.xpGain);
+                updateHUD();
+
+            } else if (tool === 'clean') {
+                p.clean = 100;
+                p.happy = Math.min(100, p.happy + 6);
+                state.messes = [];
+                Sound.clean();
+                spawnParticles(p.x, p.y, '#5eead4', 18, 'star');
+                addFloatingText(p.x, p.y - 55, 'Feathers Preened! ✨', '#5eead4');
+                makeParrotSpeak('Ooh, my feathers feel so fluffy and clean! ✨');
+                addXp(6);
+                updateHUD();
+
+            } else if (tool === 'play') {
+                tossBall(p.x + (Math.random() * 120 - 60), p.y - 120);
+
+            } else {
+                // Default Petting Interaction
+                p.happy = Math.min(100, p.happy + 8);
+                p.wingFlap = 1.0;
+                Sound.chirp(true);
+                spawnParticles(mx, my - 10, '#f472b6', 14, 'heart');
+                const randomWord = p.words[Math.floor(Math.random() * p.words.length)];
+                makeParrotSpeak(randomWord);
+                addFloatingText(p.x, p.y - 65, '+Joy 💖', '#f472b6');
+                addXp(4);
+                updateHUD();
+            }
+        }
+
+        function handlePlotClick(idx, cx, cy) {
+            const plot = state.plots[idx];
+            const tool = state.activeTool;
+
+            // A. If crop is ripe (progress >= 1), send parrot to fly & harvest it!
+            if (plot.crop && plot.progress >= 1.0) {
+                if (plot.beingHarvested) return;
+                plot.beingHarvested = true;
+                state.parrot.harvestQueue.push({ plotIdx: idx });
+
+                if (state.parrot.flightState === 'perched' || state.parrot.flightState === 'returning') {
+                    state.parrot.flightState = 'to_crop';
+                    Sound.chirp(true);
+                    makeParrotSpeak('On my way to harvest! 🪽');
+                }
+                return;
+            }
+
+            // B. Empty plot -> Plant Seed
+            if (!plot.crop) {
+                if (tool === 'plant' || tool === 'pet') {
+                    const seedKey = state.selectedItem;
+                    const seedCount = state.inventory.seeds[seedKey] || 0;
+                    const crop = CROPS[seedKey];
+
+                    if (seedCount <= 0) {
+                        showToast(`Out of ${crop.icon} ${crop.name} seeds! Visit the Farm Shop.`);
+                        return;
+                    }
+                    state.inventory.seeds[seedKey]--;
+                    plot.crop = seedKey;
+                    plot.progress = 0.05;
+                    plot.watered = UPGRADES.find(u => u.id === 'sprinkler').purchased;
+
+                    Sound.plant();
+                    spawnParticles(cx, cy, '#a3e635', 10, 'circle');
+                    addFloatingText(cx, cy - 20, `Planted ${crop.icon}`, '#bef264');
+                    updateHUD();
+                } else {
+                    showToast('Switch to Plant Seed tool to sow seeds in this plot!');
+                }
+                return;
+            }
+
+            // C. Growing plot -> Water it!
+            if (plot.crop && plot.progress < 1.0) {
+                if (tool === 'water' || !plot.watered) {
+                    plot.watered = true;
+                    plot.progress = Math.min(1.0, plot.progress + 0.18);
+                    Sound.water();
+                    spawnParticles(cx, cy, '#38bdf8', 14, 'circle');
+                    addFloatingText(cx, cy - 20, 'Watered! 💧', '#7dd3fc');
+                    updateHUD();
+                } else {
+                    const pct = Math.round(plot.progress * 100);
+                    showToast(`${CROPS[plot.crop].icon} growing (${pct}%)! Water again or Sleep to speed up.`);
+                }
+            }
+        }
+
+        function tossBall(targetX, targetY) {
+            state.toyBall.active = true;
+            state.toyBall.x = targetX;
+            state.toyBall.y = Math.min(targetY, state.parrot.y - 60);
+            state.toyBall.vx = (state.parrot.x - targetX) * 1.4;
+            state.toyBall.vy = -180;
+            Sound.plant();
+        }
+
+        /**************************************************************
+         * 10. MAIN GAME LOOP (UPDATES & PROCEDURAL ART RENDERING)
+         **************************************************************/
+        let lastTime = performance.now();
+
+        function updateGame(dt) {
+            // 1. Advance time of day slowly
+            state.timeOfDay = (state.timeOfDay + dt * 0.0045) % 1.0;
+
+            // 2. Grow watered crops continuously
+            state.plots.forEach(plot => {
+                if (plot.crop && plot.progress < 1.0) {
+                    const crop = CROPS[plot.crop];
+                    const speedMultiplier = plot.watered ? 1.0 : 0.22;
+                    plot.progress = Math.min(1.0, plot.progress + (dt / crop.growTime) * speedMultiplier);
+                }
+            });
+
+            // 3. Parrot gentle stat decay & idle behavior
+            const p = state.parrot;
+            p.hunger = Math.max(10, p.hunger - dt * 0.18);
+            p.happy = Math.max(15, p.happy - dt * 0.12);
+            p.clean = Math.max(20, p.clean - dt * 0.14);
+
+            // Occasional perch mess if cleanliness drops
+            if (Math.random() < dt * 0.015 && state.messes.length < 3) {
+                state.messes.push({
+                    x: layout.perchX + (Math.random() * 90 - 45),
+                    y: layout.perchY + 6
+                });
+            }
+
+            // Golden Bell auto-joy
+            if (UPGRADES.find(u => u.id === 'bell').purchased && Math.random() < dt * 0.03) {
+                p.happy = Math.min(100, p.happy + 2);
+            }
+
+            // Parrot Flight State Machine for Harvesting Crops
+            const homeX = layout.perchX;
+            const homeY = layout.perchY - 68;
+            const flightSpeed = 440;
+
+            if (p.flightState === 'to_crop') {
+                if (p.harvestQueue.length === 0) {
+                    p.flightState = 'returning';
+                } else {
+                    const task = p.harvestQueue[0];
+                    const r = layout.plotRects[task.plotIdx];
+                    const tx = r ? r.x + r.w / 2 : homeX;
+                    const ty = r ? r.y + r.h / 2 - 28 : homeY;
+                    const dx = tx - p.x;
+                    const dy = ty - p.y;
+                    const dist = Math.hypot(dx, dy);
+
+                    p.wingFlap = 1.0;
+                    p.flightAngle = Math.max(-0.35, Math.min(0.35, (dx / 220) * 0.3));
+
+                    // Occasional flight sparkle trail
+                    if (Math.random() < dt * 10) {
+                        spawnParticles(p.x, p.y + 15, '#fef08a', 1, 'circle');
+                    }
+
+                    if (dist <= flightSpeed * dt || dist < 14) {
+                        p.x = tx;
+                        p.y = ty;
+                        const plot = state.plots[task.plotIdx];
+                        if (plot && plot.crop) {
+                            const crop = CROPS[plot.crop];
+                            p.carriedCrops.push(plot.crop);
+                            plot.crop = null;
+                            plot.progress = 0;
+                            plot.watered = false;
+                            plot.beingHarvested = false;
+
+                            Sound.harvest();
+                            spawnParticles(tx, ty + 18, crop.color, 18, 'star');
+                            addFloatingText(tx, ty - 15, `Picked ${crop.icon}!`, '#fde047');
+                        }
+                        p.harvestQueue.shift();
+                        if (p.harvestQueue.length === 0) {
+                            p.flightState = 'returning';
+                        }
+                    } else {
+                        p.x += (dx / dist) * flightSpeed * dt;
+                        p.y += (dy / dist) * flightSpeed * dt;
+                    }
+                }
+            } else if (p.flightState === 'returning') {
+                if (p.harvestQueue.length > 0) {
+                    p.flightState = 'to_crop';
+                } else {
+                    const dx = homeX - p.x;
+                    const dy = homeY - p.y;
+                    const dist = Math.hypot(dx, dy);
+
+                    p.wingFlap = 1.0;
+                    p.flightAngle = Math.max(-0.35, Math.min(0.35, (dx / 220) * 0.3));
+
+                    if (Math.random() < dt * 10) {
+                        spawnParticles(p.x, p.y + 15, '#fef08a', 1, 'circle');
+                    }
+
+                    if (dist <= flightSpeed * dt || dist < 14) {
+                        p.x = homeX;
+                        p.y = homeY;
+                        p.flightState = 'perched';
+                        p.flightAngle = 0;
+
+                        if (p.carriedCrops.length > 0) {
+                            const count = p.carriedCrops.length;
+                            const lastKey = p.carriedCrops[count - 1];
+                            const lastCrop = CROPS[lastKey];
+
+                            p.carriedCrops.forEach(cropKey => {
+                                state.inventory.crops[cropKey] = (state.inventory.crops[cropKey] || 0) + 1;
+                                if (!state.quest.completed && state.quest.cropKey === cropKey) {
+                                    state.quest.currentHarvest++;
+                                }
+                            });
+                            p.carriedCrops = [];
+
+                            Sound.chirp(true);
+                            const label = count === 1
+                                ? `+1 ${lastCrop.icon} ${lastCrop.name}!`
+                                : `+${count} Crops Harvested! 🧺`;
+                            addFloatingText(p.x, p.y - 60, label, '#fde047');
+                            addXp(10 * count);
+                            updateHUD();
+                        }
+                    } else {
+                        p.x += (dx / dist) * flightSpeed * dt;
+                        p.y += (dy / dist) * flightSpeed * dt;
+                    }
+                }
+            } else {
+                p.x = homeX;
+                p.y = homeY;
+                p.flightAngle = 0;
+            }
+
+            // Parrot Animation Timers
+            p.bouncePhase += dt * 4.2;
+            if (p.wingFlap > 0) p.wingFlap = Math.max(0, p.wingFlap - dt * 2.4);
+            if (p.speechTimer > 0) p.speechTimer = Math.max(0, p.speechTimer - dt);
+            if (p.trickTimer > 0) {
+                p.trickTimer = Math.max(0, p.trickTimer - dt);
+                if (p.trickTimer === 0) p.trickAnim = null;
+            }
+
+            // Random spontaneous parrot speech
+            if (p.speechTimer <= 0 && Math.random() < dt * 0.045 && p.words.length > 0) {
+                const phrase = p.words[Math.floor(Math.random() * p.words.length)];
+                makeParrotSpeak(phrase);
+            }
+
+            // Blinking
+            p.blinkTimer -= dt;
+            if (p.blinkTimer <= 0) {
+                p.isBlinking = !p.isBlinking;
+                p.blinkTimer = p.isBlinking ? 0.14 : (2.2 + Math.random() * 2.5);
+            }
+
+            // Toy Ball Physics
+            if (state.toyBall.active) {
+                const b = state.toyBall;
+                b.x += b.vx * dt;
+                b.y += b.vy * dt;
+                b.vy += 480 * dt; // gravity
+
+                // Check if parrot catches/boops the ball!
+                if (Math.hypot(b.x - p.x, b.y - p.y) < 55 && b.vy > 0) {
+                    b.vy = -260;
+                    b.vx = (Math.random() - 0.5) * 220;
+                    p.wingFlap = 1.0;
+                    p.happy = Math.min(100, p.happy + 10);
+                    Sound.chirp(true);
+                    spawnParticles(b.x, b.y, '#f472b6', 12, 'heart');
+                    addFloatingText(p.x, p.y - 65, 'Boop! +10 💖', '#f472b6');
+                    addXp(8);
+                    updateHUD();
+                }
+
+                if (b.y > layout.height + 30) {
+                    b.active = false;
+                }
+            }
+
+            // Clouds drift
+            state.clouds.forEach(c => {
+                c.x += c.speed * dt;
+                if (c.x > layout.width + 120) c.x = -120;
+            });
+
+            // Particles update
+            for (let i = state.particles.length - 1; i >= 0; i--) {
+                const pt = state.particles[i];
+                pt.x += pt.vx * dt;
+                pt.y += pt.vy * dt;
+                pt.vy += 180 * dt;
+                pt.life -= dt;
+                if (pt.life <= 0) state.particles.splice(i, 1);
+            }
+
+            // Floating text update
+            for (let i = state.floatingTexts.length - 1; i >= 0; i--) {
+                const ft = state.floatingTexts[i];
+                ft.y -= 32 * dt;
+                ft.life -= dt;
+                if (ft.life <= 0) state.floatingTexts.splice(i, 1);
+            }
+        }
+
+        /**************************************************************
+         * 11. DRAWING FUNCTIONS (Sky, Barn, Hills, Plots, Perch, Parrot)
+         **************************************************************/
+        function drawScene() {
+            const w = layout.width;
+            const h = layout.height;
+            ctx.clearRect(0, 0, w, h);
+
+            // 1. Dynamic Sky Gradient based on timeOfDay
+            const t = state.timeOfDay;
+            const skyGrad = ctx.createLinearGradient(0, 0, 0, h * 0.65);
+            if (t < 0.2) {
+                // Sunrise
+                skyGrad.addColorStop(0, '#38bdf8');
+                skyGrad.addColorStop(1, '#fde68a');
+            } else if (t < 0.55) {
+                // Sunny Day
+                skyGrad.addColorStop(0, '#0ea5e9');
+                skyGrad.addColorStop(1, '#bae6fd');
+            } else if (t < 0.78) {
+                // Golden Sunset
+                skyGrad.addColorStop(0, '#7c3aed');
+                skyGrad.addColorStop(0.5, '#f97316');
+                skyGrad.addColorStop(1, '#fde047');
+            } else {
+                // Starry Night
+                skyGrad.addColorStop(0, '#0f172a');
+                skyGrad.addColorStop(1, '#1e1b4b');
+            }
+            ctx.fillStyle = skyGrad;
+            ctx.fillRect(0, 0, w, h);
+
+            // Sun or Moon
+            const celestialAngle = t * Math.PI * 2;
+            const sunX = w * 0.5 + Math.cos(celestialAngle - Math.PI / 2) * (w * 0.36);
+            const sunY = h * 0.26 + Math.sin(celestialAngle - Math.PI / 2) * (h * 0.15);
+            ctx.save();
+            if (t >= 0.78) {
+                // Moon & Twinkling Stars
+                ctx.fillStyle = '#fef9c3';
+                ctx.shadowColor = '#fef08a';
+                ctx.shadowBlur = 20;
+                ctx.beginPath();
+                ctx.arc(sunX, sunY, 26, 0, Math.PI * 2);
+                ctx.fill();
+            } else {
+                // Sun
+                ctx.fillStyle = '#fde047';
+                ctx.shadowColor = '#facc15';
+                ctx.shadowBlur = 30;
+                ctx.beginPath();
+                ctx.arc(sunX, sunY, 32, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            ctx.restore();
+
+            // 2. Fluffy Clouds
+            state.clouds.forEach(c => {
+                ctx.save();
+                ctx.translate(c.x, c.y);
+                ctx.scale(c.scale, c.scale);
+                ctx.fillStyle = t >= 0.78 ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.88)';
+                ctx.beginPath();
+                ctx.arc(0, 0, 24, 0, Math.PI * 2);
+                ctx.arc(22, -6, 28, 0, Math.PI * 2);
+                ctx.arc(46, 0, 22, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            });
+
+            // 3. Rolling Farm Hills & Red Barn in Background
+            ctx.fillStyle = t >= 0.78 ? '#14532d' : '#4ade80';
+            ctx.beginPath();
+            ctx.moveTo(0, h * 0.52);
+            ctx.quadraticCurveTo(w * 0.25, h * 0.42, w * 0.55, h * 0.50);
+            ctx.quadraticCurveTo(w * 0.8, h * 0.56, w, h * 0.46);
+            ctx.lineTo(w, h);
+            ctx.lineTo(0, h);
+            ctx.closePath();
+            ctx.fill();
+
+            // Red Cozy Barn on right hill
+            drawBarn(w * 0.78, h * 0.36);
+
+            // Foreground Lush Meadow
+            const meadowGrad = ctx.createLinearGradient(0, h * 0.48, 0, h);
+            meadowGrad.addColorStop(0, t >= 0.78 ? '#166534' : '#22c55e');
+            meadowGrad.addColorStop(1, t >= 0.78 ? '#052e16' : '#15803d');
+            ctx.fillStyle = meadowGrad;
+            ctx.fillRect(0, h * 0.50, w, h * 0.50);
+
+            // Wooden Farm Fence
+            drawFence(w, h * 0.50);
+
+            // 4. Draw 6 Farm Soil Plots & Crops
+            drawFarmPlots();
+
+            // 5. Draw Parrot Perch, Upgrades, & Parrot
+            drawPerchAndUpgrades();
+            drawParrot();
+
+            // 6. Draw Toy Ball if active
+            if (state.toyBall.active) {
+                ctx.save();
+                ctx.translate(state.toyBall.x, state.toyBall.y);
+                ctx.fillStyle = '#ec4899';
+                ctx.beginPath();
+                ctx.arc(0, 0, 14, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = '#fde047';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            // 7. Particles & Floating Text
+            drawParticlesAndText();
+        }
+
+        function drawBarn(bx, by) {
+            ctx.save();
+            ctx.translate(bx, by);
+            // Barn Body
+            ctx.fillStyle = '#dc2626';
+            ctx.fillRect(-45, 20, 90, 55);
+            // Barn Roof
+            ctx.fillStyle = '#7f1d1d';
+            ctx.beginPath();
+            ctx.moveTo(-55, 22);
+            ctx.lineTo(-28, -8);
+            ctx.lineTo(0, -18);
+            ctx.lineTo(28, -8);
+            ctx.lineTo(55, 22);
+            ctx.closePath();
+            ctx.fill();
+            // White Barn X Door
+            ctx.strokeStyle = '#fef2f2';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(-18, 36, 36, 38);
+            ctx.beginPath();
+            ctx.moveTo(-18, 36);
+            ctx.lineTo(18, 74);
+            ctx.moveTo(18, 36);
+            ctx.lineTo(-18, 74);
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function drawFence(w, fenceY) {
+            ctx.save();
+            ctx.fillStyle = '#b45309';
+            ctx.strokeStyle = '#78350f';
+            ctx.lineWidth = 2;
+            // Horizontal rails
+            ctx.fillRect(0, fenceY - 22, w, 6);
+            ctx.fillRect(0, fenceY - 10, w, 6);
+            // Posts
+            for (let x = 20; x < w; x += 65) {
+                ctx.fillRect(x, fenceY - 32, 10, 34);
+                ctx.strokeRect(x, fenceY - 32, 10, 34);
+            }
+            ctx.restore();
+        }
+
+        function drawFarmPlots() {
+            const now = performance.now() * 0.003;
+
+            // Optional Sprinkler center visual
+            const hasSprinkler = UPGRADES.find(u => u.id === 'sprinkler').purchased;
+            if (hasSprinkler && layout.plotRects.length > 0) {
+                const r0 = layout.plotRects[1];
+                ctx.save();
+                ctx.translate(r0.x + r0.w / 2, r0.y - 16);
+                ctx.fillStyle = '#38bdf8';
+                ctx.font = '20px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('⛲', 0, 0);
+                ctx.restore();
+            }
+
+            layout.plotRects.forEach((r, idx) => {
+                const plot = state.plots[idx];
+                ctx.save();
+
+                // Soil Mound
+                ctx.fillStyle = plot.watered ? '#451a03' : '#78350f';
+                ctx.strokeStyle = plot.watered ? '#38bdf8' : '#92400e';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.roundRect(r.x, r.y, r.w, r.h, 16);
+                ctx.fill();
+                ctx.stroke();
+
+                // Furrow lines
+                ctx.strokeStyle = plot.watered ? '#290f02' : '#5c280b';
+                ctx.lineWidth = 2;
+                for (let rowY = r.y + 18; rowY < r.y + r.h - 12; rowY += 18) {
+                    ctx.beginPath();
+                    ctx.moveTo(r.x + 12, rowY);
+                    ctx.lineTo(r.x + r.w - 12, rowY);
+                    ctx.stroke();
+                }
+
+                const cx = r.x + r.w / 2;
+                const cy = r.y + r.h / 2;
+
+                if (!plot.crop) {
+                    // Empty plot prompt
+                    ctx.fillStyle = 'rgba(255,255,255,0.45)';
+                    ctx.font = 'bold 12px Nunito';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('🌱 Click to Plant', cx, cy + 4);
+                } else {
+                    const crop = CROPS[plot.crop];
+                    const sway = Math.sin(now + plot.swayOffset) * 4;
+
+                    // Draw Stem/Leaves based on growth stage
+                    ctx.save();
+                    ctx.translate(cx, cy + 12);
+                    ctx.rotate(sway * 0.03);
+
+                    if (plot.progress < 0.35) {
+                        // Sprout
+                        ctx.fillStyle = '#84cc16';
+                        ctx.beginPath();
+                        ctx.ellipse(-6, -8, 7, 4, -0.4, 0, Math.PI * 2);
+                        ctx.ellipse(6, -8, 7, 4, 0.4, 0, Math.PI * 2);
+                        ctx.fill();
+                    } else if (plot.progress < 1.0) {
+                        // Bushy Growing Plant
+                        ctx.fillStyle = '#22c55e';
+                        ctx.beginPath();
+                        ctx.arc(0, -14, 16, 0, Math.PI * 2);
+                        ctx.arc(-12, -8, 12, 0, Math.PI * 2);
+                        ctx.arc(12, -8, 12, 0, Math.PI * 2);
+                        ctx.fill();
+                    } else {
+                        // Ripe Glowing Bush + Fruit Icon!
+                        ctx.fillStyle = '#16a34a';
+                        ctx.beginPath();
+                        ctx.arc(0, -16, 20, 0, Math.PI * 2);
+                        ctx.arc(-14, -8, 14, 0, Math.PI * 2);
+                        ctx.arc(14, -8, 14, 0, Math.PI * 2);
+                        ctx.fill();
+
+                        // Ripe Fruit Emoji bouncing
+                        ctx.font = '28px sans-serif';
+                        ctx.textAlign = 'center';
+                        ctx.fillText(crop.icon, 0, -10 + Math.sin(now * 2) * 3);
+                    }
+                    ctx.restore();
+
+                    // Progress / Status Pill at bottom of plot
+                    ctx.fillStyle = 'rgba(0,0,0,0.65)';
+                    ctx.beginPath();
+                    ctx.roundRect(r.x + 8, r.y + r.h - 24, r.w - 16, 18, 8);
+                    ctx.fill();
+
+                    ctx.font = 'bold 11px Nunito';
+                    ctx.textAlign = 'center';
+                    if (plot.beingHarvested) {
+                        ctx.fillStyle = '#fde047';
+                        ctx.fillText('🦜 Flying over...', cx, r.y + r.h - 11);
+                    } else if (plot.progress >= 1.0) {
+                        ctx.fillStyle = '#fde047';
+                        ctx.fillText('✨ RIPE! Click!', cx, r.y + r.h - 11);
+                    } else {
+                        const pct = Math.round(plot.progress * 100);
+                        ctx.fillStyle = plot.watered ? '#7dd3fc' : '#fed7aa';
+                        ctx.fillText(`${crop.icon} ${pct}% ${plot.watered ? '💧' : '🏜️Dry'}`, cx, r.y + r.h - 11);
+                    }
+                }
+                ctx.restore();
+            });
+        }
+
+        function drawPerchAndUpgrades() {
+            const px = layout.perchX;
+            const py = layout.perchY;
+            const isTiki = UPGRADES.find(u => u.id === 'tikiPerch').purchased;
+
+            ctx.save();
+            // Vertical Stand Pole
+            ctx.fillStyle = isTiki ? '#ca8a04' : '#78350f';
+            ctx.strokeStyle = '#451a03';
+            ctx.lineWidth = 3;
+            ctx.fillRect(px - 10, py, 20, layout.height - py);
+            ctx.strokeRect(px - 10, py, 20, layout.height - py);
+
+            // Upper Toy Arch if Bell or MusicBox owned
+            ctx.strokeStyle = isTiki ? '#eab308' : '#92400e';
+            ctx.lineWidth = 6;
+            ctx.beginPath();
+            ctx.moveTo(px - 80, py);
+            ctx.quadraticCurveTo(px - 80, py - 130, px, py - 130);
+            ctx.stroke();
+
+            // Horizontal Perch Branch
+            ctx.fillStyle = isTiki ? '#a16207' : '#92400e';
+            ctx.beginPath();
+            ctx.roundRect(px - 105, py - 8, 210, 18, 9);
+            ctx.fill();
+            ctx.stroke();
+
+            // Tiki Flowers if upgraded
+            if (isTiki) {
+                ctx.font = '20px sans-serif';
+                ctx.fillText('🌺', px - 98, py + 6);
+                ctx.fillText('🌿', px + 75, py + 6);
+            }
+
+            // Golden Bell Upgrade
+            if (UPGRADES.find(u => u.id === 'bell').purchased) {
+                ctx.font = '26px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('🔔', px - 75, py - 92);
+            }
+
+            // Music Box Upgrade
+            if (UPGRADES.find(u => u.id === 'musicBox').purchased) {
+                ctx.font = '24px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('📻', px + 72, py - 14);
+            }
+
+            // Perch Messes (click to clean)
+            state.messes.forEach(m => {
+                ctx.fillStyle = '#d6d3d1';
+                ctx.beginPath();
+                ctx.arc(m.x, m.y, 8, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.font = '12px sans-serif';
+                ctx.fillText('💨', m.x - 6, m.y - 8);
+            });
+
+            ctx.restore();
+        }
+
+        function drawParrot() {
+            const p = state.parrot;
+            const stage = getGrowthStage(p.level);
+            const plumage = PLUMAGES.find(pl => pl.id === p.plumage) || PLUMAGES[0];
+            const isFlying = p.flightState !== 'perched';
+
+            const bobY = isFlying ? Math.sin(p.bouncePhase * 2.5) * 6 : Math.sin(p.bouncePhase) * 4;
+            ctx.save();
+            ctx.translate(p.x, p.y + bobY);
+
+            if (isFlying) {
+                ctx.rotate(p.flightAngle);
+            }
+
+            // Handle Trick Animations (Spin, Flip, Dance, Wave)
+            if (p.trickAnim === 'spin') {
+                ctx.scale(Math.cos(p.trickTimer * 10), 1);
+            } else if (p.trickAnim === 'flip') {
+                ctx.rotate(p.trickTimer * Math.PI * 2);
+            } else if (p.trickAnim === 'dance') {
+                ctx.rotate(Math.sin(p.trickTimer * 18) * 0.22);
+            }
+
+            ctx.scale(stage.scale, stage.scale);
+
+            // Elder Golden Aura
+            if (stage.aura) {
+                ctx.save();
+                ctx.strokeStyle = 'rgba(250, 204, 21, 0.55)';
+                ctx.lineWidth = 6;
+                ctx.beginPath();
+                ctx.arc(0, 0, 58 + Math.sin(p.bouncePhase * 2) * 4, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            // 1. Tail Feathers (behind perch)
+            ctx.fillStyle = plumage.wing;
+            ctx.beginPath();
+            ctx.moveTo(-10, 38);
+            ctx.lineTo(10, 38);
+            ctx.lineTo(6, 38 + 48 * stage.tailLen);
+            ctx.lineTo(-6, 38 + 48 * stage.tailLen);
+            ctx.closePath();
+            ctx.fill();
+            // 2. Feet gripping the perch (or tucked up while flying)
+            ctx.fillStyle = '#f59e0b';
+            ctx.beginPath();
+            const footY = isFlying ? 41 : 48;
+            ctx.arc(-14, footY, 6, 0, Math.PI * 2);
+            ctx.arc(14, footY, 6, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 3. Plump Parrot Body
+            ctx.fillStyle = plumage.body;
+            ctx.beginPath();
+            ctx.ellipse(0, 10, 34, 42, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Belly Patch
+            ctx.fillStyle = plumage.belly;
+            ctx.beginPath();
+            ctx.ellipse(0, 16, 22, 28, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 4. Wings (Left & Right with flap animation)
+            const flapSpeed = isFlying ? 0.065 : 0.04;
+            const flapAmp = isFlying ? 0.95 : 0.65;
+            const flapAngle = p.wingFlap > 0 ? Math.sin(performance.now() * flapSpeed) * flapAmp : (p.trickAnim === 'wave' ? -0.8 : 0);
+
+            // Left Wing
+            ctx.save();
+            ctx.translate(-28, 4);
+            ctx.rotate(flapAngle);
+            ctx.fillStyle = plumage.wing;
+            ctx.beginPath();
+            ctx.ellipse(-6, 12, 12, 26, 0.2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+
+            // Right Wing
+            ctx.save();
+            ctx.translate(28, 4);
+            ctx.rotate(-flapAngle);
+            ctx.fillStyle = plumage.wing;
+            ctx.beginPath();
+            ctx.ellipse(6, 12, 12, 26, -0.2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+
+            // 5. Crest Feathers on Top of Head
+            ctx.fillStyle = plumage.trim;
+            ctx.beginPath();
+            ctx.moveTo(0, -30);
+            ctx.quadraticCurveTo(-12, -52 * stage.crest, -4, -46 * stage.crest);
+            ctx.quadraticCurveTo(4, -56 * stage.crest, 8, -42 * stage.crest);
+            ctx.closePath();
+            ctx.fill();
+
+            // 6. White Eye Patches & Expressive Eyes
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(-12, -12, 9, 0, Math.PI * 2);
+            ctx.arc(12, -12, 9, 0, Math.PI * 2);
+            ctx.fill();
+
+            if (p.isBlinking) {
+                ctx.strokeStyle = '#1c1917';
+                ctx.lineWidth = 2.5;
+                ctx.beginPath();
+                ctx.moveTo(-17, -12);
+                ctx.lineTo(-7, -12);
+                ctx.moveTo(7, -12);
+                ctx.lineTo(17, -12);
+                ctx.stroke();
+            } else {
+                ctx.fillStyle = '#1c1917';
+                ctx.beginPath();
+                ctx.arc(-11, -12, 5, 0, Math.PI * 2);
+                ctx.arc(11, -12, 5, 0, Math.PI * 2);
+                ctx.fill();
+                // Eye sparkle
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.arc(-13, -14, 2, 0, Math.PI * 2);
+                ctx.arc(9, -14, 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Rosy Cheeks
+            ctx.fillStyle = 'rgba(244, 114, 182, 0.55)';
+            ctx.beginPath();
+            ctx.arc(-20, -4, 5, 0, Math.PI * 2);
+            ctx.arc(20, -4, 5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 7. Curved Parrot Beak
+            ctx.fillStyle = '#fde047';
+            ctx.beginPath();
+            ctx.moveTo(-7, -8);
+            ctx.quadraticCurveTo(0, -14, 7, -8);
+            ctx.quadraticCurveTo(4, 6, 0, 8);
+            ctx.quadraticCurveTo(-4, 6, -7, -8);
+            ctx.fill();
+
+            // Lower beak
+            ctx.fillStyle = '#292524';
+            ctx.beginPath();
+            ctx.arc(0, 4, 4, 0, Math.PI);
+            ctx.fill();
+
+            // 8. Equipped Hat
+            if (p.hat !== 'none') {
+                const hatObj = HATS.find(h => h.id === p.hat);
+                if (hatObj) {
+                    ctx.font = '30px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(hatObj.icon, 0, -34);
+                }
+            }
+
+            // 9. Carried Crops held during flight
+            if (p.carriedCrops.length > 0) {
+                ctx.font = '24px sans-serif';
+                ctx.textAlign = 'center';
+                p.carriedCrops.slice(-3).forEach((cropKey, idx) => {
+                    const crop = CROPS[cropKey];
+                    if (crop) {
+                        ctx.fillText(crop.icon, (idx - (Math.min(p.carriedCrops.length, 3) - 1) / 2) * 16, 56);
+                    }
+                });
+            }
+
+            ctx.restore();
+
+            // 10. Speech Bubble above Parrot
+            if (p.speechTimer > 0 && p.currentSpeech) {
+                drawSpeechBubble(p.x, p.y - 78 * stage.scale, p.currentSpeech);
+            }
+        }
+
+        function drawSpeechBubble(x, y, text) {
+            ctx.save();
+            ctx.font = 'bold 13px Nunito';
+            const padding = 12;
+            const textWidth = ctx.measureText(text).width;
+            const boxW = Math.max(90, textWidth + padding * 2);
+            const boxH = 32;
+            const bx = Math.max(12, Math.min(layout.width - boxW - 12, x - boxW / 2));
+            const by = Math.max(48, y - boxH);
+
+            ctx.fillStyle = '#fffbeb';
+            ctx.strokeStyle = '#d97706';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.roundRect(bx, by, boxW, boxH, 14);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#451a03';
+            ctx.textAlign = 'center';
+            ctx.fillText(text, bx + boxW / 2, by + 20);
+            ctx.restore();
+        }
+
+        function drawParticlesAndText() {
+            state.particles.forEach(pt => {
+                ctx.save();
+                ctx.globalAlpha = Math.max(0, pt.life / pt.maxLife);
+                ctx.translate(pt.x, pt.y);
+                ctx.fillStyle = pt.color;
+
+                if (pt.shape === 'heart') {
+                    ctx.font = '16px sans-serif';
+                    ctx.fillText('💖', -6, 6);
+                } else if (pt.shape === 'star') {
+                    ctx.font = '15px sans-serif';
+                    ctx.fillText('✨', -6, 6);
+                } else {
+                    ctx.beginPath();
+                    ctx.arc(0, 0, pt.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.restore();
+            });
+
+            state.floatingTexts.forEach(ft => {
+                ctx.save();
+                ctx.globalAlpha = Math.min(1, ft.life);
+                ctx.font = 'bold 15px Fredoka';
+                ctx.textAlign = 'center';
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 3;
+                ctx.strokeText(ft.text, ft.x, ft.y);
+                ctx.fillStyle = ft.color;
+                ctx.fillText(ft.text, ft.x, ft.y);
+                ctx.restore();
+            });
+        }
+
+        /**************************************************************
+         * 12. INITIALIZATION & ANIMATION LOOP START
+         **************************************************************/
+        function gameLoop(now) {
+            const dt = Math.min(0.1, (now - lastTime) / 1000);
+            lastTime = now;
+
+            updateGame(dt);
+            drawScene();
+            requestAnimationFrame(gameLoop);
+        }
+
+        window.onload = function () {
+            resizeCanvas();
+            selectTool('pet');
+            updateHUD();
+            showToast('Welcome to Featherdew Farm! Click ripe crops or pet Mango!');
+            requestAnimationFrame(gameLoop);
+        };
+    </script>
+</body>
+</html>

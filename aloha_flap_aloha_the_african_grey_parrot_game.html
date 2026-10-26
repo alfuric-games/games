@@ -1,0 +1,2793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Aloha Flap — Aloha the African Grey Parrot Adventure (Offline Ready)</title>
+  <script src="https://cdn.tailwindcss.com" defer onerror="window.__offlineMode=true"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #06130d;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      touch-action: none;
+    }
+    .font-display {
+      font-family: 'Fredoka', 'Trebuchet MS', 'Segoe UI', system-ui, sans-serif;
+      font-weight: 700;
+    }
+
+    /* =====================================================================
+       STANDALONE OFFLINE UTILITY STYLESHEET (100% Offline Fallback for UI)
+       Ensures all layouts, modals, HUD pills, and responsive rules work
+       identically even with zero internet connection or inside an .exe.
+       ===================================================================== */
+    button, input {
+      font-family: inherit;
+      color: inherit;
+      margin: 0;
+    }
+    button {
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    h1, h2, p {
+      margin: 0;
+    }
+    .relative { position: relative; }
+    .absolute { position: absolute; }
+    .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+    .top-0 { top: 0; }
+    .left-0 { left: 0; }
+    .right-0 { right: 0; }
+    .top-14 { top: 3.5rem; }
+    .right-3 { right: 0.75rem; }
+    .top-16 { top: 4rem; }
+    .left-1\/2 { left: 50%; }
+    .bottom-2 { bottom: 0.5rem; }
+    .right-2\.5 { right: 0.625rem; }
+    .-translate-x-1\/2 { transform: translateX(-50%); }
+    .-translate-y-4 { transform: translate(-50%, -1rem); }
+    .translate-y-0 { transform: translate(-50%, 0); }
+    .z-20 { z-index: 20; }
+    .z-30 { z-index: 30; }
+
+    .w-screen { width: 100vw; }
+    .h-screen { height: 100vh; }
+    .w-full { width: 100%; }
+    .h-full { height: 100%; }
+    .max-w-\[1200px\] { max-width: 1200px; }
+    .max-h-\[900px\] { max-height: 900px; }
+    .max-w-md { max-width: 28rem; }
+    .max-w-xs { max-width: 20rem; }
+    .w-64 { width: 16rem; }
+    .min-w-\[88px\] { min-width: 88px; }
+    .w-2 { width: 0.5rem; }
+    .h-2 { height: 0.5rem; }
+    .w-3\.5 { width: 0.875rem; }
+    .h-3\.5 { height: 0.875rem; }
+    .w-4 { width: 1rem; }
+    .h-4 { height: 1rem; }
+    .w-9 { width: 2.25rem; }
+    .h-9 { height: 2.25rem; }
+    .h-10 { height: 2.5rem; }
+    .w-14 { width: 3.5rem; }
+    .h-14 { height: 3.5rem; }
+    .h-36 { height: 9rem; }
+    .w-\[1px\] { width: 1px; }
+    .h-\[34px\] { height: 34px; }
+
+    .block { display: block; }
+    .flex { display: flex; }
+    .inline-flex { display: inline-flex; }
+    .grid { display: grid; }
+    .hidden { display: none !important; }
+    .flex-1 { flex: 1 1 0%; }
+    .flex-col { flex-direction: column; }
+    .flex-wrap { flex-wrap: wrap; }
+    .items-center { align-items: center; }
+    .justify-center { justify-content: center; }
+    .justify-between { justify-content: space-between; }
+    .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+    .gap-1 { gap: 0.25rem; }
+    .gap-1\.5 { gap: 0.375rem; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-2\.5 { gap: 0.625rem; }
+    .gap-3 { gap: 0.75rem; }
+    .gap-y-1 { row-gap: 0.25rem; }
+
+    .p-1\.5 { padding: 0.375rem; }
+    .p-2 { padding: 0.5rem; }
+    .p-2\.5 { padding: 0.625rem; }
+    .p-3 { padding: 0.75rem; }
+    .p-3\.5 { padding: 0.875rem; }
+    .p-4 { padding: 1rem; }
+    .p-5 { padding: 1.25rem; }
+    .p-6 { padding: 1.5rem; }
+    .px-1 { padding-left: 0.25rem; padding-right: 0.25rem; }
+    .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+    .px-2\.5 { padding-left: 0.625rem; padding-right: 0.625rem; }
+    .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .py-0\.5 { padding-top: 0.125rem; padding-bottom: 0.125rem; }
+    .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .py-2\.5 { padding-top: 0.625rem; padding-bottom: 0.625rem; }
+    .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .py-3\.5 { padding-top: 0.875rem; padding-bottom: 0.875rem; }
+    .pb-1\.5 { padding-bottom: 0.375rem; }
+
+    .mt-1 { margin-top: 0.25rem; }
+    .mb-0\.5 { margin-bottom: 0.125rem; }
+    .mb-1 { margin-bottom: 0.25rem; }
+    .mb-1\.5 { margin-bottom: 0.375rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-3 { margin-bottom: 0.75rem; }
+    .mb-3\.5 { margin-bottom: 0.875rem; }
+    .mb-4 { margin-bottom: 1rem; }
+
+    .overflow-hidden { overflow: hidden; }
+    .pointer-events-none { pointer-events: none; }
+    .pointer-events-auto { pointer-events: auto; }
+    .cursor-pointer { cursor: pointer; }
+    .whitespace-nowrap { white-space: nowrap; }
+    .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .object-contain { object-fit: contain; }
+
+    .rounded { border-radius: 0.25rem; }
+    .rounded-md { border-radius: 0.375rem; }
+    .rounded-xl { border-radius: 0.75rem; }
+    .rounded-2xl { border-radius: 1rem; }
+    .rounded-3xl { border-radius: 1.5rem; }
+    .rounded-full { border-radius: 9999px; }
+
+    .border { border-width: 1px; border-style: solid; }
+    .border-2 { border-width: 2px; border-style: solid; }
+    .border-b { border-bottom-width: 1px; border-bottom-style: solid; }
+    .border-transparent { border-color: transparent; }
+    .border-white\/10 { border-color: rgba(255, 255, 255, 0.1); }
+    .border-white\/15 { border-color: rgba(255, 255, 255, 0.15); }
+    .border-emerald-900\/60 { border-color: rgba(6, 78, 59, 0.6); }
+    .border-emerald-400\/25 { border-color: rgba(52, 211, 153, 0.25); }
+    .border-emerald-400\/30 { border-color: rgba(52, 211, 153, 0.3); }
+    .border-emerald-400\/40 { border-color: rgba(52, 211, 153, 0.4); }
+    .border-emerald-500\/30 { border-color: rgba(16, 185, 129, 0.3); }
+    .border-cyan-400\/30 { border-color: rgba(34, 211, 238, 0.3); }
+    .border-cyan-500\/35 { border-color: rgba(6, 182, 212, 0.35); }
+    .border-amber-400\/50 { border-color: rgba(251, 191, 36, 0.5); }
+
+    .bg-\[\#06130d\] { background-color: #06130d; }
+    .bg-emerald-950 { background-color: #022c22; }
+    .bg-black\/30 { background-color: rgba(0, 0, 0, 0.3); }
+    .bg-black\/35 { background-color: rgba(0, 0, 0, 0.35); }
+    .bg-black\/40 { background-color: rgba(0, 0, 0, 0.4); }
+    .bg-black\/50 { background-color: rgba(0, 0, 0, 0.5); }
+    .bg-black\/55 { background-color: rgba(0, 0, 0, 0.55); }
+    .bg-black\/65 { background-color: rgba(0, 0, 0, 0.65); }
+    .bg-black\/70 { background-color: rgba(0, 0, 0, 0.7); }
+    .bg-black\/80 { background-color: rgba(0, 0, 0, 0.8); }
+    .bg-white\/5 { background-color: rgba(255, 255, 255, 0.05); }
+    .bg-white\/15 { background-color: rgba(255, 255, 255, 0.15); }
+    .bg-emerald-500\/20 { background-color: rgba(16, 185, 129, 0.2); }
+    .bg-emerald-400 { background-color: #34d399; }
+    .bg-amber-400 { background-color: #fbbf24; }
+    .bg-slate-950\/90 { background-color: rgba(2, 6, 23, 0.9); }
+    .bg-gradient-to-b { background-image: linear-gradient(to bottom, rgba(2, 44, 34, 0.8), rgba(0, 0, 0, 0.6)); }
+    .bg-gradient-to-br { background-image: linear-gradient(to bottom right, rgba(245, 158, 11, 0.3), rgba(161, 98, 7, 0.4)); }
+
+    .backdrop-blur-\[2px\] { backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); }
+    .backdrop-blur-sm { backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+    .backdrop-blur-md { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+
+    .font-mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+    .font-medium { font-weight: 500; }
+    .font-semibold { font-weight: 600; }
+    .font-bold { font-weight: 700; }
+
+    .text-\[9px\] { font-size: 9px; line-height: 1.2; }
+    .text-\[10px\] { font-size: 10px; line-height: 1.25; }
+    .text-\[11px\] { font-size: 11px; line-height: 1.3; }
+    .text-xs { font-size: 0.75rem; line-height: 1rem; }
+    .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+    .text-base { font-size: 1rem; line-height: 1.5rem; }
+    .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+    .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+    .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+    .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+
+    .uppercase { text-transform: uppercase; }
+    .tracking-tight { letter-spacing: -0.025em; }
+    .tracking-wide { letter-spacing: 0.025em; }
+    .tracking-wider { letter-spacing: 0.05em; }
+    .tracking-widest { letter-spacing: 0.1em; }
+    .text-left { text-align: left; }
+    .text-center { text-align: center; }
+    .text-right { text-align: right; }
+
+    .text-white { color: #ffffff; }
+    .text-black { color: #000000; }
+    .text-slate-200 { color: #e2e8f0; }
+    .text-slate-400 { color: #94a3b8; }
+    .text-emerald-100\/70 { color: rgba(209, 250, 229, 0.7); }
+    .text-emerald-100\/80 { color: rgba(209, 250, 229, 0.8); }
+    .text-emerald-200 { color: #a7f3d0; }
+    .text-emerald-200\/70 { color: rgba(167, 243, 208, 0.7); }
+    .text-emerald-200\/80 { color: rgba(167, 243, 208, 0.8); }
+    .text-emerald-300 { color: #6ee7b7; }
+    .text-emerald-300\/80 { color: rgba(110, 231, 183, 0.8); }
+    .text-emerald-300\/90 { color: rgba(110, 231, 183, 0.9); }
+    .text-emerald-400 { color: #34d399; }
+    .text-amber-200\/70 { color: rgba(253, 230, 138, 0.7); }
+    .text-amber-300 { color: #fcd34d; }
+    .text-amber-500 { color: #f59e0b; }
+    .text-cyan-300 { color: #67e8f9; }
+    .text-pink-300 { color: #f9a8d4; }
+    .text-indigo-300 { color: #a5b4fc; }
+    .text-red-400 { color: #f87171; }
+    .text-rose-400 { color: #fb7185; }
+
+    .shadow { box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+    .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0,0,0,0.4); }
+    .shadow-xl { box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); }
+    .shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0,0,0,0.65); }
+    .shadow-inner { box-shadow: inset 0 2px 4px 0 rgba(0,0,0,0.35); }
+    .drop-shadow-md { filter: drop-shadow(0 4px 3px rgba(0,0,0,0.35)); }
+
+    .opacity-0 { opacity: 0; }
+    .opacity-100 { opacity: 1; }
+    .transition { transition: all 0.15s ease; }
+    .transition-all { transition: all 0.25s ease; }
+    .duration-200 { transition-duration: 200ms; }
+    .duration-500 { transition-duration: 500ms; }
+    .hover\:bg-black\/75:hover { background-color: rgba(0, 0, 0, 0.75); }
+    .hover\:bg-emerald-950\/80:hover { background-color: rgba(2, 44, 34, 0.8); }
+    .hover\:text-amber-200:hover { color: #fde68a; }
+    .active\:scale-95:active { transform: scale(0.95); }
+    .focus\:outline-none:focus { outline: none; }
+    .focus\:border-emerald-400:focus { border-color: #34d399; }
+    .accent-emerald-500 { accent-color: #10b981; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.45; }
+    }
+    .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+
+    @media (min-width: 640px) {
+      .sm\:p-4 { padding: 1rem; }
+      .sm\:p-7 { padding: 1.75rem; }
+      .sm\:gap-2 { gap: 0.5rem; }
+      .sm\:text-xs { font-size: 0.75rem; line-height: 1rem; }
+      .sm\:text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+      .sm\:text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+      .sm\:text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+      .sm\:text-2xl { font-size: 1.5rem; line-height: 2rem; }
+      .sm\:text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+      .sm\:text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
+      .sm\:inline { display: inline !important; }
+      .sm\:block { display: block !important; }
+      .sm\:flex { display: flex !important; }
+      .sm\:w-5 { width: 1.25rem; }
+      .sm\:h-5 { height: 1.25rem; }
+      .sm\:w-10 { width: 2.5rem; }
+      .sm\:h-10 { height: 2.5rem; }
+      .sm\:right-4 { right: 1rem; }
+      .sm\:h-40 { height: 10rem; }
+    }
+    @media (min-width: 768px) {
+      .md\:rounded-2xl { border-radius: 1rem; }
+    }
+    @media (min-width: 1024px) {
+      .lg\:flex { display: flex !important; }
+      .lg\:block { display: block !important; }
+    }
+
+    /* Custom subtle glassmorphism and button animations */
+    .glass-panel {
+      background: rgba(15, 23, 42, 0.84);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(248, 113, 113, 0.32);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    }
+    .btn-jungle {
+      background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%);
+      border-bottom: 4px solid #7f1d1d;
+      text-shadow: 0 2px 3px rgba(0, 0, 0, 0.35);
+      transition: transform 0.1s ease, filter 0.15s ease, border-bottom-width 0.1s ease;
+    }
+    .btn-jungle:hover {
+      filter: brightness(1.08);
+    }
+    .btn-jungle:active {
+      transform: translateY(2px);
+      border-bottom-width: 2px;
+    }
+    .btn-secondary {
+      background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
+      border-bottom: 3px solid #0f172a;
+      transition: transform 0.1s ease, filter 0.15s ease;
+    }
+    .btn-secondary:hover {
+      filter: brightness(1.12);
+    }
+    .btn-secondary:active {
+      transform: translateY(2px);
+    }
+    .input-pill-active {
+      background: rgba(239, 68, 68, 0.25);
+      border-color: #f87171;
+      color: #fee2e2;
+      box-shadow: 0 0 12px rgba(248, 113, 113, 0.35);
+    }
+    #gameCanvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body class="relative w-screen h-screen overflow-hidden flex items-center justify-center bg-[#06130d]">
+
+  <!-- Main Responsive Game Container -->
+  <div id="gameContainer" class="relative w-full h-full max-w-[1200px] max-h-[900px] md:rounded-2xl overflow-hidden shadow-2xl border border-emerald-900/60 bg-emerald-950">
+    
+    <!-- HTML5 Game Canvas -->
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- Top HUD Bar (Always Visible) -->
+    <div class="absolute top-0 left-0 right-0 p-2.5 sm:p-4 flex flex-wrap items-center justify-between gap-2 pointer-events-none z-20">
+      
+      <!-- Left: Live Multi-Input Status Badges (Keyboard & Touch) -->
+      <div class="flex items-center gap-1.5 sm:gap-2 bg-black/50 backdrop-blur-md px-2.5 py-1.5 rounded-full border border-white/10 pointer-events-auto">
+        <!-- Keyboard Badge -->
+        <div id="badgeKeyboard" class="flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-medium border border-transparent text-emerald-100/70 transition-all duration-200" title="Space, W, or Up Arrow to Flap">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M8 13h8"/></svg>
+          <span class="hidden sm:inline">Keys</span>
+        </div>
+
+        <!-- Touch / Mouse Badge -->
+        <div id="badgeTouch" class="flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-medium border border-transparent text-emerald-100/70 transition-all duration-200" title="Tap or Click anywhere to Flap">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11V6a2 2 0 0 1 4 0v5m-4 0a2 2 0 1 0-4 0v5a6 6 0 0 0 12 0v-3a2 2 0 1 0-4 0"/></svg>
+          <span class="hidden sm:inline">Touch/Click</span>
+        </div>
+      </div>
+
+      <!-- Center: Live Score & Biome Pill (Visible during play) -->
+      <div id="hudCenter" class="hidden items-center gap-3 bg-black/50 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/15">
+        <div class="hidden lg:flex items-center gap-1 text-xs font-semibold text-red-400">
+          <span>🦜</span>
+          <span>Aloha</span>
+        </div>
+        <div class="h-4 w-[1px] bg-white/15 hidden lg:block"></div>
+        <div class="flex items-center gap-1.5">
+          <span class="text-xs uppercase tracking-wider text-emerald-300/80 font-semibold">Score</span>
+          <span id="hudScore" class="font-display text-xl sm:text-2xl text-white tracking-wide">0</span>
+        </div>
+        <div class="h-4 w-[1px] bg-white/15"></div>
+        <div class="flex items-center gap-1.5" title="Bonus Tropical Fruits Collected">
+          <span class="text-sm">🥭</span>
+          <span id="hudFruits" class="font-display text-base sm:text-lg text-amber-300">0</span>
+        </div>
+        <div class="h-4 w-[1px] bg-white/15 hidden sm:block"></div>
+        <div class="hidden sm:flex items-center gap-1.5">
+          <span id="hudBiomeTag" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-200 border border-emerald-400/30">
+            Lv.1 • Congo Canopy
+          </span>
+        </div>
+      </div>
+
+      <!-- Right: Action Buttons (Telemetry, Quality, Pause & Audio Mute) -->
+      <div class="flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
+        <!-- Graphics Quality Mode Button -->
+        <button id="btnQuality" class="flex items-center gap-1 px-2.5 h-9 sm:h-10 rounded-full bg-black/55 hover:bg-black/75 text-emerald-300 border border-white/15 text-[11px] font-semibold transition active:scale-95" title="Toggle Graphics Quality (High / Ultra-Fast)">
+          <span>⚡</span>
+          <span id="qualityLabel">HIGH</span>
+        </button>
+
+        <!-- Toggle Performance Telemetry (F) -->
+        <button id="btnPerfHud" class="flex items-center gap-1 px-2.5 h-9 sm:h-10 rounded-full bg-black/55 hover:bg-emerald-950/80 text-cyan-300 border border-cyan-400/30 text-[11px] font-mono font-semibold transition active:scale-95" title="Toggle FPS & Performance Telemetry (F)">
+          <span id="miniFpsReadout">60 FPS</span>
+        </button>
+
+        <button id="btnPause" class="hidden items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-black/55 hover:bg-black/75 text-white border border-white/15 transition active:scale-95" title="Pause Game (P or Esc)">
+          <svg id="iconPause" class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>
+          <svg id="iconPlay" class="w-4 h-4 sm:w-5 sm:h-5 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+
+        <button id="btnMute" class="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-black/55 hover:bg-black/75 text-white border border-white/15 transition active:scale-95" title="Toggle Audio (M)">
+          <svg id="iconSoundOn" class="w-4 h-4 sm:w-5 sm:h-5 text-emerald-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5L6 9H2v6h4l5 4V5zM15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+          <svg id="iconSoundOff" class="w-4 h-4 sm:w-5 sm:h-5 text-rose-400 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Interactive Performance Telemetry Overlay Panel (Toggle with F or FPS button) -->
+    <div id="perfPanel" class="hidden absolute top-14 right-3 sm:right-4 z-20 w-64 bg-black/80 backdrop-blur-md border border-cyan-500/35 rounded-2xl p-3 text-[11px] font-mono text-slate-200 shadow-2xl pointer-events-auto">
+      <div class="flex items-center justify-between border-b border-white/10 pb-1.5 mb-2">
+        <span class="font-bold text-cyan-300 uppercase tracking-wider flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          Engine Telemetry
+        </span>
+        <span class="text-[10px] text-slate-400">[F] Hide</span>
+      </div>
+      <div class="grid grid-cols-2 gap-y-1 text-xs mb-2">
+        <div class="text-slate-400">Frame Rate:</div>
+        <div id="perfFps" class="text-right font-bold text-emerald-400">60 FPS</div>
+        <div class="text-slate-400">Frame Time:</div>
+        <div id="perfMs" class="text-right text-cyan-300">1.2 ms</div>
+        <div class="text-slate-400">Pooled Active:</div>
+        <div id="perfPool" class="text-right text-amber-300">0 / 164</div>
+        <div class="text-slate-400">Sprite Atlas:</div>
+        <div id="perfCache" class="text-right text-emerald-300">48 Cached</div>
+      </div>
+      <!-- Live Frame-Time Sparkline Canvas -->
+      <canvas id="perfSparkline" width="230" height="34" class="w-full h-[34px] rounded bg-slate-950/90 border border-white/10"></canvas>
+    </div>
+
+    <!-- Biome / Level-Up Floating Banner -->
+    <div id="biomeBanner" class="pointer-events-none absolute top-16 left-1/2 -translate-x-1/2 z-20 transition-all duration-500 opacity-0 -translate-y-4">
+      <div class="bg-black/70 backdrop-blur-md border border-emerald-400/40 px-5 py-2 rounded-2xl shadow-xl text-center">
+        <div id="bannerSub" class="text-[11px] font-bold uppercase tracking-widest text-amber-300">Level Up!</div>
+        <div id="bannerTitle" class="font-display text-lg sm:text-xl text-white">Congo Rainforest Canopy</div>
+      </div>
+    </div>
+
+    <!-- START MENU OVERLAY -->
+    <div id="startModal" class="absolute inset-0 z-30 flex items-center justify-center p-4 bg-black/30 backdrop-blur-[2px]">
+      <div class="glass-panel w-full max-w-md rounded-3xl p-5 sm:p-7 text-center text-white animate-fade-in">
+        
+        <!-- Badge -->
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 border border-white/15 text-slate-200 text-xs font-semibold mb-2">
+          <span>🦜</span>
+          <span>ALOHA • African Grey Parrot (Psittacus erithacus)</span>
+        </div>
+
+        <h1 class="font-display text-3xl sm:text-4xl text-white tracking-tight drop-shadow-md">
+          ALOHA <span class="text-red-400">FLAP</span>
+        </h1>
+        <p class="text-xs sm:text-sm text-emerald-100/80 mt-1 mb-4">
+          Guide <strong class="text-amber-300">Aloha</strong> the African Grey Parrot through procedurally generated rainforest biomes!
+        </p>
+
+        <!-- Markings & Collectibles Legend -->
+        <div class="grid grid-cols-3 gap-2 bg-black/35 rounded-2xl p-2.5 mb-4 border border-white/10 text-xs">
+          <div class="flex flex-col items-center p-1.5 rounded-xl bg-white/5">
+            <span class="text-base mb-0.5">🥭</span>
+            <span class="font-semibold text-amber-300">Mango</span>
+            <span class="text-[11px] text-emerald-200/70">+2 Bonus</span>
+          </div>
+          <div class="flex flex-col items-center p-1.5 rounded-xl bg-white/5">
+            <span class="text-base mb-0.5">🍈</span>
+            <span class="font-semibold text-pink-300">Guava</span>
+            <span class="text-[11px] text-emerald-200/70">+3 Bonus</span>
+          </div>
+          <div class="flex flex-col items-center p-1.5 rounded-xl bg-white/5">
+            <span class="text-base mb-0.5">🫐</span>
+            <span class="font-semibold text-indigo-300">Palm Nut</span>
+            <span class="text-[11px] text-emerald-200/70">+5 Bonus</span>
+          </div>
+        </div>
+
+        <!-- Procedural Seed Configuration -->
+        <div class="bg-black/35 rounded-2xl p-3 mb-4 border border-white/10 text-left">
+          <div class="flex items-center justify-between mb-1.5">
+            <label for="seedInput" class="text-xs font-semibold uppercase tracking-wider text-emerald-300/90">
+              Procedural World Seed
+            </label>
+            <button id="btnRandomSeed" type="button" class="text-xs text-amber-300 hover:text-amber-200 font-medium flex items-center gap-1 transition">
+              <span>🎲 New Seed</span>
+            </button>
+          </div>
+          <div class="flex items-center gap-2">
+            <input id="seedInput" type="text" maxlength="16" value="ALOHA-777" 
+              class="w-full bg-black/50 border border-emerald-500/30 rounded-xl px-3 py-1.5 text-sm text-white font-mono focus:outline-none focus:border-emerald-400"
+              placeholder="Enter seed or leave random..." />
+            <label class="flex items-center gap-1.5 text-xs text-emerald-100/80 cursor-pointer whitespace-nowrap">
+              <input id="chkAutoRandom" type="checkbox" checked class="accent-emerald-500 rounded cursor-pointer" />
+              <span>Auto-Random</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Best Score & Controls Info -->
+        <div class="flex items-center justify-between text-xs text-emerald-200/80 px-1 mb-4">
+          <span>🏆 High Score: <strong id="startBestScore" class="text-amber-300 font-display text-sm">0</strong></span>
+          <span>🎮 Space / Tap / Click • <span id="offlineReadyBadge" class="text-emerald-300 font-semibold">✓ Offline Ready</span></span>
+        </div>
+
+        <button id="btnStartGame" class="btn-jungle w-full py-3.5 rounded-2xl font-display text-xl text-white tracking-wide shadow-lg cursor-pointer">
+          FLY WITH ALOHA
+        </button>
+      </div>
+    </div>
+
+    <!-- PAUSE OVERLAY -->
+    <div id="pauseModal" class="hidden absolute inset-0 z-30 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+      <div class="glass-panel w-full max-w-xs rounded-3xl p-6 text-center text-white">
+        <div class="text-amber-300 text-xs font-bold uppercase tracking-widest mb-1">Aloha's Flight Paused</div>
+        <h2 class="font-display text-2xl mb-4">Aloha is Perching</h2>
+        <div class="flex flex-col gap-2.5">
+          <button id="btnResume" class="btn-jungle w-full py-3 rounded-2xl font-display text-lg text-white">
+            RESUME ALOHA (P)
+          </button>
+          <button id="btnRestartFromPause" class="btn-secondary w-full py-2.5 rounded-2xl font-semibold text-sm text-slate-200">
+            NEW FLIGHT WITH ALOHA
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- GAME OVER MODAL -->
+    <div id="gameOverModal" class="hidden absolute inset-0 z-30 flex items-center justify-center p-4 bg-black/55 backdrop-blur-sm">
+      <div class="glass-panel w-full max-w-md rounded-3xl p-5 sm:p-7 text-center text-white">
+        
+        <!-- Aloha on Back with Feet in the Air Chewing on a Popsicle Stick Canvas -->
+        <div class="relative w-full h-36 sm:h-40 bg-gradient-to-b from-emerald-950/80 to-black/60 rounded-2xl border border-white/10 mb-3 flex items-center justify-center overflow-hidden">
+          <canvas id="alohaBackCanvas" width="360" height="150" class="w-full h-full object-contain"></canvas>
+          <div class="absolute bottom-2 right-2.5 bg-black/65 px-2.5 py-0.5 rounded-full text-[10px] font-medium text-amber-300 border border-amber-400/50 shadow">
+            Aloha chewing a popsicle stick! 🦜🪵
+          </div>
+        </div>
+
+        <div id="gameOverTag" class="text-xs font-bold uppercase tracking-widest text-rose-400 mb-0.5">ALOHA HIT AN OBSTACLE!</div>
+        <h2 class="font-display text-2xl sm:text-3xl text-white mb-3">ALOHA'S FLIGHT COMPLETE</h2>
+
+        <!-- Medal + Stats Card -->
+        <div class="flex items-center justify-between gap-3 bg-black/40 border border-white/10 rounded-2xl p-3.5 mb-3.5">
+          <!-- Medal Display -->
+          <div class="flex flex-col items-center justify-center min-w-[88px]">
+            <div id="medalCircle" class="w-14 h-14 rounded-full flex items-center justify-center text-2xl shadow-inner border-2 border-amber-400/50 bg-gradient-to-br from-amber-500/30 to-yellow-700/40 mb-1">
+              🪶
+            </div>
+            <span id="medalName" class="text-xs font-bold text-amber-300">Bronze Tail</span>
+          </div>
+
+          <!-- Score Breakdown -->
+          <div class="flex-1 grid grid-cols-2 gap-2 text-left">
+            <div class="bg-white/5 p-2 rounded-xl">
+              <div class="text-[10px] text-emerald-200/70 uppercase font-semibold">Score</div>
+              <div id="finalScore" class="font-display text-xl text-white">0</div>
+            </div>
+            <div class="bg-white/5 p-2 rounded-xl">
+              <div class="text-[10px] text-amber-200/70 uppercase font-semibold">Best</div>
+              <div class="flex items-center gap-1">
+                <span id="finalBest" class="font-display text-xl text-amber-300">0</span>
+                <span id="newRecordBadge" class="hidden text-[9px] font-bold bg-amber-400 text-black px-1 py-0.5 rounded-md">NEW!</span>
+              </div>
+            </div>
+            <div class="bg-white/5 p-1.5 rounded-xl">
+              <div class="text-[9px] text-emerald-200/70 uppercase">Fruits</div>
+              <div id="finalFruits" class="font-display text-xs text-emerald-300">0</div>
+            </div>
+            <div class="bg-white/5 p-1.5 rounded-xl">
+              <div class="text-[9px] text-emerald-200/70 uppercase">Reached</div>
+              <div id="finalBiome" class="font-display text-xs text-cyan-300 truncate">Lv.1 Canopy</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-xs text-emerald-200/70 mb-3.5">
+          Seed: <span id="finalSeedUsed" class="font-mono text-white">ALOHA-777</span> • Press <strong class="text-white">Space</strong> or <strong class="text-white">Tap</strong>
+        </div>
+
+        <div class="flex gap-2.5">
+          <button id="btnPlayAgain" class="btn-jungle flex-1 py-3 rounded-2xl font-display text-lg text-white cursor-pointer">
+            FLY AGAIN WITH ALOHA
+          </button>
+          <button id="btnOpenSettings" class="btn-secondary px-4 py-3 rounded-2xl font-semibold text-xs text-emerald-200 cursor-pointer" title="Change Seed / Menu">
+            SEED
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    /*************************************************************************
+     * 1. SEEDED PSEUDO-RANDOM NUMBER GENERATOR (Mulberry32 + String Hash)
+     *************************************************************************/
+    class SeededRNG {
+      constructor(seedString = "ALOHA-777") {
+        this.setSeed(seedString);
+      }
+
+      setSeed(seedString) {
+        this.seedString = String(seedString || "ALOHA-777").trim().toUpperCase();
+        let h = 1779033703 ^ this.seedString.length;
+        for (let i = 0; i < this.seedString.length; i++) {
+          h = Math.imul(h ^ this.seedString.charCodeAt(i), 3432918353);
+          h = (h << 13) | (h >>> 19);
+        }
+        this.state = (h >>> 0) || 123456789;
+      }
+
+      next() {
+        let t = (this.state += 0x6D2B79F5);
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      }
+
+      range(min, max) {
+        return min + this.next() * (max - min);
+      }
+
+      int(min, max) {
+        return (this.range(min, max + 1)) | 0;
+      }
+
+      pick(array) {
+        return array[(this.next() * array.length) | 0];
+      }
+    }
+
+    /*************************************************************************
+     * 2. SYNTHESIZED WEB AUDIO API SOUND ENGINE
+     *************************************************************************/
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.muted = false;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) {
+            this.ctx = new AudioCtx();
+          }
+        }
+        if (this.ctx && this.ctx.state === "suspended") {
+          this.ctx.resume();
+        }
+      }
+
+      toggleMute() {
+        this.muted = !this.muted;
+        return this.muted;
+      }
+
+      playFlap() {
+        if (this.muted) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(210, now);
+        osc.frequency.exponentialRampToValueAtTime(360, now + 0.065);
+        osc.frequency.exponentialRampToValueAtTime(150, now + 0.13);
+
+        gain.gain.setValueAtTime(0.01, now);
+        gain.gain.linearRampToValueAtTime(0.16, now + 0.025);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.13);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.14);
+      }
+
+      playScore() {
+        if (this.muted) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+        const notes = [659.25, 987.77];
+        for (let idx = 0; idx < notes.length; idx++) {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(notes[idx], now + idx * 0.065);
+
+          gain.gain.setValueAtTime(0.001, now + idx * 0.065);
+          gain.gain.linearRampToValueAtTime(0.12, now + idx * 0.065 + 0.015);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.065 + 0.22);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now + idx * 0.065);
+          osc.stop(now + idx * 0.065 + 0.23);
+        }
+      }
+
+      playFruit(bonus = 2) {
+        if (this.muted) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+        const baseNotes = bonus >= 5 ? [523.25, 659.25, 783.99, 1046.5] : [523.25, 659.25, 783.99];
+        for (let i = 0; i < baseNotes.length; i++) {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(baseNotes[i], now + i * 0.05);
+
+          gain.gain.setValueAtTime(0.001, now + i * 0.05);
+          gain.gain.linearRampToValueAtTime(0.16, now + i * 0.05 + 0.01);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.05 + 0.2);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now + i * 0.05);
+          osc.stop(now + i * 0.05 + 0.22);
+        }
+      }
+
+      playLevelUp() {
+        if (this.muted) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+        const chord = [440, 554.37, 659.25, 880];
+        for (let i = 0; i < chord.length; i++) {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(chord[i], now + i * 0.07);
+
+          gain.gain.setValueAtTime(0.001, now + i * 0.07);
+          gain.gain.linearRampToValueAtTime(0.14, now + i * 0.07 + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.07 + 0.45);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now + i * 0.07);
+          osc.stop(now + i * 0.07 + 0.46);
+        }
+      }
+
+      playCrash() {
+        if (this.muted) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+        const whistle = this.ctx.createOscillator();
+        const whistleGain = this.ctx.createGain();
+        whistle.type = "triangle";
+        whistle.frequency.setValueAtTime(860, now);
+        whistle.frequency.linearRampToValueAtTime(1120, now + 0.07);
+        whistle.frequency.exponentialRampToValueAtTime(320, now + 0.28);
+
+        whistleGain.gain.setValueAtTime(0.15, now);
+        whistleGain.gain.exponentialRampToValueAtTime(0.001, now + 0.29);
+
+        whistle.connect(whistleGain);
+        whistleGain.connect(this.ctx.destination);
+        whistle.start(now);
+        whistle.stop(now + 0.3);
+
+        const thud = this.ctx.createOscillator();
+        const thudGain = this.ctx.createGain();
+        thud.type = "sine";
+        thud.frequency.setValueAtTime(130, now);
+        thud.frequency.exponentialRampToValueAtTime(38, now + 0.22);
+
+        thudGain.gain.setValueAtTime(0.25, now);
+        thudGain.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
+
+        thud.connect(thudGain);
+        thudGain.connect(this.ctx.destination);
+        thud.start(now);
+        thud.stop(now + 0.25);
+      }
+    }
+
+    /*************************************************************************
+     * 3. BIOME DEFINITIONS & PROCEDURAL THEMES
+     *************************************************************************/
+    const BIOMES = [
+      {
+        id: "canopy",
+        name: "Congo Rainforest Canopy",
+        shortName: "Congo Canopy",
+        skyTop: [18, 92, 138],
+        skyBottom: [118, 210, 175],
+        sunColor: "rgba(254, 249, 195, 0.88)",
+        mountainFar: "#1e5b53",
+        canopyBack: "#0d3528",
+        canopyFront: "#072319",
+        groundTop: "#228b3b",
+        groundSoil: "#3b2314",
+        obstacleWeights: [0, 3, 0, 1], // 0:HOLLOW_TREE, 1:BAMBOO, 2:STONE_TOTEM, 3:HANGING_VINES
+        ambientColor: "#ffffff"
+      },
+      {
+        id: "sunset",
+        name: "Sunset Jungle River",
+        shortName: "Sunset River",
+        skyTop: [88, 28, 98],
+        skyBottom: [249, 115, 22],
+        sunColor: "rgba(253, 186, 116, 0.92)",
+        mountainFar: "#581c4f",
+        canopyBack: "#270d21",
+        canopyFront: "#190714",
+        groundTop: "#9a3412",
+        groundSoil: "#29130e",
+        obstacleWeights: [1, 0, 3, 2],
+        ambientColor: "#fed7aa"
+      },
+      {
+        id: "ruins",
+        name: "Misty Bamboo Ruins",
+        shortName: "Bamboo Ruins",
+        skyTop: [19, 78, 74],
+        skyBottom: [153, 246, 228],
+        sunColor: "rgba(204, 251, 241, 0.8)",
+        mountainFar: "#115e59",
+        canopyBack: "#09302e",
+        canopyFront: "#05201f",
+        groundTop: "#0d9488",
+        groundSoil: "#1e293b",
+        obstacleWeights: [2, 1, 2, 3],
+        ambientColor: "#ccfbf1"
+      },
+      {
+        id: "night",
+        name: "Starlit Tropical Night",
+        shortName: "Starlit Night",
+        skyTop: [9, 13, 38],
+        skyBottom: [28, 42, 94],
+        sunColor: "rgba(224, 242, 254, 0.95)",
+        mountainFar: "#172147",
+        canopyBack: "#080f24",
+        canopyFront: "#040814",
+        groundTop: "#15803d",
+        groundSoil: "#0f172a",
+        obstacleWeights: [2, 3, 1, 0],
+        ambientColor: "#bef264"
+      }
+    ];
+
+    /*************************************************************************
+     * 4. OFFSCREEN CANVAS SPRITE ATLAS CACHE (ZERO RUNTIME VECTOR PATHS)
+     *************************************************************************/
+    const SpriteCache = {
+      parrotFrames: [[], []], // [0: eyes open (16 wing frames), 1: blinking (16 wing frames)]
+      fruits: [],             // [0: MANGO, 1: GUAVA, 2: PALM_NUT]
+      obstacles: [],          // [0: HOLLOW_TREE, 1: BAMBOO, 2: STONE_TOTEM, 3: HANGING_VINES]
+      feathers: [],           // Pre-rendered grey, silver & crimson feather sprites
+      cloudSprite: null,      // Pre-rendered soft cloud sprite
+      popupSprites: {},       // Pre-rendered "+2", "+3", "+5", "GO ALOHA!" floating text sprites
+      biomeLayers: [],        // Per-biome pre-rendered mountain, canopyBack, canopyFront, groundStrip
+      skyBuffer: null,        // Offscreen full-size sky + sun/moon buffer
+      skyBufferCtx: null,
+      lastSkyMixHash: "",
+      totalCachedSprites: 0,
+
+      createCanvas(w, h) {
+        const c = document.createElement("canvas");
+        c.width = w;
+        c.height = h;
+        return c;
+      },
+
+      initAll() {
+        this.totalCachedSprites = 0;
+        this.bakeParrotSprites();
+        this.bakeFruitSprites();
+        this.bakeObstacleSprites();
+        this.bakeFeatherSprites();
+        this.bakeCloudAndPopups();
+        this.bakeBiomeParallaxStrips();
+      },
+
+      // 4A. Pre-render 32 frames of Aloha the Congo African Grey Parrot (16 wing angles x 2 blink states)
+      bakeParrotSprites() {
+        const WING_STEPS = 16;
+        const SPRITE_W = 84;
+        const SPRITE_H = 64;
+        const cx = 44;
+        const cy = 32;
+
+        for (let blink = 0; blink < 2; blink++) {
+          this.parrotFrames[blink] = [];
+          const isBlinking = blink === 1;
+
+          for (let i = 0; i < WING_STEPS; i++) {
+            const norm = i / (WING_STEPS - 1);
+            const wingAngle = -1.05 + norm * 2.1;
+            const tailWag = Math.sin(norm * Math.PI * 2) * 0.06;
+
+            const canvas = this.createCanvas(SPRITE_W, SPRITE_H);
+            const c = canvas.getContext("2d");
+            c.translate(cx, cy);
+
+            // 1. ICONIC BRIGHT SCARLET / CRIMSON RED TAIL FEATHERS
+            c.save();
+            c.rotate(tailWag);
+            c.fillStyle = "#ef4444";
+            c.beginPath();
+            c.moveTo(-14, 1);
+            c.lineTo(-37, -5);
+            c.lineTo(-34, 4);
+            c.lineTo(-36, 11);
+            c.lineTo(-12, 8);
+            c.closePath();
+            c.fill();
+
+            c.fillStyle = "#b91c1c";
+            c.beginPath();
+            c.moveTo(-14, 3);
+            c.lineTo(-32, 0);
+            c.lineTo(-30, 8);
+            c.lineTo(-12, 7);
+            c.closePath();
+            c.fill();
+            c.restore();
+
+            // 2. PLUMP SILVERY-GREY PARROT BODY WITH SCALLOPED FEATHER EDGES
+            const bodyGrad = c.createRadialGradient(-2, -4, 4, -2, 0, 24);
+            bodyGrad.addColorStop(0, "#cbd5e1");
+            bodyGrad.addColorStop(0.55, "#94a3b8");
+            bodyGrad.addColorStop(1, "#475569");
+
+            c.fillStyle = bodyGrad;
+            c.beginPath();
+            c.ellipse(-1, 2, 20, 15.5, -0.12, 0, Math.PI * 2);
+            c.fill();
+
+            // Subtle white/silver scalloped feather markings on breast & mantle
+            c.strokeStyle = "rgba(241, 245, 249, 0.55)";
+            c.lineWidth = 1.25;
+            for (let k = -9; k <= 3; k += 6) {
+              c.beginPath();
+              c.arc(k, -3, 4.2, 0.2, Math.PI - 0.2);
+              c.stroke();
+              c.beginPath();
+              c.arc(k - 2, 3, 4.2, 0.2, Math.PI - 0.2);
+              c.stroke();
+            }
+
+            // 3. SILVERY-GREY HEAD & PALE CROWN
+            const headGrad = c.createRadialGradient(9, -10, 2, 10, -7, 14);
+            headGrad.addColorStop(0, "#e2e8f0");
+            headGrad.addColorStop(0.65, "#94a3b8");
+            headGrad.addColorStop(1, "#64748b");
+            c.fillStyle = headGrad;
+            c.beginPath();
+            c.arc(10, -7, 13.5, 0, Math.PI * 2);
+            c.fill();
+
+            // Fine scalloped crown texture
+            c.strokeStyle = "rgba(255, 255, 255, 0.45)";
+            c.lineWidth = 1;
+            c.beginPath();
+            c.arc(7, -14, 3.5, 0.3, Math.PI - 0.3);
+            c.arc(12, -15, 3.5, 0.3, Math.PI - 0.3);
+            c.stroke();
+
+            // 4. BARE WHITE FACIAL PATCH (Signature African Grey facial mask)
+            c.fillStyle = "#f8fafc";
+            c.beginPath();
+            c.ellipse(15.2, -8.5, 6.8, 5.2, -0.12, 0, Math.PI * 2);
+            c.fill();
+
+            // 5. SOLID CHARCOAL-BLACK HOOKED BEAK
+            c.fillStyle = "#0f172a";
+            c.beginPath();
+            c.moveTo(19, -4);
+            c.quadraticCurveTo(25, -2, 25, -6.5);
+            c.lineTo(20, -7);
+            c.closePath();
+            c.fill();
+
+            const beakGrad = c.createLinearGradient(20, -13, 31, -3);
+            beakGrad.addColorStop(0, "#334155");
+            beakGrad.addColorStop(0.35, "#1e293b");
+            beakGrad.addColorStop(1, "#020617");
+            c.fillStyle = beakGrad;
+            c.beginPath();
+            c.moveTo(20.5, -12.5);
+            c.quadraticCurveTo(31, -11.5, 30.5, -2.2);
+            c.quadraticCurveTo(26.5, -5.5, 20.2, -6.2);
+            c.closePath();
+            c.fill();
+
+            // Subtle glossy highlight on black upper mandible
+            c.strokeStyle = "rgba(148, 163, 184, 0.45)";
+            c.lineWidth = 1;
+            c.beginPath();
+            c.moveTo(22, -11);
+            c.quadraticCurveTo(27, -10, 28.5, -6);
+            c.stroke();
+
+            // 6. PALE STRAW-YELLOW IRIS & PUPIL
+            if (isBlinking) {
+              c.fillStyle = "#cbd5e1";
+              c.beginPath();
+              c.arc(14.8, -8.8, 3.4, 0, Math.PI * 2);
+              c.fill();
+              c.strokeStyle = "#334155";
+              c.lineWidth = 1.4;
+              c.beginPath();
+              c.moveTo(11.6, -8.8);
+              c.lineTo(18.0, -8.8);
+              c.stroke();
+            } else {
+              c.fillStyle = "#fef08a";
+              c.beginPath();
+              c.arc(14.8, -8.8, 3.3, 0, Math.PI * 2);
+              c.fill();
+
+              c.strokeStyle = "#ca8a04";
+              c.lineWidth = 0.8;
+              c.stroke();
+
+              c.fillStyle = "#0f172a";
+              c.beginPath();
+              c.arc(15.2, -8.8, 1.85, 0, Math.PI * 2);
+              c.fill();
+
+              c.fillStyle = "#ffffff";
+              c.beginPath();
+              c.arc(15.9, -9.9, 0.95, 0, Math.PI * 2);
+              c.fill();
+            }
+
+            // 7. ANIMATED WING WITH CHARCOAL PRIMARIES & SILVERY-GREY COVERTS
+            c.save();
+            c.translate(-2, 1);
+            c.rotate(wingAngle);
+
+            // Dark slate/charcoal primary flight feathers
+            c.fillStyle = "#1e293b";
+            c.beginPath();
+            c.moveTo(-4, 0);
+            c.quadraticCurveTo(-22, 6, -20, 14);
+            c.quadraticCurveTo(-8, 13, 2, 5);
+            c.closePath();
+            c.fill();
+
+            // Mid-grey secondary flight feathers
+            c.fillStyle = "#475569";
+            c.beginPath();
+            c.ellipse(-9, 6.5, 7.5, 4.2, -0.25, 0, Math.PI * 2);
+            c.fill();
+
+            // Silvery-grey wing coverts with pale edge
+            const wingGrad = c.createLinearGradient(-14, -4, 4, 10);
+            wingGrad.addColorStop(0, "#cbd5e1");
+            wingGrad.addColorStop(1, "#64748b");
+            c.fillStyle = wingGrad;
+            c.beginPath();
+            c.moveTo(4, -2);
+            c.quadraticCurveTo(-15, -3, -17, 7);
+            c.quadraticCurveTo(-6, 10, 5, 4);
+            c.closePath();
+            c.fill();
+
+            c.strokeStyle = "#e2e8f0";
+            c.lineWidth = 1;
+            c.stroke();
+            c.restore();
+
+            // 8. TUCKED DARK-GREY PARROT FEET
+            c.strokeStyle = "#475569";
+            c.lineWidth = 2;
+            c.lineCap = "round";
+            c.beginPath();
+            c.moveTo(2, 16);
+            c.lineTo(5, 19);
+            c.moveTo(-2, 16);
+            c.lineTo(1, 19);
+            c.stroke();
+
+            this.parrotFrames[blink].push(canvas);
+            this.totalCachedSprites++;
+          }
+        }
+      },
+
+      // 4B. Pre-render Tropical Fruits with baked glow halos (44x44)
+      bakeFruitSprites() {
+        const size = 44;
+        const half = size / 2;
+        this.fruits = [];
+
+        for (let type = 0; type < 3; type++) {
+          const canvas = this.createCanvas(size, size);
+          const c = canvas.getContext("2d");
+          c.translate(half, half);
+
+          const halo = c.createRadialGradient(0, 0, 4, 0, 0, 20);
+          halo.addColorStop(0, "rgba(255, 255, 255, 0.32)");
+          halo.addColorStop(1, "rgba(255, 255, 255, 0)");
+          c.fillStyle = halo;
+          c.beginPath();
+          c.arc(0, 0, 20, 0, Math.PI * 2);
+          c.fill();
+
+          if (type === 0) {
+            // MANGO
+            const g = c.createLinearGradient(-8, -10, 8, 10);
+            g.addColorStop(0, "#ef4444");
+            g.addColorStop(0.55, "#f97316");
+            g.addColorStop(1, "#facc15");
+            c.fillStyle = g;
+            c.beginPath();
+            c.ellipse(0, 1, 11, 8.5, -0.35, 0, Math.PI * 2);
+            c.fill();
+
+            c.fillStyle = "#22c55e";
+            c.beginPath();
+            c.ellipse(3, -9, 5, 2.5, -0.5, 0, Math.PI * 2);
+            c.fill();
+          } else if (type === 1) {
+            // GUAVA
+            c.fillStyle = "#84cc16";
+            c.beginPath();
+            c.arc(0, 1, 10.5, 0, Math.PI * 2);
+            c.fill();
+
+            c.fillStyle = "#fb7185";
+            c.beginPath();
+            c.arc(0, 1, 7.2, 0, Math.PI * 2);
+            c.fill();
+
+            c.fillStyle = "#fef08a";
+            c.fillRect(-2, -1, 1.5, 1.5);
+            c.fillRect(2, 1, 1.5, 1.5);
+            c.fillRect(0, 3, 1.5, 1.5);
+          } else {
+            // AFRICAN OIL PALM NUT CLUSTER
+            const positions = [[-4, -2], [4, -2], [0, 4], [0, -6]];
+            for (let i = 0; i < positions.length; i++) {
+              const bx = positions[i][0];
+              const by = positions[i][1];
+              c.fillStyle = "#dc2626";
+              c.beginPath();
+              c.arc(bx, by, 5.2, 0, Math.PI * 2);
+              c.fill();
+
+              c.fillStyle = "#fde047";
+              c.beginPath();
+              c.arc(bx - 1.5, by - 1.5, 1.6, 0, Math.PI * 2);
+              c.fill();
+            }
+          }
+
+          this.fruits.push(canvas);
+          this.totalCachedSprites++;
+        }
+      },
+
+      // 4C. Pre-render full-height Obstacle Columns
+      bakeObstacleSprites() {
+        const w = 84;
+        const h = 650;
+        this.obstacles = [];
+
+        for (let type = 0; type < 4; type++) {
+          const topCanvas = this.createCanvas(w, h);
+          const botCanvas = this.createCanvas(w, h);
+          this.renderObstacleColumn(topCanvas.getContext("2d"), w, h, type, true);
+          this.renderObstacleColumn(botCanvas.getContext("2d"), w, h, type, false);
+          this.obstacles.push({ top: topCanvas, bottom: botCanvas });
+          this.totalCachedSprites += 2;
+        }
+      },
+
+      renderObstacleColumn(c, w, h, type, isTop) {
+        const innerX = 6;
+        const innerW = w - 12;
+
+        if (type === 0) {
+          // HOLLOW_TREE
+          const grad = c.createLinearGradient(innerX, 0, innerX + innerW, 0);
+          grad.addColorStop(0, "#3f2312");
+          grad.addColorStop(0.35, "#5c361e");
+          grad.addColorStop(0.75, "#422514");
+          grad.addColorStop(1, "#26140a");
+          c.fillStyle = grad;
+          c.fillRect(innerX, 0, innerW, h);
+
+          c.strokeStyle = "rgba(25, 12, 5, 0.45)";
+          c.lineWidth = 2;
+          for (let i = 1; i <= 4; i++) {
+            const bx = innerX + (innerW / 5) * i;
+            c.beginPath();
+            c.moveTo(bx, 0);
+            c.lineTo(bx, h);
+            c.stroke();
+          }
+
+          const ky = isTop ? h - 48 : 38;
+          c.fillStyle = "#170b04";
+          c.beginPath();
+          c.ellipse(innerX + innerW * 0.5, ky, 9, 13, 0, 0, Math.PI * 2);
+          c.fill();
+
+          const capY = isTop ? h - 18 : 0;
+          c.fillStyle = "#15803d";
+          c.beginPath();
+          c.roundRect(1, capY, w - 2, 18, 8);
+          c.fill();
+          c.fillStyle = "#22c55e";
+          c.beginPath();
+          c.roundRect(3, capY + 2, w - 6, 8, 5);
+          c.fill();
+        } else if (type === 1) {
+          // BAMBOO
+          const grad = c.createLinearGradient(innerX, 0, innerX + innerW, 0);
+          grad.addColorStop(0, "#365314");
+          grad.addColorStop(0.3, "#84cc16");
+          grad.addColorStop(0.6, "#65a30d");
+          grad.addColorStop(1, "#1a2e05");
+          c.fillStyle = grad;
+          c.fillRect(innerX + 3, 0, innerW - 6, h);
+
+          const step = 44;
+          c.fillStyle = "#bef264";
+          c.strokeStyle = "#1a2e05";
+          c.lineWidth = 1.5;
+          for (let ny = isTop ? h - 10 : 6; isTop ? ny > 0 : ny < h; ny += isTop ? -step : step) {
+            c.beginPath();
+            c.roundRect(innerX - 2, ny, innerW + 4, 8, 4);
+            c.fill();
+            c.stroke();
+          }
+        } else if (type === 2) {
+          // STONE_TOTEM
+          const grad = c.createLinearGradient(innerX, 0, innerX + innerW, 0);
+          grad.addColorStop(0, "#334155");
+          grad.addColorStop(0.4, "#64748b");
+          grad.addColorStop(0.8, "#475569");
+          grad.addColorStop(1, "#1e293b");
+          c.fillStyle = grad;
+          c.fillRect(innerX, 0, innerW, h);
+
+          c.strokeStyle = "rgba(15, 23, 42, 0.55)";
+          c.lineWidth = 2;
+          const blockH = 48;
+          for (let by = 0; by < h - 20; by += blockH) {
+            c.strokeRect(innerX + 6, by + 6, innerW - 12, blockH - 8);
+          }
+
+          const faceY = isTop ? h - 28 : 18;
+          c.fillStyle = "#facc15";
+          c.beginPath();
+          c.arc(innerX + innerW * 0.32, faceY, 4.5, 0, Math.PI * 2);
+          c.arc(innerX + innerW * 0.68, faceY, 4.5, 0, Math.PI * 2);
+          c.fill();
+
+          const capY = isTop ? h - 14 : 0;
+          c.fillStyle = "#475569";
+          c.beginPath();
+          c.roundRect(1, capY, w - 2, 14, 4);
+          c.fill();
+        } else {
+          // HANGING_VINES
+          const grad = c.createLinearGradient(innerX, 0, innerX + innerW, 0);
+          grad.addColorStop(0, "#064e3b");
+          grad.addColorStop(0.5, "#047857");
+          grad.addColorStop(1, "#022c22");
+          c.fillStyle = grad;
+          c.fillRect(innerX + 4, 0, innerW - 8, h);
+
+          c.strokeStyle = "#34d399";
+          c.lineWidth = 3;
+          c.beginPath();
+          for (let vy = 0; vy < h; vy += 16) {
+            const vx = innerX + innerW / 2 + Math.sin(vy * 0.08) * (innerW * 0.35);
+            if (vy === 0) c.moveTo(vx, vy);
+            else c.lineTo(vx, vy);
+          }
+          c.stroke();
+
+          const capY = isTop ? h - 16 : 0;
+          c.fillStyle = "#10b981";
+          c.beginPath();
+          c.roundRect(2, capY, w - 4, 16, 8);
+          c.fill();
+        }
+      },
+
+      // 4D. Pre-render African Grey Feather Particles (Silver, Slate, Charcoal & Scarlet Red)
+      bakeFeatherSprites() {
+        const colors = ["#cbd5e1", "#94a3b8", "#dc2626", "#ef4444", "#475569", "#f8fafc"];
+        this.feathers = [];
+        for (let i = 0; i < colors.length; i++) {
+          const canvas = this.createCanvas(20, 12);
+          const c = canvas.getContext("2d");
+          c.fillStyle = colors[i];
+          c.beginPath();
+          c.ellipse(10, 6, 8, 3.5, 0, 0, Math.PI * 2);
+          c.fill();
+          this.feathers.push(canvas);
+          this.totalCachedSprites++;
+        }
+      },
+
+      // 4E. Pre-render Cloud & Floating Score Text Sprites
+      bakeCloudAndPopups() {
+        const cc = this.createCanvas(96, 52);
+        const ctx = cc.getContext("2d");
+        ctx.fillStyle = "rgba(255, 255, 255, 0.26)";
+        ctx.beginPath();
+        ctx.arc(28, 30, 18, 0, Math.PI * 2);
+        ctx.arc(46, 23, 16, 0, Math.PI * 2);
+        ctx.arc(62, 30, 14, 0, Math.PI * 2);
+        ctx.fill();
+        this.cloudSprite = cc;
+        this.totalCachedSprites++;
+
+        const labels = ["+2", "+3", "+5", "GO ALOHA!"];
+        for (let i = 0; i < labels.length; i++) {
+          const text = labels[i];
+          const isBanner = text.length > 3;
+          const cw = isBanner ? 148 : 48;
+          const ch = 32;
+          const tc = this.createCanvas(cw, ch);
+          const tctx = tc.getContext("2d");
+          tctx.font = isBanner ? "bold 18px 'Fredoka', sans-serif" : "bold 20px 'Fredoka', sans-serif";
+          tctx.textAlign = "center";
+          tctx.textBaseline = "middle";
+          tctx.strokeStyle = "rgba(0,0,0,0.78)";
+          tctx.lineWidth = 4;
+          tctx.strokeText(text, cw * 0.5, ch * 0.5);
+          tctx.fillStyle = isBanner ? "#f87171" : "#fde047";
+          tctx.fillText(text, cw * 0.5, ch * 0.5);
+          this.popupSprites[text] = tc;
+          this.totalCachedSprites++;
+        }
+      },
+
+      // 4F. Pre-render Repeatable Parallax Strips per Biome
+      bakeBiomeParallaxStrips() {
+        this.biomeLayers = [];
+        for (let b = 0; b < BIOMES.length; b++) {
+          const biome = BIOMES[b];
+
+          const mCanvas = this.createCanvas(280, 220);
+          const mCtx = mCanvas.getContext("2d");
+          mCtx.fillStyle = biome.mountainFar;
+          mCtx.beginPath();
+          mCtx.moveTo(0, 220);
+          mCtx.lineTo(0, 80);
+          mCtx.lineTo(70, 10);
+          mCtx.lineTo(140, 80);
+          mCtx.lineTo(210, 10);
+          mCtx.lineTo(280, 80);
+          mCtx.lineTo(280, 220);
+          mCtx.closePath();
+          mCtx.fill();
+
+          const cbCanvas = this.createCanvas(180, 105);
+          const cbCtx = cbCanvas.getContext("2d");
+          cbCtx.fillStyle = biome.canopyBack;
+          cbCtx.beginPath();
+          cbCtx.arc(45, 70, 58, Math.PI, 0);
+          cbCtx.arc(135, 70, 58, Math.PI, 0);
+          cbCtx.fillRect(0, 68, 180, 37);
+          cbCtx.fill();
+
+          const cfCanvas = this.createCanvas(140, 65);
+          const cfCtx = cfCanvas.getContext("2d");
+          cfCtx.fillStyle = biome.canopyFront;
+          cfCtx.beginPath();
+          cfCtx.arc(35, 52, 42, Math.PI, 0);
+          cfCtx.arc(105, 52, 42, Math.PI, 0);
+          cfCtx.fillRect(0, 50, 140, 15);
+          cfCtx.fill();
+
+          const gCanvas = this.createCanvas(280, 84);
+          const gCtx = gCanvas.getContext("2d");
+          gCtx.fillStyle = biome.groundSoil;
+          gCtx.fillRect(0, 8, 280, 76);
+          gCtx.fillStyle = biome.groundTop;
+          gCtx.fillRect(0, 8, 280, 16);
+          gCtx.fillStyle = "#4ade80";
+          for (let gx = 0; gx < 280; gx += 28) {
+            gCtx.beginPath();
+            gCtx.moveTo(gx, 22);
+            gCtx.lineTo(gx + 10, 2);
+            gCtx.lineTo(gx + 18, 22);
+            gCtx.closePath();
+            gCtx.fill();
+          }
+
+          this.biomeLayers.push({
+            mountain: mCanvas,
+            canopyBack: cbCanvas,
+            canopyFront: cfCanvas,
+            ground: gCanvas
+          });
+          this.totalCachedSprites += 4;
+        }
+      },
+
+      updateSkyBuffer(w, playAreaH, prevB, activeB, mix) {
+        if (!this.skyBuffer || this.skyBuffer.width !== w || this.skyBuffer.height !== playAreaH) {
+          this.skyBuffer = this.createCanvas(w, playAreaH);
+          this.skyBufferCtx = this.skyBuffer.getContext("2d", { alpha: false });
+          this.lastSkyMixHash = "";
+        }
+
+        const quantMix = ((mix * 25) | 0) / 25;
+        const hash = `${prevB.id}_${activeB.id}_${quantMix}_${w}_${playAreaH}`;
+        if (hash === this.lastSkyMixHash) return;
+        this.lastSkyMixHash = hash;
+
+        const sctx = this.skyBufferCtx;
+        const skyGrad = sctx.createLinearGradient(0, 0, 0, playAreaH);
+        skyGrad.addColorStop(0, lerpColor(prevB.skyTop, activeB.skyTop, quantMix));
+        skyGrad.addColorStop(1, lerpColor(prevB.skyBottom, activeB.skyBottom, quantMix));
+        sctx.fillStyle = skyGrad;
+        sctx.fillRect(0, 0, w, playAreaH);
+
+        const celestialX = (w * 0.76) | 0;
+        const celestialY = (playAreaH * 0.22) | 0;
+
+        const haloGrad = sctx.createRadialGradient(celestialX, celestialY, 30, celestialX, celestialY, 95);
+        haloGrad.addColorStop(0, "rgba(255,255,255,0.22)");
+        haloGrad.addColorStop(1, "rgba(255,255,255,0)");
+        sctx.fillStyle = haloGrad;
+        sctx.beginPath();
+        sctx.arc(celestialX, celestialY, 95, 0, Math.PI * 2);
+        sctx.fill();
+
+        sctx.fillStyle = activeB.sunColor;
+        sctx.beginPath();
+        sctx.arc(celestialX, celestialY, 38, 0, Math.PI * 2);
+        sctx.fill();
+      }
+    };
+
+    /*************************************************************************
+     * 5. ZERO-ALLOCATION OBJECT POOLS
+     *************************************************************************/
+    const MAX_OBSTACLES = 10;
+    const MAX_FRUITS = 14;
+    const MAX_FEATHERS = 120;
+    const MAX_POPUPS = 16;
+    const TOTAL_POOL_CAPACITY = MAX_OBSTACLES + MAX_FRUITS + MAX_FEATHERS + MAX_POPUPS;
+
+    const obstaclePool = Array.from({ length: MAX_OBSTACLES }, () => ({
+      active: false,
+      x: 0,
+      width: 72,
+      gapCenterY: 200,
+      baseGapCenterY: 200,
+      gapHeight: 150,
+      type: 0,
+      oscAmp: 0,
+      oscSpeed: 0,
+      oscPhase: 0,
+      passed: false
+    }));
+
+    const fruitPool = Array.from({ length: MAX_FRUITS }, () => ({
+      active: false,
+      x: 0,
+      y: 0,
+      baseY: 0,
+      radius: 14,
+      type: 0,
+      points: 2,
+      phase: 0
+    }));
+
+    const featherPool = Array.from({ length: MAX_FEATHERS }, () => ({
+      active: false,
+      x: 0,
+      y: 0,
+      vx: 0,
+      vy: 0,
+      rot: 0,
+      vRot: 0,
+      spriteIdx: 0,
+      life: 0,
+      decay: 1
+    }));
+
+    const popupPool = Array.from({ length: MAX_POPUPS }, () => ({
+      active: false,
+      x: 0,
+      y: 0,
+      label: "+2",
+      life: 0
+    }));
+
+    function resetAllPools() {
+      for (let i = 0; i < MAX_OBSTACLES; i++) obstaclePool[i].active = false;
+      for (let i = 0; i < MAX_FRUITS; i++) fruitPool[i].active = false;
+      for (let i = 0; i < MAX_FEATHERS; i++) featherPool[i].active = false;
+      for (let i = 0; i < MAX_POPUPS; i++) popupPool[i].active = false;
+    }
+
+    function countActivePooledEntities() {
+      let count = 0;
+      for (let i = 0; i < MAX_OBSTACLES; i++) if (obstaclePool[i].active) count++;
+      for (let i = 0; i < MAX_FRUITS; i++) if (fruitPool[i].active) count++;
+      for (let i = 0; i < MAX_FEATHERS; i++) if (featherPool[i].active) count++;
+      for (let i = 0; i < MAX_POPUPS; i++) if (popupPool[i].active) count++;
+      return count;
+    }
+
+    /*************************************************************************
+     * 6. MAIN GAME ENGINE & CANVAS PIPELINE
+     *************************************************************************/
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d", { alpha: false });
+    const sound = new SoundEngine();
+    const rng = new SeededRNG("ALOHA-777");
+
+    const STATE = {
+      START: "START",
+      PLAYING: "PLAYING",
+      PAUSED: "PAUSED",
+      GAMEOVER: "GAMEOVER"
+    };
+
+    let currentState = STATE.START;
+    let width = 800;
+    let height = 600;
+    const groundHeight = 76;
+    let ultraFastMode = false;
+
+    let score = 0;
+    let highScore = parseInt(localStorage.getItem("alohaFlapHighScore") || "0", 10);
+    let fruitsCollected = 0;
+    let currentLevel = 1;
+    let biomeIndex = 0;
+    let biomeTransitionMix = 1;
+    let prevBiome = BIOMES[0];
+    let activeBiome = BIOMES[0];
+
+    const HUDCache = {
+      score: -1,
+      fruits: -1,
+      biomeTag: "",
+      activeInput: "",
+
+      updateScore(val) {
+        if (this.score !== val) {
+          this.score = val;
+          hudScore.textContent = val;
+        }
+      },
+      updateFruits(val) {
+        if (this.fruits !== val) {
+          this.fruits = val;
+          hudFruits.textContent = val;
+        }
+      },
+      updateBiomeTag(lvl, shortName) {
+        const str = `Lv.${lvl} • ${shortName}`;
+        if (this.biomeTag !== str) {
+          this.biomeTag = str;
+          hudBiomeTag.textContent = str;
+        }
+      }
+    };
+
+    const parrot = {
+      name: "Aloha",
+      species: "African Grey Parrot",
+      x: 160,
+      y: 260,
+      vy: 0,
+      radius: 19,
+      gravity: 1180,
+      flapImpulse: -385,
+      maxFallSpeed: 540,
+      rotation: 0,
+      wingAngle: 0,
+      wingFlapTimer: 0,
+      blinkTimer: 2.5,
+      isBlinking: false,
+      lastFlapTime: -100,
+
+      reset(canvasW, canvasH) {
+        this.x = Math.min(200, Math.max(105, (canvasW * 0.24) | 0));
+        this.y = ((canvasH - groundHeight) * 0.46) | 0;
+        this.vy = 0;
+        this.rotation = 0;
+        this.wingAngle = 0;
+        this.wingFlapTimer = 0;
+      },
+
+      flap() {
+        const now = performance.now();
+        if (now - this.lastFlapTime < 30) return false;
+        this.lastFlapTime = now;
+
+        this.vy = this.flapImpulse;
+        this.wingFlapTimer = 0.26;
+        spawnFeatherBurst(this.x - 10, this.y + 4, ultraFastMode ? 2 : 4, false);
+        sound.playFlap();
+        return true;
+      },
+
+      update(dt, isHoveringOnly = false) {
+        this.blinkTimer -= dt;
+        if (this.blinkTimer <= 0) {
+          if (this.isBlinking) {
+            this.isBlinking = false;
+            this.blinkTimer = 2.2 + Math.random() * 2.8;
+          } else {
+            this.isBlinking = true;
+            this.blinkTimer = 0.13;
+          }
+        }
+
+        if (isHoveringOnly) {
+          const t = performance.now() * 0.004;
+          this.y = (height - groundHeight) * 0.44 + Math.sin(t) * 12;
+          this.wingAngle = Math.sin(t * 3.5) * 0.75;
+          this.rotation = Math.sin(t) * 0.06;
+          return;
+        }
+
+        const prevVy = this.vy;
+        this.vy = Math.min(this.maxFallSpeed, this.vy + this.gravity * dt);
+        this.y += (prevVy + this.vy) * 0.5 * dt;
+
+        const targetRot =
+          this.vy < 0
+            ? Math.max(-0.48, (this.vy / 400) * 0.48)
+            : Math.min(1.22, (this.vy / 480) * 1.1);
+        this.rotation += (targetRot - this.rotation) * Math.min(1, dt * 12);
+
+        if (this.wingFlapTimer > 0) {
+          this.wingFlapTimer -= dt;
+          this.wingAngle = Math.sin((0.26 - this.wingFlapTimer) * 34) * 1.05;
+        } else {
+          this.wingAngle += (-0.18 - this.wingAngle) * Math.min(1, dt * 8);
+        }
+
+        if (this.y < this.radius + 8) {
+          this.y = this.radius + 8;
+          this.vy = 0;
+        }
+      }
+    };
+
+    function drawAfricanGreyParrotCached(ctx, p) {
+      const blinkIdx = p.isBlinking ? 1 : 0;
+      const frames = SpriteCache.parrotFrames[blinkIdx];
+      const norm = Math.max(0, Math.min(1, (p.wingAngle + 1.05) / 2.1));
+      const frameIdx = (norm * 15 + 0.5) | 0;
+      const sprite = frames[frameIdx];
+
+      ctx.save();
+      ctx.translate((p.x + 0.5) | 0, (p.y + 0.5) | 0);
+      ctx.rotate(p.rotation);
+      ctx.drawImage(sprite, -44, -32);
+      ctx.restore();
+    }
+
+    /*************************************************************************
+     * 7. POOLED SPAWNERS & PARALLAX WORLD STATE
+     *************************************************************************/
+    const parallaxClouds = Array.from({ length: 6 }, () => ({ x: 0, y: 0, speed: 15 }));
+    const ambientParticles = Array.from({ length: 24 }, () => ({ x: 0, y: 0, vx: -20, vy: 0 }));
+
+    let groundScroll = 0;
+    let canopyScrollBack = 0;
+    let canopyScrollFront = 0;
+    let mountainScroll = 0;
+    let nextSpawnX = 0;
+
+    function initParallaxWorld() {
+      for (let i = 0; i < parallaxClouds.length; i++) {
+        parallaxClouds[i].x = Math.random() * width;
+        parallaxClouds[i].y = 30 + Math.random() * (height * 0.32);
+        parallaxClouds[i].speed = 12 + Math.random() * 18;
+      }
+
+      for (let i = 0; i < ambientParticles.length; i++) {
+        ambientParticles[i].x = Math.random() * width;
+        ambientParticles[i].y = Math.random() * (height - groundHeight);
+        ambientParticles[i].vx = -15 - Math.random() * 25;
+        ambientParticles[i].vy = (Math.random() - 0.5) * 14;
+      }
+    }
+
+    function spawnFeatherBurst(x, y, count = 6, isCrash = false) {
+      let spawned = 0;
+      const maxSprite = SpriteCache.feathers.length;
+      for (let i = 0; i < MAX_FEATHERS && spawned < count; i++) {
+        const f = featherPool[i];
+        if (f.active) continue;
+
+        const angle = isCrash
+          ? Math.random() * Math.PI * 2
+          : Math.PI + (Math.random() - 0.5) * 1.4;
+        const speed = isCrash ? 60 + Math.random() * 190 : 35 + Math.random() * 75;
+
+        f.active = true;
+        f.x = x;
+        f.y = y;
+        f.vx = Math.cos(angle) * speed;
+        f.vy = Math.sin(angle) * speed - 20;
+        f.rot = Math.random() * Math.PI * 2;
+        f.vRot = (Math.random() - 0.5) * 8;
+        f.spriteIdx = spawned % maxSprite;
+        f.life = 1;
+        f.decay = isCrash ? 0.7 + Math.random() * 0.4 : 1.3 + Math.random() * 0.5;
+        spawned++;
+      }
+    }
+
+    function spawnFloatingText(x, y, label) {
+      for (let i = 0; i < MAX_POPUPS; i++) {
+        const p = popupPool[i];
+        if (!p.active) {
+          p.active = true;
+          p.x = x;
+          p.y = y;
+          p.label = label;
+          p.life = 1.0;
+          return;
+        }
+      }
+    }
+
+    function spawnProceduralObstacle(startX) {
+      const playAreaH = height - groundHeight;
+      const minGap = Math.max(122, 168 - currentLevel * 5);
+      const maxGap = Math.max(142, 196 - currentLevel * 4);
+      const gapHeight = rng.range(minGap, maxGap);
+
+      const margin = 64;
+      const minCenterY = margin + gapHeight * 0.5;
+      const maxCenterY = playAreaH - margin - gapHeight * 0.5;
+      const gapCenterY = rng.range(minCenterY, maxCenterY);
+
+      const obsWidth = 72;
+      const type = rng.pick(activeBiome.obstacleWeights);
+
+      const canOscillate = currentLevel >= 2 && rng.next() < Math.min(0.55, 0.14 * currentLevel);
+      const oscAmp = canOscillate ? rng.range(18, Math.min(52, 18 + currentLevel * 6)) : 0;
+      const oscSpeed = canOscillate ? rng.range(1.4, 2.5) : 0;
+
+      for (let i = 0; i < MAX_OBSTACLES; i++) {
+        const obs = obstaclePool[i];
+        if (!obs.active) {
+          obs.active = true;
+          obs.x = startX;
+          obs.width = obsWidth;
+          obs.gapCenterY = gapCenterY;
+          obs.baseGapCenterY = gapCenterY;
+          obs.gapHeight = gapHeight;
+          obs.type = type;
+          obs.oscAmp = oscAmp;
+          obs.oscSpeed = oscSpeed;
+          obs.oscPhase = rng.range(0, Math.PI * 2);
+          obs.passed = false;
+          break;
+        }
+      }
+
+      const spacing = rng.range(
+        Math.max(235, 295 - currentLevel * 6),
+        Math.max(295, 360 - currentLevel * 6)
+      );
+
+      if (rng.next() < 0.68) {
+        for (let i = 0; i < MAX_FRUITS; i++) {
+          const f = fruitPool[i];
+          if (!f.active) {
+            const fruitRoll = rng.next();
+            let fruitType = 0;
+            let points = 2;
+            if (fruitRoll > 0.82) {
+              fruitType = 2;
+              points = 5;
+            } else if (fruitRoll > 0.48) {
+              fruitType = 1;
+              points = 3;
+            }
+
+            const placeInGap = rng.next() < 0.48;
+            const fruitX = placeInGap
+              ? startX + obsWidth * 0.5
+              : startX + obsWidth + (spacing - obsWidth) * 0.5;
+            const fruitY = placeInGap
+              ? gapCenterY + rng.range(-gapHeight * 0.22, gapHeight * 0.22)
+              : rng.range(margin + 30, playAreaH - margin - 30);
+
+            f.active = true;
+            f.x = fruitX;
+            f.y = fruitY;
+            f.baseY = fruitY;
+            f.type = fruitType;
+            f.points = points;
+            f.phase = rng.range(0, Math.PI * 2);
+            break;
+          }
+        }
+      }
+
+      return startX + spacing;
+    }
+
+    /*************************************************************************
+     * 8. RENDERING PIPELINE
+     *************************************************************************/
+    function lerpColor(rgbA, rgbB, t) {
+      const r = (rgbA[0] + (rgbB[0] - rgbA[0]) * t) | 0;
+      const g = (rgbA[1] + (rgbB[1] - rgbA[1]) * t) | 0;
+      const b = (rgbA[2] + (rgbB[2] - rgbA[2]) * t) | 0;
+      return `rgb(${r},${g},${b})`;
+    }
+
+    function drawBackgroundCached(ctx) {
+      const playAreaH = height - groundHeight;
+
+      SpriteCache.updateSkyBuffer(width, playAreaH, prevBiome, activeBiome, biomeTransitionMix);
+      ctx.drawImage(SpriteCache.skyBuffer, 0, 0);
+
+      const layers = SpriteCache.biomeLayers[biomeIndex];
+
+      if (!ultraFastMode) {
+        const cloudImg = SpriteCache.cloudSprite;
+        for (let i = 0; i < parallaxClouds.length; i++) {
+          const c = parallaxClouds[i];
+          ctx.drawImage(cloudImg, c.x | 0, c.y | 0);
+        }
+      }
+
+      const mImg = layers.mountain;
+      const mW = mImg.width;
+      const mY = (playAreaH - mImg.height) | 0;
+      const mOffset = (mountainScroll | 0) % mW;
+      for (let x = -mOffset; x < width; x += mW) {
+        ctx.drawImage(mImg, x | 0, mY);
+      }
+
+      if (!ultraFastMode) {
+        const cbImg = layers.canopyBack;
+        const cbW = cbImg.width;
+        const cbY = (playAreaH - cbImg.height) | 0;
+        const cbOffset = (canopyScrollBack | 0) % cbW;
+        for (let x = -cbOffset; x < width; x += cbW) {
+          ctx.drawImage(cbImg, x | 0, cbY);
+        }
+      }
+
+      const cfImg = layers.canopyFront;
+      const cfW = cfImg.width;
+      const cfY = (playAreaH - cfImg.height) | 0;
+      const cfOffset = (canopyScrollFront | 0) % cfW;
+      for (let x = -cfOffset; x < width; x += cfW) {
+        ctx.drawImage(cfImg, x | 0, cfY);
+      }
+
+      if (!ultraFastMode) {
+        ctx.fillStyle = activeBiome.ambientColor;
+        ctx.globalAlpha = 0.35;
+        ctx.beginPath();
+        for (let i = 0; i < ambientParticles.length; i++) {
+          const ap = ambientParticles[i];
+          ctx.rect(ap.x | 0, ap.y | 0, 3, 3);
+        }
+        ctx.fill();
+        ctx.globalAlpha = 1.0;
+      }
+    }
+
+    function drawObstacleCached(ctx, obs) {
+      const playAreaH = height - groundHeight;
+      const topH = (obs.gapCenterY - obs.gapHeight * 0.5) | 0;
+      const bottomY = (obs.gapCenterY + obs.gapHeight * 0.5) | 0;
+      const bottomH = playAreaH - bottomY;
+
+      const pair = SpriteCache.obstacles[obs.type];
+      const drawX = (obs.x - 6) | 0;
+      const spriteH = pair.top.height;
+
+      if (topH > 0) {
+        const srcH = Math.min(spriteH, topH);
+        ctx.drawImage(pair.top, 0, spriteH - srcH, 84, srcH, drawX, topH - srcH, 84, srcH);
+      }
+
+      if (bottomH > 0) {
+        const srcH = Math.min(spriteH, bottomH);
+        ctx.drawImage(pair.bottom, 0, 0, 84, srcH, drawX, bottomY, 84, srcH);
+      }
+    }
+
+    function drawForegroundGroundCached(ctx) {
+      const groundY = height - groundHeight - 8;
+      const gImg = SpriteCache.biomeLayers[biomeIndex].ground;
+      const gW = gImg.width;
+      const offset = (groundScroll | 0) % gW;
+      for (let x = -offset; x < width; x += gW) {
+        ctx.drawImage(gImg, x | 0, groundY);
+      }
+    }
+
+    // Render Aloha lying on their back with their feet up in the air, happily chewing on a popsicle stick
+    function renderAlohaOnBackGraphic() {
+      const backCanvas = document.getElementById("alohaBackCanvas");
+      if (!backCanvas) return;
+      const bCtx = backCanvas.getContext("2d");
+      const cw = backCanvas.width;
+      const ch = backCanvas.height;
+      const cx = cw * 0.5;
+      const cy = ch * 0.58;
+
+      bCtx.clearRect(0, 0, cw, ch);
+
+      // 1. Soft tropical canopy background & warm spotlight
+      const bgGrad = bCtx.createLinearGradient(0, 0, 0, ch);
+      bgGrad.addColorStop(0, "#0f172a");
+      bgGrad.addColorStop(1, "#064e3b");
+      bCtx.fillStyle = bgGrad;
+      bCtx.fillRect(0, 0, cw, ch);
+
+      const glowGrad = bCtx.createRadialGradient(cx, cy - 6, 10, cx, cy - 6, 110);
+      glowGrad.addColorStop(0, "rgba(251, 191, 36, 0.22)");
+      glowGrad.addColorStop(1, "rgba(6, 78, 59, 0)");
+      bCtx.fillStyle = glowGrad;
+      bCtx.beginPath();
+      bCtx.arc(cx, cy - 6, 110, 0, Math.PI * 2);
+      bCtx.fill();
+
+      // 2. Soft tropical leaf mat / cushion underneath Aloha's back
+      bCtx.fillStyle = "rgba(0, 0, 0, 0.35)";
+      bCtx.beginPath();
+      bCtx.ellipse(cx - 2, cy + 29, 76, 13, 0, 0, Math.PI * 2);
+      bCtx.fill();
+
+      const leafGrad = bCtx.createLinearGradient(cx - 75, cy + 16, cx + 75, cy + 32);
+      leafGrad.addColorStop(0, "#15803d");
+      leafGrad.addColorStop(0.5, "#22c55e");
+      leafGrad.addColorStop(1, "#166534");
+      bCtx.fillStyle = leafGrad;
+      bCtx.beginPath();
+      bCtx.ellipse(cx - 2, cy + 25, 70, 12, 0, 0, Math.PI * 2);
+      bCtx.fill();
+
+      // 3. BRIGHT SCARLET-RED TAIL FEATHERS (fanned out on the left while Aloha lies on back)
+      bCtx.save();
+      bCtx.translate(cx - 42, cy + 12);
+      bCtx.rotate(0.08);
+      bCtx.fillStyle = "#dc2626";
+      bCtx.beginPath();
+      bCtx.moveTo(6, -6);
+      bCtx.lineTo(-34, -15);
+      bCtx.lineTo(-38, -4);
+      bCtx.lineTo(-34, 8);
+      bCtx.lineTo(8, 7);
+      bCtx.closePath();
+      bCtx.fill();
+
+      bCtx.fillStyle = "#ef4444";
+      bCtx.beginPath();
+      bCtx.moveTo(6, -3);
+      bCtx.lineTo(-30, -8);
+      bCtx.lineTo(-31, 3);
+      bCtx.lineTo(6, 5);
+      bCtx.closePath();
+      bCtx.fill();
+      bCtx.restore();
+
+      // 4. FOLDED CHARCOAL & SILVER WING CUSHIONING ALOHA'S BACK
+      bCtx.fillStyle = "#334155";
+      bCtx.beginPath();
+      bCtx.ellipse(cx - 10, cy + 19, 34, 12, 0.05, 0, Math.PI * 2);
+      bCtx.fill();
+
+      // 5. PLUMP SILVERY-GREY BODY (Upside-down, belly facing the sky!)
+      const bellyGrad = bCtx.createRadialGradient(cx - 6, cy - 2, 5, cx - 6, cy + 6, 38);
+      bellyGrad.addColorStop(0, "#e2e8f0");
+      bellyGrad.addColorStop(0.6, "#94a3b8");
+      bellyGrad.addColorStop(1, "#475569");
+      bCtx.fillStyle = bellyGrad;
+      bCtx.beginPath();
+      bCtx.ellipse(cx - 6, cy + 6, 36, 21, -0.05, 0, Math.PI * 2);
+      bCtx.fill();
+
+      // Scalloped silver-white belly feather pattern
+      bCtx.strokeStyle = "rgba(248, 250, 252, 0.55)";
+      bCtx.lineWidth = 1.3;
+      for (let bx = cx - 26; bx <= cx + 10; bx += 9) {
+        bCtx.beginPath();
+        bCtx.arc(bx, cy + 2, 5, Math.PI * 1.15, Math.PI * 1.85);
+        bCtx.stroke();
+        bCtx.beginPath();
+        bCtx.arc(bx + 3, cy + 10, 5, Math.PI * 1.15, Math.PI * 1.85);
+        bCtx.stroke();
+      }
+
+      // 6. ALOHA'S HEAD RESTING ON BACK (tilted slightly up on the right to chew the stick)
+      const headX = cx + 30;
+      const headY = cy + 2;
+      const headGrad = bCtx.createRadialGradient(headX - 3, headY - 3, 3, headX, headY, 20);
+      headGrad.addColorStop(0, "#e2e8f0");
+      headGrad.addColorStop(0.65, "#94a3b8");
+      headGrad.addColorStop(1, "#64748b");
+      bCtx.fillStyle = headGrad;
+      bCtx.beginPath();
+      bCtx.arc(headX, headY, 18.5, 0, Math.PI * 2);
+      bCtx.fill();
+
+      // Bare white African Grey facial patch
+      bCtx.fillStyle = "#f8fafc";
+      bCtx.beginPath();
+      bCtx.ellipse(headX - 2, headY - 5, 9, 6.8, -0.2, 0, Math.PI * 2);
+      bCtx.fill();
+
+      // Cheerful pale-yellow eye looking at the popsicle stick
+      bCtx.fillStyle = "#fef08a";
+      bCtx.beginPath();
+      bCtx.arc(headX - 3, headY - 5.5, 4.2, 0, Math.PI * 2);
+      bCtx.fill();
+      bCtx.strokeStyle = "#ca8a04";
+      bCtx.lineWidth = 0.9;
+      bCtx.stroke();
+
+      bCtx.fillStyle = "#0f172a";
+      bCtx.beginPath();
+      bCtx.arc(headX - 3.6, headY - 6.2, 2.2, 0, Math.PI * 2);
+      bCtx.fill();
+
+      bCtx.fillStyle = "#ffffff";
+      bCtx.beginPath();
+      bCtx.arc(headX - 4.4, headY - 7.1, 1.0, 0, Math.PI * 2);
+      bCtx.fill();
+
+      // 7. BOTH FEET STICKING STRAIGHT UP IN THE AIR!
+      // Left leg & zygodactyl toes kicking happily in the air
+      bCtx.strokeStyle = "#64748b";
+      bCtx.lineWidth = 4.2;
+      bCtx.lineCap = "round";
+      bCtx.beginPath();
+      bCtx.moveTo(cx - 20, cy - 10);
+      bCtx.lineTo(cx - 26, cy - 34);
+      bCtx.stroke();
+
+      // Left foot toes spread in the air + dark claws
+      bCtx.strokeStyle = "#94a3b8";
+      bCtx.lineWidth = 2.6;
+      bCtx.beginPath();
+      bCtx.moveTo(cx - 26, cy - 34);
+      bCtx.quadraticCurveTo(cx - 35, cy - 41, cx - 37, cy - 36);
+      bCtx.moveTo(cx - 26, cy - 34);
+      bCtx.quadraticCurveTo(cx - 27, cy - 45, cx - 24, cy - 46);
+      bCtx.moveTo(cx - 26, cy - 34);
+      bCtx.quadraticCurveTo(cx - 18, cy - 42, cx - 16, cy - 37);
+      bCtx.stroke();
+
+      // Right leg raised high in the air helping hold the popsicle stick
+      bCtx.strokeStyle = "#64748b";
+      bCtx.lineWidth = 4.2;
+      bCtx.beginPath();
+      bCtx.moveTo(cx - 2, cy - 11);
+      bCtx.lineTo(cx + 2, cy - 33);
+      bCtx.stroke();
+
+      // 8. WOODEN POPSICLE STICK BEING CHEWED BY ALOHA
+      bCtx.save();
+      bCtx.translate(cx + 12, cy - 23);
+      bCtx.rotate(0.42);
+
+      // Rounded wooden popsicle stick body
+      const stickGrad = bCtx.createLinearGradient(-44, -6, 36, 6);
+      stickGrad.addColorStop(0, "#fde68a");
+      stickGrad.addColorStop(0.5, "#f59e0b");
+      stickGrad.addColorStop(1, "#d97706");
+      bCtx.fillStyle = stickGrad;
+      bCtx.strokeStyle = "#92400e";
+      bCtx.lineWidth = 1.6;
+      bCtx.beginPath();
+      bCtx.roundRect(-42, -5.5, 72, 11, 5.5);
+      bCtx.fill();
+      bCtx.stroke();
+
+      // Wood grain lines along the popsicle stick
+      bCtx.strokeStyle = "rgba(146, 64, 14, 0.35)";
+      bCtx.lineWidth = 1;
+      bCtx.beginPath();
+      bCtx.moveTo(-34, -1.5);
+      bCtx.lineTo(20, -1.5);
+      bCtx.moveTo(-28, 2);
+      bCtx.lineTo(24, 2);
+      bCtx.stroke();
+
+      // Little chew notches near the beak end of the stick
+      bCtx.fillStyle = "#0f172a";
+      bCtx.beginPath();
+      bCtx.moveTo(14, -6);
+      bCtx.lineTo(17, -2);
+      bCtx.lineTo(20, -6);
+      bCtx.closePath();
+      bCtx.fill();
+      bCtx.restore();
+
+      // Right foot toes gripping around the popsicle stick in mid-air
+      bCtx.strokeStyle = "#94a3b8";
+      bCtx.lineWidth = 2.8;
+      bCtx.beginPath();
+      bCtx.moveTo(cx + 2, cy - 33);
+      bCtx.quadraticCurveTo(cx - 3, cy - 38, cx + 1, cy - 26);
+      bCtx.moveTo(cx + 2, cy - 33);
+      bCtx.quadraticCurveTo(cx + 6, cy - 38, cx + 7, cy - 25);
+      bCtx.moveTo(cx + 2, cy - 33);
+      bCtx.quadraticCurveTo(cx + 11, cy - 33, cx + 10, cy - 23);
+      bCtx.stroke();
+
+      // 9. OPEN BLACK HOOKED BEAK HAPPILY GNAWING ON THE POPSICLE STICK
+      // Lower black mandible under the stick
+      bCtx.fillStyle = "#1e293b";
+      bCtx.beginPath();
+      bCtx.moveTo(headX + 1, headY - 12);
+      bCtx.quadraticCurveTo(headX - 3, headY - 22, headX + 6, headY - 22);
+      bCtx.lineTo(headX + 9, headY - 13);
+      bCtx.closePath();
+      bCtx.fill();
+
+      // Upper curved black hookbill biting over the end of the popsicle stick
+      const beakGrad = bCtx.createLinearGradient(headX + 4, headY - 26, headX + 20, headY - 10);
+      beakGrad.addColorStop(0, "#334155");
+      beakGrad.addColorStop(0.5, "#0f172a");
+      beakGrad.addColorStop(1, "#020617");
+      bCtx.fillStyle = beakGrad;
+      bCtx.beginPath();
+      bCtx.moveTo(headX + 12, headY - 10);
+      bCtx.quadraticCurveTo(headX + 18, headY - 25, headX + 4, headY - 26);
+      bCtx.quadraticCurveTo(headX + 7, headY - 18, headX + 5, headY - 13);
+      bCtx.closePath();
+      bCtx.fill();
+
+      // 10. FLYING WOOD SPLINTERS / CHEW CRUMBS & PLAYFUL ACCENTS
+      bCtx.fillStyle = "#fbbf24";
+      const splinters = [
+        [headX + 16, headY - 28, 3.5, 1.8, -0.4],
+        [headX + 22, headY - 20, 4.0, 1.6, 0.3],
+        [headX + 8, headY - 34, 3.0, 1.5, -0.8],
+        [cx - 8, cy - 42, 3.2, 1.5, 0.5]
+      ];
+      for (let i = 0; i < splinters.length; i++) {
+        const s = splinters[i];
+        bCtx.save();
+        bCtx.translate(s[0], s[1]);
+        bCtx.rotate(s[4]);
+        bCtx.fillRect(-s[2] * 0.5, -s[3] * 0.5, s[2], s[3]);
+        bCtx.restore();
+      }
+
+      // Playful motion lines around the kicking feet & crunch text
+      bCtx.strokeStyle = "rgba(253, 224, 71, 0.65)";
+      bCtx.lineWidth = 1.5;
+      bCtx.beginPath();
+      bCtx.arc(cx - 26, cy - 42, 14, Math.PI * 1.15, Math.PI * 1.65);
+      bCtx.stroke();
+
+      bCtx.font = "bold 11px 'Fredoka', sans-serif";
+      bCtx.fillStyle = "#fde047";
+      bCtx.fillText("CRUNCH! 🪵", headX + 18, headY - 30);
+      bCtx.font = "14px sans-serif";
+      bCtx.fillText("🎵", cx - 58, cy - 28);
+      bCtx.fillText("✨", cx - 44, cy - 42);
+    }
+
+    /*************************************************************************
+     * 9. MULTI-INPUT SYSTEM (KEYBOARD & TOUCH/MOUSE)
+     *************************************************************************/
+    const badgeKeyboard = document.getElementById("badgeKeyboard");
+    const badgeTouch = document.getElementById("badgeTouch");
+
+    let lastMenuActionTime = -100;
+    let gameOverTimestamp = 0;
+
+    function focusGameWindow() {
+      try {
+        if (document.activeElement && document.activeElement !== document.getElementById("seedInput")) {
+          document.activeElement.blur();
+        }
+        window.focus();
+      } catch (_) {}
+    }
+
+    function highlightInputBadge(source) {
+      if (HUDCache.activeInput === source) return;
+      HUDCache.activeInput = source;
+      badgeKeyboard.classList.toggle("input-pill-active", source === "KEYBOARD");
+      badgeTouch.classList.toggle("input-pill-active", source === "TOUCH");
+    }
+
+    function triggerPrimaryAction(source = "KEYBOARD") {
+      highlightInputBadge(source);
+
+      if (currentState === STATE.START) {
+        const now = performance.now();
+        if (now - lastMenuActionTime < 60) return;
+        lastMenuActionTime = now;
+        startNewGame();
+      } else if (currentState === STATE.PLAYING) {
+        parrot.flap();
+      } else if (currentState === STATE.PAUSED) {
+        const now = performance.now();
+        if (now - lastMenuActionTime < 60) return;
+        lastMenuActionTime = now;
+        togglePause();
+      } else if (currentState === STATE.GAMEOVER) {
+        const now = performance.now();
+        if (now - gameOverTimestamp < 280 || now - lastMenuActionTime < 60) return;
+        lastMenuActionTime = now;
+        startNewGame();
+      }
+    }
+
+    window.addEventListener("keydown", (e) => {
+      if (document.activeElement === document.getElementById("seedInput")) return;
+
+      if (e.code === "Space" || e.code === "ArrowUp" || e.code === "KeyW") {
+        e.preventDefault();
+        if (e.repeat) return;
+        triggerPrimaryAction("KEYBOARD");
+      } else if (e.code === "KeyP" || e.code === "Escape") {
+        e.preventDefault();
+        if (currentState === STATE.PLAYING || currentState === STATE.PAUSED) {
+          togglePause();
+        }
+      } else if (e.code === "KeyM") {
+        e.preventDefault();
+        handleMuteToggle();
+      } else if (e.code === "KeyF") {
+        e.preventDefault();
+        togglePerfHud();
+      }
+    });
+
+    window.addEventListener("pointerdown", (e) => {
+      if (e.target !== document.getElementById("seedInput")) {
+        focusGameWindow();
+      }
+    }, { passive: true });
+
+    canvas.addEventListener(
+      "pointerdown",
+      (e) => {
+        e.preventDefault();
+        focusGameWindow();
+        if (currentState === STATE.PLAYING) {
+          triggerPrimaryAction("TOUCH");
+        }
+      },
+      { passive: false }
+    );
+
+    /*************************************************************************
+     * 10. GAMEPLAY FLOW & COLLISION DETECTION
+     *************************************************************************/
+    const startModal = document.getElementById("startModal");
+    const pauseModal = document.getElementById("pauseModal");
+    const gameOverModal = document.getElementById("gameOverModal");
+    const hudCenter = document.getElementById("hudCenter");
+    const btnPause = document.getElementById("btnPause");
+    const hudScore = document.getElementById("hudScore");
+    const hudFruits = document.getElementById("hudFruits");
+    const hudBiomeTag = document.getElementById("hudBiomeTag");
+    const biomeBanner = document.getElementById("biomeBanner");
+    const bannerSub = document.getElementById("bannerSub");
+    const bannerTitle = document.getElementById("bannerTitle");
+    const seedInput = document.getElementById("seedInput");
+    const chkAutoRandom = document.getElementById("chkAutoRandom");
+
+    document.getElementById("startBestScore").textContent = highScore;
+
+    function generateRandomSeedCode() {
+      const prefixes = ["ALOHA", "CONGO", "SCARLET", "POPSICLE", "SILVER", "BAOBAB"];
+      const word = prefixes[(Math.random() * prefixes.length) | 0];
+      const num = (100 + Math.random() * 900) | 0;
+      return `${word}-${num}`;
+    }
+
+    document.getElementById("btnRandomSeed").addEventListener("click", () => {
+      seedInput.value = generateRandomSeedCode();
+    });
+
+    function showBiomeBanner(level, biomeName) {
+      bannerSub.textContent = `Aloha Reached Level ${level}!`;
+      bannerTitle.textContent = biomeName;
+      biomeBanner.classList.remove("opacity-0", "-translate-y-4");
+      biomeBanner.classList.add("opacity-100", "translate-y-0");
+
+      setTimeout(() => {
+        biomeBanner.classList.remove("opacity-100", "translate-y-0");
+        biomeBanner.classList.add("opacity-0", "-translate-y-4");
+      }, 2400);
+    }
+
+    function startNewGame() {
+      focusGameWindow();
+      sound.init();
+
+      if (chkAutoRandom.checked && currentState !== STATE.START) {
+        seedInput.value = generateRandomSeedCode();
+      }
+      const chosenSeed = seedInput.value.trim() || generateRandomSeedCode();
+      seedInput.value = chosenSeed;
+      rng.setSeed(chosenSeed);
+
+      score = 0;
+      fruitsCollected = 0;
+      currentLevel = 1;
+      biomeIndex = 0;
+      prevBiome = BIOMES[0];
+      activeBiome = BIOMES[0];
+      biomeTransitionMix = 1;
+
+      resetAllPools();
+      parrot.reset(width, height);
+
+      nextSpawnX = width + 110;
+      for (let i = 0; i < 4; i++) {
+        nextSpawnX = spawnProceduralObstacle(nextSpawnX);
+      }
+
+      HUDCache.updateScore(0);
+      HUDCache.updateFruits(0);
+      HUDCache.updateBiomeTag(1, activeBiome.shortName);
+
+      startModal.classList.add("hidden");
+      pauseModal.classList.add("hidden");
+      gameOverModal.classList.add("hidden");
+      hudCenter.classList.remove("hidden");
+      hudCenter.classList.add("flex");
+      btnPause.classList.remove("hidden");
+      btnPause.classList.add("flex");
+
+      currentState = STATE.PLAYING;
+      parrot.flap();
+      showBiomeBanner(1, activeBiome.name);
+    }
+
+    function togglePause() {
+      if (currentState === STATE.PLAYING) {
+        currentState = STATE.PAUSED;
+        pauseModal.classList.remove("hidden");
+        document.getElementById("iconPause").classList.add("hidden");
+        document.getElementById("iconPlay").classList.remove("hidden");
+      } else if (currentState === STATE.PAUSED) {
+        currentState = STATE.PLAYING;
+        pauseModal.classList.add("hidden");
+        document.getElementById("iconPause").classList.remove("hidden");
+        document.getElementById("iconPlay").classList.add("hidden");
+      }
+    }
+
+    function checkLevelProgression() {
+      const newLevel = ((score / 8) | 0) + 1;
+      if (newLevel > currentLevel) {
+        currentLevel = newLevel;
+        prevBiome = activeBiome;
+        biomeIndex = (currentLevel - 1) % BIOMES.length;
+        activeBiome = BIOMES[biomeIndex];
+        biomeTransitionMix = 0;
+
+        HUDCache.updateBiomeTag(currentLevel, activeBiome.shortName);
+        showBiomeBanner(currentLevel, activeBiome.name);
+        spawnFloatingText(parrot.x, Math.max(48, parrot.y - 28), "GO ALOHA!");
+        sound.playLevelUp();
+      }
+    }
+
+    function triggerGameOver(reason = "ALOHA HIT AN OBSTACLE!") {
+      currentState = STATE.GAMEOVER;
+      gameOverTimestamp = performance.now();
+      sound.playCrash();
+      spawnFeatherBurst(parrot.x, parrot.y, ultraFastMode ? 8 : 18, true);
+
+      let isNewRecord = false;
+      if (score > highScore) {
+        highScore = score;
+        localStorage.setItem("alohaFlapHighScore", String(highScore));
+        document.getElementById("startBestScore").textContent = highScore;
+        isNewRecord = true;
+      }
+
+      document.getElementById("gameOverTag").textContent = reason;
+      document.getElementById("finalScore").textContent = score;
+      document.getElementById("finalBest").textContent = highScore;
+      document.getElementById("newRecordBadge").classList.toggle("hidden", !isNewRecord);
+      document.getElementById("finalFruits").textContent = `${fruitsCollected} Collected`;
+      document.getElementById("finalBiome").textContent = `Lv.${currentLevel} ${activeBiome.shortName}`;
+      document.getElementById("finalSeedUsed").textContent = rng.seedString;
+
+      const medalCircle = document.getElementById("medalCircle");
+      const medalName = document.getElementById("medalName");
+      if (score >= 40) {
+        medalCircle.textContent = "🦜";
+        medalName.textContent = "Scarlet Legend";
+        medalName.className = "text-xs font-bold text-red-400";
+      } else if (score >= 25) {
+        medalCircle.textContent = "👑";
+        medalName.textContent = "Golden Crown";
+        medalName.className = "text-xs font-bold text-amber-300";
+      } else if (score >= 12) {
+        medalCircle.textContent = "🥈";
+        medalName.textContent = "Silver Wing";
+        medalName.className = "text-xs font-bold text-slate-200";
+      } else {
+        medalCircle.textContent = "🪶";
+        medalName.textContent = "Bronze Tail";
+        medalName.className = "text-xs font-bold text-amber-500";
+      }
+
+      btnPause.classList.add("hidden");
+      gameOverModal.classList.remove("hidden");
+      renderAlohaOnBackGraphic();
+    }
+
+    function circleRectCollide(cx, cy, cr, rx, ry, rw, rh) {
+      if (rh <= 0 || rw <= 0) return false;
+      const closestX = cx < rx ? rx : cx > rx + rw ? rx + rw : cx;
+      const closestY = cy < ry ? ry : cy > ry + rh ? ry + rh : cy;
+      const dx = cx - closestX;
+      const dy = cy - closestY;
+      return dx * dx + dy * dy < cr * cr;
+    }
+
+    /*************************************************************************
+     * 11. TELEMETRY MONITOR & SPARKLINE
+     *************************************************************************/
+    const perfPanel = document.getElementById("perfPanel");
+    const miniFpsReadout = document.getElementById("miniFpsReadout");
+    const perfFps = document.getElementById("perfFps");
+    const perfMs = document.getElementById("perfMs");
+    const perfPool = document.getElementById("perfPool");
+    const perfCache = document.getElementById("perfCache");
+    const sparkCanvas = document.getElementById("perfSparkline");
+    const sparkCtx = sparkCanvas.getContext("2d");
+
+    let showPerfPanel = false;
+    let frameCount = 0;
+    let fpsAccumTime = 0;
+    let currentFps = 60;
+    let smoothFrameMs = 1.0;
+    const sparkHistory = new Float32Array(46);
+    let sparkIndex = 0;
+
+    function togglePerfHud() {
+      showPerfPanel = !showPerfPanel;
+      perfPanel.classList.toggle("hidden", !showPerfPanel);
+      if (showPerfPanel) {
+        perfCache.textContent = `${SpriteCache.totalCachedSprites} Sprites`;
+      }
+    }
+
+    function updateTelemetry(dt, frameExecMs) {
+      frameCount++;
+      fpsAccumTime += dt;
+      smoothFrameMs = smoothFrameMs * 0.85 + frameExecMs * 0.15;
+
+      if (fpsAccumTime >= 0.25) {
+        currentFps = Math.round(frameCount / fpsAccumTime);
+        frameCount = 0;
+        fpsAccumTime = 0;
+
+        miniFpsReadout.textContent = `${currentFps} FPS`;
+
+        if (showPerfPanel) {
+          perfFps.textContent = `${currentFps} FPS`;
+          perfMs.textContent = `${smoothFrameMs.toFixed(2)} ms`;
+          perfPool.textContent = `${countActivePooledEntities()} / ${TOTAL_POOL_CAPACITY}`;
+
+          sparkHistory[sparkIndex] = Math.min(16.6, smoothFrameMs);
+          sparkIndex = (sparkIndex + 1) % sparkHistory.length;
+
+          sparkCtx.clearRect(0, 0, 230, 34);
+          sparkCtx.strokeStyle = "#22d3ee";
+          sparkCtx.lineWidth = 1.5;
+          sparkCtx.beginPath();
+          for (let i = 0; i < sparkHistory.length; i++) {
+            const idx = (sparkIndex + i) % sparkHistory.length;
+            const val = sparkHistory[idx];
+            const sx = i * 5;
+            const sy = 31 - (val / 16.6) * 26;
+            if (i === 0) sparkCtx.moveTo(sx, sy);
+            else sparkCtx.lineTo(sx, sy);
+          }
+          sparkCtx.stroke();
+        }
+      }
+    }
+
+    /*************************************************************************
+     * 12. MAIN LOOP
+     *************************************************************************/
+    let lastTime = performance.now();
+
+    function updateGame(dt) {
+      const scrollSpeed = Math.min(310, 185 + (currentLevel - 1) * 14);
+      const isIdle = currentState === STATE.START;
+
+      if (biomeTransitionMix < 1) {
+        biomeTransitionMix = Math.min(1, biomeTransitionMix + dt * 0.65);
+      }
+
+      if (currentState === STATE.START || currentState === STATE.PLAYING) {
+        const speedFactor = isIdle ? 0.55 : 1;
+        groundScroll += scrollSpeed * speedFactor * dt;
+        canopyScrollFront += scrollSpeed * 0.45 * speedFactor * dt;
+        canopyScrollBack += scrollSpeed * 0.25 * speedFactor * dt;
+        mountainScroll += scrollSpeed * 0.1 * speedFactor * dt;
+
+        if (!ultraFastMode) {
+          for (let i = 0; i < parallaxClouds.length; i++) {
+            const c = parallaxClouds[i];
+            c.x -= c.speed * speedFactor * dt;
+            if (c.x < -100) c.x = width + 40;
+          }
+
+          const maxPlayY = height - groundHeight - 10;
+          for (let i = 0; i < ambientParticles.length; i++) {
+            const ap = ambientParticles[i];
+            ap.x += ap.vx * dt;
+            ap.y += ap.vy * dt;
+            if (ap.x < -10) ap.x = width + 10;
+            if (ap.y < 10) ap.y = maxPlayY;
+            else if (ap.y > maxPlayY) ap.y = 12;
+          }
+        }
+      }
+
+      for (let i = 0; i < MAX_FEATHERS; i++) {
+        const f = featherPool[i];
+        if (!f.active) continue;
+        f.x += f.vx * dt;
+        f.y += f.vy * dt;
+        f.vy += 220 * dt;
+        f.vx *= Math.pow(0.98, dt * 60);
+        f.rot += f.vRot * dt;
+        f.life -= f.decay * dt;
+        if (f.life <= 0) f.active = false;
+      }
+
+      for (let i = 0; i < MAX_POPUPS; i++) {
+        const ft = popupPool[i];
+        if (!ft.active) continue;
+        ft.y -= 42 * dt;
+        ft.life -= dt * 1.15;
+        if (ft.life <= 0) ft.active = false;
+      }
+
+      if (currentState === STATE.START) {
+        parrot.update(dt, true);
+        return;
+      }
+
+      if (currentState !== STATE.PLAYING) return;
+
+      parrot.update(dt, false);
+
+      const playAreaH = height - groundHeight;
+      if (parrot.y + parrot.radius >= playAreaH) {
+        parrot.y = playAreaH - parrot.radius;
+        triggerGameOver("ALOHA HIT THE JUNGLE FLOOR!");
+        return;
+      }
+
+      nextSpawnX -= scrollSpeed * dt;
+      if (nextSpawnX < width + 180) {
+        nextSpawnX = spawnProceduralObstacle(nextSpawnX);
+      }
+
+      const hitRadius = parrot.radius - 4;
+
+      for (let i = 0; i < MAX_OBSTACLES; i++) {
+        const obs = obstaclePool[i];
+        if (!obs.active) continue;
+
+        obs.x -= scrollSpeed * dt;
+
+        if (obs.oscAmp > 0) {
+          obs.oscPhase += obs.oscSpeed * dt;
+          obs.gapCenterY = obs.baseGapCenterY + Math.sin(obs.oscPhase) * obs.oscAmp;
+        }
+
+        if (obs.x < parrot.x + hitRadius && obs.x + obs.width > parrot.x - hitRadius) {
+          const topH = Math.max(0, obs.gapCenterY - obs.gapHeight * 0.5);
+          const bottomY = obs.gapCenterY + obs.gapHeight * 0.5;
+          const bottomH = Math.max(0, playAreaH - bottomY);
+
+          if (
+            circleRectCollide(parrot.x, parrot.y, hitRadius, obs.x, 0, obs.width, topH) ||
+            circleRectCollide(parrot.x, parrot.y, hitRadius, obs.x, bottomY, obs.width, bottomH)
+          ) {
+            triggerGameOver("ALOHA HIT AN OBSTACLE!");
+            return;
+          }
+        }
+
+        if (!obs.passed && obs.x + obs.width < parrot.x) {
+          obs.passed = true;
+          score += 1;
+          HUDCache.updateScore(score);
+          sound.playScore();
+          checkLevelProgression();
+        }
+
+        if (obs.x + obs.width < -90) {
+          obs.active = false;
+        }
+      }
+
+      const minDistSq = (parrot.radius + 14) * (parrot.radius + 14);
+      for (let i = 0; i < MAX_FRUITS; i++) {
+        const f = fruitPool[i];
+        if (!f.active) continue;
+
+        f.x -= scrollSpeed * dt;
+        f.phase += dt * 4;
+        f.y = f.baseY + Math.sin(f.phase) * 7;
+
+        const dx = parrot.x - f.x;
+        const dy = parrot.y - f.y;
+        if (dx * dx + dy * dy <= minDistSq) {
+          f.active = false;
+          score += f.points;
+          fruitsCollected += 1;
+          HUDCache.updateScore(score);
+          HUDCache.updateFruits(fruitsCollected);
+          sound.playFruit(f.points);
+          spawnFeatherBurst(f.x, f.y, ultraFastMode ? 3 : 7, false);
+          spawnFloatingText(f.x, f.y - 10, `+${f.points}`);
+          checkLevelProgression();
+          continue;
+        }
+
+        if (f.x < -50) {
+          f.active = false;
+        }
+      }
+    }
+
+    function renderGame() {
+      drawBackgroundCached(ctx);
+
+      for (let i = 0; i < MAX_OBSTACLES; i++) {
+        const obs = obstaclePool[i];
+        if (obs.active && obs.x < width + 12 && obs.x + obs.width > -12) {
+          drawObstacleCached(ctx, obs);
+        }
+      }
+
+      for (let i = 0; i < MAX_FRUITS; i++) {
+        const f = fruitPool[i];
+        if (f.active && f.x < width + 24 && f.x > -24) {
+          ctx.drawImage(SpriteCache.fruits[f.type], (f.x - 22) | 0, (f.y - 22) | 0);
+        }
+      }
+
+      drawForegroundGroundCached(ctx);
+
+      for (let i = 0; i < MAX_FEATHERS; i++) {
+        const f = featherPool[i];
+        if (!f.active) continue;
+        ctx.save();
+        ctx.translate(f.x | 0, f.y | 0);
+        ctx.rotate(f.rot);
+        ctx.globalAlpha = f.life;
+        ctx.drawImage(SpriteCache.feathers[f.spriteIdx], -10, -6);
+        ctx.restore();
+      }
+
+      drawAfricanGreyParrotCached(ctx, parrot);
+
+      for (let i = 0; i < MAX_POPUPS; i++) {
+        const ft = popupPool[i];
+        if (!ft.active) continue;
+        const badge = SpriteCache.popupSprites[ft.label];
+        if (badge) {
+          ctx.globalAlpha = ft.life;
+          ctx.drawImage(badge, (ft.x - badge.width * 0.5) | 0, (ft.y - badge.height * 0.5) | 0);
+          ctx.globalAlpha = 1.0;
+        }
+      }
+    }
+
+    function gameLoop(now) {
+      const frameStart = performance.now();
+      const dt = Math.min(0.05, Math.max(0.001, (now - lastTime) * 0.001));
+      lastTime = now;
+
+      updateGame(dt);
+      renderGame();
+
+      const frameExecMs = performance.now() - frameStart;
+      updateTelemetry(dt, frameExecMs);
+
+      requestAnimationFrame(gameLoop);
+    }
+
+    /*************************************************************************
+     * 13. UI EVENT LISTENERS & RESIZING
+     *************************************************************************/
+    function resizeCanvas() {
+      const container = document.getElementById("gameContainer");
+      const rect = container.getBoundingClientRect();
+      width = Math.max(320, rect.width | 0);
+      height = Math.max(460, rect.height | 0);
+      canvas.width = width;
+      canvas.height = height;
+      SpriteCache.lastSkyMixHash = "";
+
+      if (currentState === STATE.START) {
+        parrot.reset(width, height);
+      }
+    }
+
+    window.addEventListener("resize", resizeCanvas);
+
+    function handleMuteToggle() {
+      const isMuted = sound.toggleMute();
+      document.getElementById("iconSoundOn").classList.toggle("hidden", isMuted);
+      document.getElementById("iconSoundOff").classList.toggle("hidden", !isMuted);
+    }
+
+    document.getElementById("btnMute").addEventListener("click", handleMuteToggle);
+    document.getElementById("btnPerfHud").addEventListener("click", togglePerfHud);
+    document.getElementById("btnQuality").addEventListener("click", () => {
+      ultraFastMode = !ultraFastMode;
+      document.getElementById("qualityLabel").textContent = ultraFastMode ? "ULTRA" : "HIGH";
+    });
+    document.getElementById("btnPause").addEventListener("click", togglePause);
+    document.getElementById("btnResume").addEventListener("click", togglePause);
+    document.getElementById("btnStartGame").addEventListener("click", () => startNewGame());
+    document.getElementById("btnPlayAgain").addEventListener("click", () => startNewGame());
+    document.getElementById("btnRestartFromPause").addEventListener("click", () => startNewGame());
+    document.getElementById("btnOpenSettings").addEventListener("click", () => {
+      gameOverModal.classList.add("hidden");
+      hudCenter.classList.add("hidden");
+      startModal.classList.remove("hidden");
+      currentState = STATE.START;
+      parrot.reset(width, height);
+    });
+
+    // Update live Online / Offline status indicator
+    function updateConnectivityBadge() {
+      const badge = document.getElementById("offlineReadyBadge");
+      if (!badge) return;
+      if (navigator.onLine === false) {
+        badge.textContent = "⚡ Offline Mode Active";
+      } else {
+        badge.textContent = "✓ Offline Ready";
+      }
+    }
+    window.addEventListener("online", updateConnectivityBadge);
+    window.addEventListener("offline", updateConnectivityBadge);
+
+    window.onload = function () {
+      updateConnectivityBadge();
+      SpriteCache.initAll();
+      resizeCanvas();
+      initParallaxWorld();
+      parrot.reset(width, height);
+      requestAnimationFrame(gameLoop);
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,2171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pan's Kibble Caper! — Miniature Poodle Arcade</title>
+    <!-- Tailwind CSS CDN for enhanced styling (with complete embedded CSS fallback so the game works 100% offline!) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* ==========================================================================
+           100% OFFLINE-READY STYLES & ARCADE AESTHETICS
+           ========================================================================== */
+        :root {
+            --bg-dark: #0f1021;
+            --bg-panel: #1a1c36;
+            --bg-panel-border: #333866;
+            --accent-gold: #fbbf24;
+            --accent-amber: #f59e0b;
+            --accent-pink: #f472b6;
+            --accent-cyan: #38bdf8;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            height: 100dvh;
+            background: radial-gradient(circle at 50% 15%, #1e2246 0%, #0b0c1a 100%);
+            color: var(--text-light);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        .app-shell {
+            width: 100%;
+            max-width: 600px;
+            height: 100%;
+            height: 100dvh;
+            margin: 0 auto;
+            padding: 6px 10px 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+        }
+
+        /* Compact Header Bar */
+        .header-bar {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            background: rgba(26, 28, 54, 0.92);
+            border: 2px solid var(--bg-panel-border);
+            border-radius: 14px;
+            padding: 6px 10px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+            flex-shrink: 0;
+        }
+
+        .brand-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+        }
+
+        .brand-title h1 {
+            margin: 0;
+            font-size: clamp(0.92rem, 3.5vw, 1.25rem);
+            font-weight: 900;
+            letter-spacing: 0.02em;
+            background: linear-gradient(90deg, #fde68a, #f59e0b, #fb7185);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            white-space: nowrap;
+        }
+
+        .brand-subtitle {
+            margin: 0;
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-shrink: 0;
+        }
+
+        .arcade-btn {
+            appearance: none;
+            border: 2px solid #475569;
+            background: linear-gradient(180deg, #2e335a 0%, #1c203b 100%);
+            color: #f8fafc;
+            font-weight: 700;
+            font-size: 0.74rem;
+            padding: 5px 9px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: transform 0.1s ease, border-color 0.15s ease;
+            box-shadow: 0 3px 0 #0f1123;
+            white-space: nowrap;
+        }
+
+        .arcade-btn:hover {
+            border-color: var(--accent-gold);
+        }
+
+        .arcade-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #0f1123;
+        }
+
+        .arcade-btn.primary {
+            background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+            border-color: #fde68a;
+            color: #111827;
+            box-shadow: 0 3px 0 #78350f;
+        }
+
+        /* Single-Column Centered Stage */
+        .stage-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            width: 100%;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .hud-bar {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 5px;
+            background: rgba(26, 28, 54, 0.92);
+            border: 2px solid var(--bg-panel-border);
+            border-radius: 12px;
+            padding: 5px 8px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+            flex-shrink: 0;
+        }
+
+        .hud-cell {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(15, 16, 33, 0.65);
+            border-radius: 8px;
+            padding: 3px 4px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            min-width: 0;
+        }
+
+        .hud-label {
+            font-size: 0.58rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .hud-value {
+            font-size: clamp(0.8rem, 2.5vw, 1.05rem);
+            font-weight: 900;
+            color: #fde68a;
+            font-variant-numeric: tabular-nums;
+            margin-top: 1px;
+            white-space: nowrap;
+        }
+
+        .mode-badge {
+            font-size: 0.65rem;
+            font-weight: 900;
+            padding: 1px 6px;
+            border-radius: 99px;
+            margin-top: 2px;
+            letter-spacing: 0.04em;
+        }
+
+        .mode-scatter {
+            background: rgba(52, 211, 153, 0.18);
+            color: #6ee7b7;
+            border: 1px solid rgba(52, 211, 153, 0.4);
+        }
+
+        .mode-chase {
+            background: rgba(244, 63, 94, 0.2);
+            color: #fda4af;
+            border: 1px solid rgba(244, 63, 94, 0.45);
+        }
+
+        .mode-fright {
+            background: rgba(56, 189, 248, 0.22);
+            color: #7dd3fc;
+            border: 1px solid rgba(56, 189, 248, 0.5);
+        }
+
+        /* Responsive Square Canvas Wrapper */
+        .canvas-frame {
+            position: relative;
+            width: min(100%, calc(100dvh - 210px), 540px);
+            aspect-ratio: 1 / 1;
+            background: #080915;
+            border: 3px solid #3b427e;
+            border-radius: 16px;
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.65), inset 0 0 24px rgba(56, 189, 248, 0.12);
+            overflow: hidden;
+            touch-action: none;
+            flex-shrink: 1;
+        }
+
+        #gameCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        /* Power Mode Banner Overlay */
+        .power-meter-wrap {
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.9);
+            border: 2px solid #38bdf8;
+            border-radius: 999px;
+            padding: 3px 12px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            pointer-events: none;
+            z-index: 5;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.45);
+        }
+
+        .power-meter-wrap.active {
+            display: flex;
+        }
+
+        .power-bar-bg {
+            width: 80px;
+            height: 7px;
+            background: #1e293b;
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .power-bar-fill {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, #38bdf8, #fde047);
+            transition: width 0.1s linear;
+        }
+
+        /* Modal Overlay Inside Canvas */
+        .canvas-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(10, 11, 24, 0.85);
+            backdrop-filter: blur(4px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            text-align: center;
+            z-index: 10;
+            transition: opacity 0.2s ease;
+        }
+
+        .canvas-overlay.hidden {
+            display: none;
+        }
+
+        .overlay-card {
+            background: linear-gradient(180deg, rgba(30, 34, 70, 0.96), rgba(18, 20, 42, 0.98));
+            border: 2px solid #fbbf24;
+            border-radius: 18px;
+            padding: 16px 18px;
+            max-width: 390px;
+            width: 100%;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.7);
+        }
+
+        /* Ergonomic On-Screen Touch D-Pad */
+        .controls-panel {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            background: rgba(26, 28, 54, 0.88);
+            border: 2px solid var(--bg-panel-border);
+            border-radius: 14px;
+            padding: 6px 12px;
+            flex-shrink: 0;
+        }
+
+        .controls-hint {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            line-height: 1.25;
+        }
+
+        .dpad-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 52px);
+            grid-template-rows: repeat(2, 40px);
+            gap: 5px;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
+        }
+
+        .dpad-btn {
+            width: 52px;
+            height: 40px;
+            border-radius: 10px;
+            border: 2px solid #4f5897;
+            background: linear-gradient(180deg, #2e3463 0%, #1c2041 100%);
+            color: #fde68a;
+            font-size: 1.1rem;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 3px 0 #0d0f22;
+            transition: transform 0.08s ease, background 0.12s ease;
+            touch-action: none;
+        }
+
+        .dpad-btn:active, .dpad-btn.pressed {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #0d0f22;
+            background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+            color: #0f172a;
+            border-color: #fef08a;
+        }
+
+        @media (max-width: 480px) {
+            .brand-subtitle {
+                display: none;
+            }
+            .controls-hint {
+                display: none;
+            }
+            .dpad-grid {
+                grid-template-columns: repeat(3, 62px);
+                grid-template-rows: repeat(2, 44px);
+            }
+            .dpad-btn {
+                width: 62px;
+                height: 44px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <!-- Top Header Bar -->
+        <header class="header-bar">
+            <div class="brand-title">
+                <canvas id="headerLogoCanvas" width="36" height="36" style="border-radius:8px; background:rgba(255,255,255,0.05); flex-shrink:0;"></canvas>
+                <div style="min-width:0;">
+                    <h1>PAN'S KIBBLE CAPER</h1>
+                    <p class="brand-subtitle">Pan (Black &amp; Brown) vs. Lyra (Grey, Brown &amp; Black)</p>
+                </div>
+            </div>
+
+            <div class="top-actions">
+                <button id="pauseBtn" class="arcade-btn" title="Pause or Resume Game (P / Space)">
+                    <span id="pauseBtnText">⏸ Pause</span>
+                </button>
+                <button id="muteBtn" class="arcade-btn" title="Toggle Sound Effects">
+                    <span id="muteBtnText">🔊 ON</span>
+                </button>
+                <button id="restartBtn" class="arcade-btn" title="Restart Game">
+                    🔄
+                </button>
+                <button id="downloadOfflineBtn" class="arcade-btn primary" title="Download this single file to play offline anytime">
+                    💾 Save
+                </button>
+            </div>
+        </header>
+
+        <!-- Centered Single-Column Game Stage -->
+        <main class="stage-column">
+            <!-- Score, Mode & Lives HUD -->
+            <div class="hud-bar">
+                <div class="hud-cell">
+                    <span class="hud-label">Score</span>
+                    <span id="scoreValue" class="hud-value">0</span>
+                </div>
+                <div class="hud-cell">
+                    <span class="hud-label">Best</span>
+                    <span id="highScoreValue" class="hud-value">0</span>
+                </div>
+                <div class="hud-cell">
+                    <span class="hud-label">Level</span>
+                    <span id="levelValue" class="hud-value">1</span>
+                </div>
+                <div class="hud-cell">
+                    <span class="hud-label">Lyra Mode</span>
+                    <span id="modeBadge" class="mode-badge mode-scatter">SCATTER</span>
+                </div>
+                <div class="hud-cell">
+                    <span class="hud-label">Pan Lives</span>
+                    <canvas id="livesCanvas" width="84" height="22" style="margin-top:1px;"></canvas>
+                </div>
+            </div>
+
+            <!-- Interactive Maze Canvas -->
+            <div class="canvas-frame" id="canvasContainer">
+                <canvas id="gameCanvas" width="588" height="588"></canvas>
+
+                <!-- Bone Treat Power Meter -->
+                <div id="powerMeterWrap" class="power-meter-wrap">
+                    <span style="font-size:0.72rem; font-weight:800; color:#fde047;">🦴 BONE POWER!</span>
+                    <div class="power-bar-bg">
+                        <div id="powerBarFill" class="power-bar-fill"></div>
+                    </div>
+                </div>
+
+                <!-- Start / Game Over / Pause Modal Overlay -->
+                <div id="canvasOverlay" class="canvas-overlay">
+                    <div class="overlay-card">
+                        <canvas id="overlayHeroCanvas" width="180" height="76" style="margin: 0 auto 6px; display:block;"></canvas>
+                        <h2 id="overlayTitle" style="margin:0 0 6px; font-size:1.35rem; font-weight:900; color:#fde68a;">
+                            READY FOR WALKIES?
+                        </h2>
+                        <p id="overlayMessage" style="margin:0 0 14px; font-size:0.82rem; color:#cbd5e1; line-height:1.4;">
+                            Guide <strong>Pan</strong> to crunch all the <strong>Dog Kibble</strong> &amp; <strong>Banana Slices</strong>! Outsmart <strong>Lyra</strong>—or chomp a <strong>Dog Bone Treat</strong> to boop her nose!
+                        </p>
+                        <button id="overlayActionBtn" class="arcade-btn primary" style="font-size:0.95rem; padding:10px 22px;">
+                            🐾 Start Kibble Caper!
+                        </button>
+                        <p style="margin:10px 0 0; font-size:0.7rem; color:#94a3b8;">
+                            Tap maze, swipe, use D-Pad below, or press Arrow Keys / WASD
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Touch Screen D-Pad & Controls Bar -->
+            <div class="controls-panel">
+                <div class="controls-hint">
+                    <span>📱 <strong>Touch:</strong> Tap maze, swipe, or D-Pad</span>
+                    <span>⌨️ <strong>Keys:</strong> Arrows / WASD / Space</span>
+                </div>
+                <div class="dpad-grid">
+                    <div></div>
+                    <button class="dpad-btn" data-dir="UP" aria-label="Steer Up">▲</button>
+                    <div></div>
+                    <button class="dpad-btn" data-dir="LEFT" aria-label="Steer Left">◀</button>
+                    <button class="dpad-btn" data-dir="DOWN" aria-label="Steer Down">▼</button>
+                    <button class="dpad-btn" data-dir="RIGHT" aria-label="Steer Right">▶</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        /* ==========================================================================
+           PAN'S KIBBLE CAPER - COMPLETE OFFLINE HTML5 ENGINE
+           ========================================================================== */
+
+        // --- 1. OFFLINE WEB AUDIO SYNTHESIZER ---
+        class SoundEffects {
+            constructor() {
+                this.ctx = null;
+                this.muted = false;
+                this.crunchToggle = false;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    if (AudioCtx) {
+                        this.ctx = new AudioCtx();
+                    }
+                }
+                if (this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+
+            playCrunch() {
+                if (this.muted) return;
+                this.init();
+                if (!this.ctx) return;
+
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                this.crunchToggle = !this.crunchToggle;
+                const baseFreq = this.crunchToggle ? 310 : 370;
+
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(baseFreq, now);
+                osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.45, now + 0.055);
+
+                gain.gain.setValueAtTime(0.11, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.065);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.07);
+            }
+
+            playBoneTreat() {
+                if (this.muted) return;
+                this.init();
+                if (!this.ctx) return;
+
+                const notes = [392, 523.25, 659.25, 783.99];
+                notes.forEach((freq, idx) => {
+                    const now = this.ctx.currentTime + idx * 0.055;
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now);
+                    gain.gain.setValueAtTime(0.16, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.17);
+                });
+            }
+
+            playBananaSlice() {
+                if (this.muted) return;
+                this.init();
+                if (!this.ctx) return;
+
+                const notes = [587.33, 783.99, 987.77, 1174.66];
+                notes.forEach((freq, idx) => {
+                    const now = this.ctx.currentTime + idx * 0.06;
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now);
+                    gain.gain.setValueAtTime(0.18, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.19);
+                });
+            }
+
+            playBoopLyra() {
+                if (this.muted) return;
+                this.init();
+                if (!this.ctx) return;
+
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(280, now);
+                osc.frequency.exponentialRampToValueAtTime(880, now + 0.18);
+                gain.gain.setValueAtTime(0.22, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.23);
+            }
+
+            playLoseLife() {
+                if (this.muted) return;
+                this.init();
+                if (!this.ctx) return;
+
+                const freqs = [440, 392, 349.23, 293.66, 220];
+                freqs.forEach((f, i) => {
+                    const now = this.ctx.currentTime + i * 0.09;
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(f, now);
+                    gain.gain.setValueAtTime(0.12, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.11);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.12);
+                });
+            }
+
+            playLevelClear() {
+                if (this.muted) return;
+                this.init();
+                if (!this.ctx) return;
+
+                const melody = [523.25, 659.25, 783.99, 1046.5];
+                melody.forEach((f, i) => {
+                    const now = this.ctx.currentTime + i * 0.1;
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(f, now);
+                    gain.gain.setValueAtTime(0.18, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.24);
+                });
+            }
+        }
+
+        const sfx = new SoundEffects();
+
+        // --- 2. CUSTOM VECTOR POODLE & TREAT ARTWORK RENDERERS ---
+        const ArtRenderer = {
+            /**
+             * Draws Pan: Cute Black & Brown Phantom Miniature Poodle
+             */
+            drawPan(ctx, x, y, radius, dirX, dirY, mouthPhase, timestamp) {
+                ctx.save();
+                ctx.translate(x, y);
+
+                const facingLeft = dirX < 0;
+                const tiltAngle = dirY < 0 ? -0.22 : (dirY > 0 ? 0.22 : 0);
+                if (facingLeft) {
+                    ctx.scale(-1, 1);
+                }
+                ctx.rotate(tiltAngle);
+
+                const r = radius;
+                const mouthOpen = 0.15 + Math.abs(Math.sin(mouthPhase)) * 0.45;
+
+                // Subtle ground shadow
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+                ctx.beginPath();
+                ctx.ellipse(0, r * 0.85, r * 0.78, r * 0.26, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Warm tan chest & front paws puff
+                ctx.fillStyle = '#b45309';
+                ctx.beginPath();
+                ctx.ellipse(r * 0.25, r * 0.58, r * 0.38, r * 0.26, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#d97706';
+                ctx.beginPath();
+                ctx.arc(r * 0.42, r * 0.76, r * 0.2, 0, Math.PI * 2);
+                ctx.arc(-r * 0.28, r * 0.76, r * 0.2, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Main Black Poodle Head Base
+                ctx.fillStyle = '#18181b';
+                ctx.beginPath();
+                ctx.arc(-r * 0.05, 0, r * 0.74, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Upper & Lower Snout
+                ctx.save();
+                ctx.rotate(-mouthOpen * 0.45);
+                ctx.fillStyle = '#18181b';
+                ctx.beginPath();
+                ctx.ellipse(r * 0.42, -r * 0.04, r * 0.48, r * 0.32, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#c26a27';
+                ctx.beginPath();
+                ctx.ellipse(r * 0.44, r * 0.05, r * 0.4, r * 0.23, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#09090b';
+                ctx.beginPath();
+                ctx.ellipse(r * 0.84, -r * 0.1, r * 0.17, r * 0.13, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.arc(r * 0.87, -r * 0.14, r * 0.05, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+
+                ctx.save();
+                ctx.rotate(mouthOpen * 0.65);
+                ctx.fillStyle = '#b45309';
+                ctx.beginPath();
+                ctx.ellipse(r * 0.35, r * 0.22, r * 0.38, r * 0.18, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                if (mouthOpen > 0.25) {
+                    ctx.fillStyle = '#fb7185';
+                    ctx.beginPath();
+                    ctx.ellipse(r * 0.52, r * 0.15, r * 0.18, r * 0.09, 0.2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.restore();
+
+                // Fluffy Curly Black Poodle Topknot
+                const puffs = [
+                    { x: -r * 0.32, y: -r * 0.64, rad: r * 0.32 },
+                    { x: -r * 0.04, y: -r * 0.74, rad: r * 0.36 },
+                    { x: r * 0.24,  y: -r * 0.62, rad: r * 0.30 },
+                    { x: -r * 0.46, y: -r * 0.42, rad: r * 0.28 }
+                ];
+                ctx.fillStyle = '#27272a';
+                puffs.forEach(p => {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.rad, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+                ctx.fillStyle = '#18181b';
+                puffs.forEach(p => {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y + r * 0.03, p.rad * 0.85, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+
+                ctx.fillStyle = '#d97706';
+                ctx.beginPath();
+                ctx.ellipse(r * 0.22, -r * 0.34, r * 0.16, r * 0.09, -0.25, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#111827';
+                ctx.beginPath();
+                ctx.arc(r * 0.24, -r * 0.18, r * 0.15, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.arc(r * 0.28, -r * 0.22, r * 0.06, 0, Math.PI * 2);
+                ctx.fill();
+
+                const earBob = Math.sin(timestamp * 0.012) * (r * 0.06);
+                ctx.fillStyle = '#09090b';
+                ctx.beginPath();
+                ctx.ellipse(-r * 0.38, r * 0.15 + earBob, r * 0.32, r * 0.56, 0.22, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = '#78350f';
+                ctx.lineWidth = Math.max(1.5, r * 0.09);
+                ctx.beginPath();
+                ctx.arc(-r * 0.36, r * 0.22 + earBob, r * 0.2, 0.3, Math.PI - 0.3);
+                ctx.stroke();
+
+                ctx.restore();
+            },
+
+            /**
+             * Draws Lyra: Silver-Grey, Black & Deep Rust-Brown Phantom Miniature Poodle (Based on Photo)
+             * Features a curly silver-grey and black back coat, deep rust/brown muzzle, rust eyebrows, 
+             * rust front paw, long curly dark ears, and NO topknot.
+             */
+            drawLyra(ctx, x, y, radius, dirX, dirY, state, collarColor, scaredTimer, timestamp) {
+                ctx.save();
+                ctx.translate(x, y);
+
+                const r = radius;
+                const isScared = state === 'SCARED';
+                const isReturning = state === 'EATEN';
+                const isFlashing = isScared && scaredTimer < 2.2 && Math.floor(timestamp / 140) % 2 === 0;
+
+                const lookX = (dirX || 0) * (r * 0.08);
+                const lookY = (dirY || 0) * (r * 0.08);
+
+                if (isReturning) {
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.22)';
+                    ctx.beginPath();
+                    ctx.ellipse(0, r * 0.75, r * 0.55, r * 0.18, 0, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.fillStyle = collarColor || '#f43f5e';
+                    ctx.beginPath();
+                    ctx.roundRect(-r * 0.45, r * 0.22, r * 0.9, r * 0.18, 4);
+                    ctx.fill();
+                    ctx.fillStyle = '#fbbf24';
+                    ctx.beginPath();
+                    ctx.arc(0, r * 0.36, r * 0.1, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    [-1, 1].forEach(side => {
+                        ctx.fillStyle = '#ffffff';
+                        ctx.beginPath();
+                        ctx.arc(side * r * 0.24, -r * 0.08, r * 0.18, 0, Math.PI * 2);
+                        ctx.fill();
+
+                        ctx.fillStyle = '#38bdf8';
+                        ctx.beginPath();
+                        ctx.arc(side * r * 0.24 + lookX * 1.2, -r * 0.08 + lookY * 1.2, r * 0.09, 0, Math.PI * 2);
+                        ctx.fill();
+                    });
+
+                    ctx.restore();
+                    return;
+                }
+
+                const bounce = Math.sin(timestamp * 0.011 + x * 0.1) * (r * 0.06);
+                ctx.translate(0, bounce);
+
+                // Ground shadow
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+                ctx.beginPath();
+                ctx.ellipse(0, r * 0.85, r * 0.78, r * 0.25, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                if (isScared) {
+                    ctx.strokeStyle = isFlashing ? '#fef08a' : '#38bdf8';
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([4, 3]);
+                    ctx.beginPath();
+                    ctx.arc(0, 0, r * 1.04, 0, Math.PI * 2);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                }
+
+                // Photo-matched color palette: Silver-Grey back, Black saddle, Deep Rust/Brown muzzle and paws
+                const silverGrey = isScared ? (isFlashing ? '#e2e8f0' : '#60a5fa') : '#8892a0';
+                const charcoalBlack = isScared ? (isFlashing ? '#475569' : '#1e3a8a') : '#1e2430';
+                const rustBrown = isScared ? (isFlashing ? '#f59e0b' : '#3b82f6') : '#b44616'; // Deep warm rust
+                const lightRust = isScared ? (isFlashing ? '#fde68a' : '#93c5fd') : '#d96526'; // Lighter warm rust
+                const whiteHighlight = isScared ? '#ffffff' : '#cbd5e1';
+
+                // Body / Chest base (Silver-grey & black curly coat with prominent rust chest patch)
+                ctx.fillStyle = silverGrey;
+                ctx.beginPath();
+                ctx.ellipse(0, r * 0.42, r * 0.68, r * 0.46, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Dark saddle mark over back
+                ctx.fillStyle = charcoalBlack;
+                ctx.beginPath();
+                ctx.ellipse(0, r * 0.34, r * 0.52, r * 0.32, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Warm Rust Chest Patch
+                ctx.fillStyle = rustBrown;
+                ctx.beginPath();
+                ctx.ellipse(0, r * 0.5, r * 0.42, r * 0.28, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Prominent Rust Paws extending forward (matching photo pose)
+                ctx.fillStyle = rustBrown;
+                ctx.beginPath();
+                ctx.ellipse(-r * 0.36, r * 0.76, r * 0.22, r * 0.16, 0.2, 0, Math.PI * 2);
+                ctx.ellipse(r * 0.36, r * 0.76, r * 0.22, r * 0.16, -0.2, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Signature Colored Collar with Golden Tag
+                ctx.fillStyle = collarColor || '#f43f5e';
+                ctx.beginPath();
+                ctx.roundRect(-r * 0.52, r * 0.24, r * 1.04, r * 0.19, 4);
+                ctx.fill();
+                ctx.fillStyle = '#fbbf24';
+                ctx.beginPath();
+                ctx.arc(0, r * 0.39, r * 0.11, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Long Floppy Dark Curly Ears (matching photo)
+                const earSwing = Math.sin(timestamp * 0.014) * (r * 0.05);
+                [-1, 1].forEach(side => {
+                    ctx.save();
+                    ctx.fillStyle = charcoalBlack;
+                    ctx.beginPath();
+                    ctx.ellipse(side * r * 0.68, r * 0.08 + earSwing, r * 0.28, r * 0.56, side * -0.24, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.fillStyle = '#111827';
+                    ctx.beginPath();
+                    ctx.ellipse(side * r * 0.66, r * 0.12 + earSwing, r * 0.18, r * 0.38, side * -0.24, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                });
+
+                // Head Dome (NO topknot! Silver-grey and black curly skull)
+                ctx.fillStyle = charcoalBlack;
+                ctx.beginPath();
+                ctx.arc(0, -r * 0.06, r * 0.62, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = silverGrey;
+                ctx.beginPath();
+                ctx.arc(0, -r * 0.14, r * 0.52, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Distinctive Warm Rust Muzzle & Cheeks (matching photo)
+                ctx.fillStyle = rustBrown;
+                ctx.beginPath();
+                ctx.ellipse(0, r * 0.1, r * 0.48, r * 0.3, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = lightRust;
+                ctx.beginPath();
+                ctx.ellipse(0, r * 0.08, r * 0.35, r * 0.22, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Warm Rust Phantom Eyebrow Spots (matching photo)
+                ctx.fillStyle = lightRust;
+                ctx.beginPath();
+                ctx.ellipse(-r * 0.24, -r * 0.26, r * 0.14, r * 0.08, 0.22, 0, Math.PI * 2);
+                ctx.ellipse(r * 0.24, -r * 0.26, r * 0.14, r * 0.08, -0.22, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Eyes
+                if (isScared) {
+                    [-1, 1].forEach(side => {
+                        ctx.fillStyle = '#fef08a';
+                        ctx.beginPath();
+                        ctx.arc(side * r * 0.23, -r * 0.12, r * 0.15, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.fillStyle = '#0f172a';
+                        ctx.beginPath();
+                        ctx.arc(side * r * 0.23, -r * 0.12, r * 0.07, 0, Math.PI * 2);
+                        ctx.fill();
+                    });
+                    ctx.strokeStyle = '#fef08a';
+                    ctx.lineWidth = 1.8;
+                    ctx.beginPath();
+                    ctx.moveTo(-r * 0.24, r * 0.22);
+                    ctx.lineTo(-r * 0.12, r * 0.16);
+                    ctx.lineTo(0, r * 0.22);
+                    ctx.lineTo(r * 0.12, r * 0.16);
+                    ctx.lineTo(r * 0.24, r * 0.22);
+                    ctx.stroke();
+                } else {
+                    [-1, 1].forEach(side => {
+                        ctx.fillStyle = '#ffffff';
+                        ctx.beginPath();
+                        ctx.arc(side * r * 0.23, -r * 0.12, r * 0.15, 0, Math.PI * 2);
+                        ctx.fill();
+
+                        ctx.fillStyle = '#09090b';
+                        ctx.beginPath();
+                        ctx.arc(side * r * 0.23 + lookX, -r * 0.12 + lookY, r * 0.09, 0, Math.PI * 2);
+                        ctx.fill();
+
+                        ctx.fillStyle = '#ffffff';
+                        ctx.beginPath();
+                        ctx.arc(side * r * 0.25 + lookX, -r * 0.15 + lookY, r * 0.035, 0, Math.PI * 2);
+                        ctx.fill();
+                    });
+                }
+
+                // Cute Button Nose
+                ctx.fillStyle = '#09090b';
+                ctx.beginPath();
+                ctx.ellipse(0, r * 0.04, r * 0.13, r * 0.09, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.restore();
+            },
+
+            drawKibble(ctx, x, y, radius) {
+                ctx.save();
+                ctx.translate(x, y);
+
+                // Warm crunchy brown kibble nugget with highlight & texture dimple
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+                ctx.beginPath();
+                ctx.arc(0.8, 1.2, radius * 1.05, 0, Math.PI * 2);
+                ctx.fill();
+
+                const grad = ctx.createRadialGradient(-radius * 0.3, -radius * 0.3, radius * 0.1, 0, 0, radius);
+                grad.addColorStop(0, '#d97706');
+                grad.addColorStop(0.65, '#92400e');
+                grad.addColorStop(1, '#5c2808');
+
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(0, 0, radius, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Crunchy specular highlight
+                ctx.fillStyle = 'rgba(254, 243, 199, 0.45)';
+                ctx.beginPath();
+                ctx.arc(-radius * 0.3, -radius * 0.3, radius * 0.28, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.restore();
+            },
+
+            /**
+             * Draws Stereotypical Cartoon Dog Bone Treat (Power Pellet equivalent)
+             */
+            drawBoneTreat(ctx, x, y, scale, timestamp) {
+                ctx.save();
+                ctx.translate(x, y);
+
+                const pulse = 1 + Math.sin(timestamp * 0.007) * 0.12;
+                ctx.scale(scale * pulse, scale * pulse);
+                ctx.rotate(-0.35);
+
+                // Golden glow behind bone
+                ctx.shadowColor = '#fbbf24';
+                ctx.shadowBlur = 10;
+
+                ctx.fillStyle = '#fef3c7';
+                ctx.strokeStyle = '#d97706';
+                ctx.lineWidth = 1.6;
+
+                // Classic double-knobbed cartoon dog bone silhouette
+                const shaftW = 11;
+                const shaftH = 5.2;
+                const knobR = 4.6;
+
+                ctx.beginPath();
+                // Four corner knobs
+                ctx.arc(-shaftW * 0.5, -shaftH * 0.55, knobR, 0, Math.PI * 2);
+                ctx.arc(-shaftW * 0.5,  shaftH * 0.55, knobR, 0, Math.PI * 2);
+                ctx.arc( shaftW * 0.5, -shaftH * 0.55, knobR, 0, Math.PI * 2);
+                ctx.arc( shaftW * 0.5,  shaftH * 0.55, knobR, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                // Center bone shaft
+                ctx.shadowBlur = 0;
+                ctx.fillStyle = '#fef3c7';
+                ctx.fillRect(-shaftW * 0.55, -shaftH * 0.5, shaftW * 1.1, shaftH);
+
+                // Top & bottom shaft outlines
+                ctx.beginPath();
+                ctx.moveTo(-shaftW * 0.4, -shaftH * 0.5);
+                ctx.lineTo( shaftW * 0.4, -shaftH * 0.5);
+                ctx.moveTo(-shaftW * 0.4,  shaftH * 0.5);
+                ctx.lineTo( shaftW * 0.4,  shaftH * 0.5);
+                ctx.stroke();
+
+                // Biscuit bake marks (3 tiny dots in center)
+                ctx.fillStyle = '#d97706';
+                [-3, 0, 3].forEach(dx => {
+                    ctx.beginPath();
+                    ctx.arc(dx, 0, 0.9, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+
+                ctx.restore();
+            },
+
+            /**
+             * Draws Slice of Banana (Cherry / Bonus Fruit equivalent)
+             * Round cream-yellow banana slice with subtle golden rim, inner ring & 3 tiny brown seed-specks.
+             */
+            drawBananaSlice(ctx, x, y, radius, timestamp) {
+                ctx.save();
+                ctx.translate(x, y);
+
+                const bob = Math.sin(timestamp * 0.008) * 1.8;
+                ctx.translate(0, bob);
+
+                // Drop shadow / 3D slice thickness
+                ctx.fillStyle = '#ca8a04';
+                ctx.beginPath();
+                ctx.ellipse(0, 2.5, radius, radius * 0.92, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Outer golden-yellow banana slice rim
+                ctx.fillStyle = '#fde047';
+                ctx.beginPath();
+                ctx.arc(0, 0, radius, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Creamy pale yellow banana flesh
+                ctx.fillStyle = '#fef9c3';
+                ctx.beginPath();
+                ctx.arc(0, 0, radius * 0.84, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Subtle inner banana ring
+                ctx.strokeStyle = '#facc15';
+                ctx.lineWidth = 1.3;
+                ctx.beginPath();
+                ctx.arc(0, 0, radius * 0.52, 0, Math.PI * 2);
+                ctx.stroke();
+
+                // 3 characteristic tiny brown banana seed-specks in the center
+                ctx.fillStyle = '#78350f';
+                for (let i = 0; i < 3; i++) {
+                    const angle = (i * Math.PI * 2) / 3 - Math.PI / 2;
+                    const sx = Math.cos(angle) * (radius * 0.22);
+                    const sy = Math.sin(angle) * (radius * 0.22);
+                    ctx.beginPath();
+                    ctx.ellipse(sx, sy, radius * 0.11, radius * 0.06, angle, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                ctx.restore();
+            }
+        };
+
+        // --- 3. CLASSIC PAC-MAN STYLE SYMMETRIC MAZE DEFINITION (21x21 - NO DEAD ENDS) ---
+        // Legend:
+        // 1 = Wall
+        // 0 = Kibble (10 pts)
+        // 2 = Dog Bone Treat (50 pts + Power Mode)
+        // 3 = Empty corridor (Tunnels & around Doghouse)
+        // 4 = Doghouse Door (Lyra can pass through, Pan cannot)
+        // 5 = Doghouse Interior
+        const MAZE_TEMPLATE = [
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+            [1,2,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,2,1],
+            [1,0,1,1,1,0,1,1,1,0,1,0,1,1,1,0,1,1,1,0,1],
+            [1,0,1,1,1,0,1,1,1,0,1,0,1,1,1,0,1,1,1,0,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,1,1,1,0,1,0,1,1,3,1,1,0,1,0,1,1,1,0,1],
+            [1,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,1],
+            [1,1,1,1,1,0,1,1,1,3,1,3,1,1,1,0,1,1,1,1,1],
+            [3,3,3,3,1,0,1,3,3,3,3,3,3,3,1,0,1,3,3,3,3],
+            [1,1,1,1,1,0,1,3,1,1,4,1,1,3,1,0,1,1,1,1,1],
+            [3,3,3,3,3,0,3,3,1,5,5,5,1,3,3,0,3,3,3,3,3],
+            [1,1,1,1,1,0,1,3,1,1,1,1,1,3,1,0,1,1,1,1,1],
+            [3,3,3,3,1,0,1,3,3,3,3,3,3,3,1,0,1,3,3,3,3],
+            [1,1,1,1,1,0,1,3,1,1,1,1,1,3,1,0,1,1,1,1,1],
+            [1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1],
+            [1,0,1,1,1,0,1,1,1,0,1,0,1,1,1,0,1,1,1,0,1],
+            [1,2,0,0,1,0,0,0,0,0,3,0,0,0,0,0,1,0,0,2,1],
+            [1,0,1,0,1,0,1,0,1,1,3,1,1,0,1,0,1,0,1,0,1],
+            [1,0,1,0,1,0,1,0,1,1,0,1,1,0,1,0,1,0,1,0,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+        ];
+
+        const GRID_SIZE = 21;
+        const TILE_SIZE = 28; // 21 * 28 = 588px internal canvas resolution
+
+        const DIRS = {
+            UP:    { x: 0,  y: -1, name: 'UP' },
+            DOWN:  { x: 0,  y: 1,  name: 'DOWN' },
+            LEFT:  { x: -1, y: 0,  name: 'LEFT' },
+            RIGHT: { x: 1,  y: 0,  name: 'RIGHT' },
+            NONE:  { x: 0,  y: 0,  name: 'NONE' }
+        };
+
+        // Classic Pac-Man Scatter / Chase wave schedule (in seconds)
+        const WAVE_SCHEDULE = [
+            { mode: 'SCATTER', duration: 7 },
+            { mode: 'CHASE',   duration: 20 },
+            { mode: 'SCATTER', duration: 7 },
+            { mode: 'CHASE',   duration: 20 },
+            { mode: 'SCATTER', duration: 5 },
+            { mode: 'CHASE',   duration: 20 },
+            { mode: 'SCATTER', duration: 5 },
+            { mode: 'CHASE',   duration: Infinity }
+        ];
+
+        // --- 4. MAIN GAME STATE & CONTROLLER ---
+        class PoodlePacmanGame {
+            constructor() {
+                this.canvas = document.getElementById('gameCanvas');
+                this.ctx = this.canvas.getContext('2d');
+
+                this.score = 0;
+                this.highScore = Number(localStorage.getItem('pan_kibble_high_score') || 0);
+                this.level = 1;
+                this.lives = 3;
+
+                this.state = 'START'; // START, PLAYING, PAUSED, LIFE_LOST, LEVEL_CLEAR, GAME_OVER
+                this.stateTimer = 0;
+
+                // Classic Scatter / Chase wave state
+                this.waveIndex = 0;
+                this.waveTimer = WAVE_SCHEDULE[0].duration;
+                this.globalGhostMode = 'SCATTER';
+
+                this.scaredTimer = 0;
+                this.scaredDuration = 8.0;
+                this.lyraCombo = 0;
+
+                this.grid = [];
+                this.totalKibble = 0;
+                this.kibbleEaten = 0;
+
+                // Bonus Banana Slice state
+                this.banana = {
+                    active: false,
+                    x: 10,
+                    y: 12,
+                    timer: 0,
+                    spawnedCount: 0
+                };
+
+                // Floating score popups & touch tap feedback ripples
+                this.popups = [];
+                this.tapRipples = [];
+
+                this.initEntities();
+                this.loadMaze();
+                this.bindEvents();
+                this.renderStaticLegends();
+                this.updateHUD();
+
+                this.lastTime = performance.now();
+                requestAnimationFrame((t) => this.loop(t));
+            }
+
+            initEntities() {
+                // Pan starts at bottom-center (10, 16)
+                this.pan = {
+                    x: 10,
+                    y: 16,
+                    dir: DIRS.LEFT,
+                    nextDir: DIRS.LEFT,
+                    speed: 5.7, // tiles per second
+                    mouthPhase: 0
+                };
+
+                // 4 Classic Pac-Man Ghost Personalities for Lyra
+                this.lyras = [
+                    {
+                        name: 'Shadow Lyra (Blinky)',
+                        collar: '#f43f5e', // Rose Red
+                        x: 10,
+                        y: 8,
+                        homeX: 10,
+                        homeY: 10,
+                        scatterX: 19,
+                        scatterY: 0,
+                        dir: DIRS.LEFT,
+                        state: 'NORMAL',
+                        releaseDelay: 0,
+                        behavior: 'CHASER',
+                        lastDecisionTile: null
+                    },
+                    {
+                        name: 'Speedy Lyra (Pinky)',
+                        collar: '#ec4899', // Hot Pink
+                        x: 10,
+                        y: 10,
+                        homeX: 10,
+                        homeY: 10,
+                        scatterX: 1,
+                        scatterY: 0,
+                        dir: DIRS.UP,
+                        state: 'NORMAL',
+                        releaseDelay: 1.5,
+                        behavior: 'AMBUSHER',
+                        lastDecisionTile: null
+                    },
+                    {
+                        name: 'Bashful Lyra (Inky)',
+                        collar: '#06b6d4', // Cyan Teal
+                        x: 9,
+                        y: 10,
+                        homeX: 9,
+                        homeY: 10,
+                        scatterX: 19,
+                        scatterY: 20,
+                        dir: DIRS.UP,
+                        state: 'NORMAL',
+                        releaseDelay: 3.5,
+                        behavior: 'FLANKER',
+                        lastDecisionTile: null
+                    },
+                    {
+                        name: 'Pokey Lyra (Clyde)',
+                        collar: '#f97316', // Bright Orange
+                        x: 11,
+                        y: 10,
+                        homeX: 11,
+                        homeY: 10,
+                        scatterX: 1,
+                        scatterY: 20,
+                        dir: DIRS.UP,
+                        state: 'NORMAL',
+                        releaseDelay: 5.5,
+                        behavior: 'SNEAKY',
+                        lastDecisionTile: null
+                    }
+                ];
+            }
+
+            loadMaze() {
+                this.grid = MAZE_TEMPLATE.map(row => [...row]);
+                this.totalKibble = 0;
+                this.kibbleEaten = 0;
+
+                for (let r = 0; r < GRID_SIZE; r++) {
+                    for (let c = 0; c < GRID_SIZE; c++) {
+                        if (this.grid[r][c] === 0 || this.grid[r][c] === 2) {
+                            this.totalKibble++;
+                        }
+                    }
+                }
+
+                this.banana.active = false;
+                this.banana.spawnedCount = 0;
+            }
+
+            resetPositions() {
+                this.pan.x = 10;
+                this.pan.y = 16;
+                this.pan.dir = DIRS.LEFT;
+                this.pan.nextDir = DIRS.LEFT;
+
+                const starts = [
+                    { x: 10, y: 8,  dir: DIRS.LEFT, delay: 0 },
+                    { x: 10, y: 10, dir: DIRS.UP,   delay: 1.4 },
+                    { x: 9,  y: 10, dir: DIRS.UP,   delay: 3.0 },
+                    { x: 11, y: 10, dir: DIRS.UP,   delay: 4.6 }
+                ];
+
+                this.lyras.forEach((lyra, idx) => {
+                    lyra.x = starts[idx].x;
+                    lyra.y = starts[idx].y;
+                    lyra.dir = starts[idx].dir;
+                    lyra.state = 'NORMAL';
+                    lyra.releaseDelay = starts[idx].delay;
+                    lyra.lastDecisionTile = null;
+                });
+
+                this.waveIndex = 0;
+                this.waveTimer = WAVE_SCHEDULE[0].duration;
+                this.globalGhostMode = WAVE_SCHEDULE[0].mode;
+
+                this.scaredTimer = 0;
+                document.getElementById('powerMeterWrap').classList.remove('active');
+                this.updateHUD();
+            }
+
+            startNewGame() {
+                sfx.init();
+                this.score = 0;
+                this.level = 1;
+                this.lives = 3;
+                this.scaredDuration = 8.0;
+                this.loadMaze();
+                this.resetPositions();
+                this.state = 'PLAYING';
+                this.hideOverlay();
+                this.updateHUD();
+            }
+
+            nextLevel() {
+                this.level++;
+                this.scaredDuration = Math.max(3.5, 8.5 - (this.level - 1) * 0.7);
+                this.loadMaze();
+                this.resetPositions();
+                this.state = 'PLAYING';
+                this.updateHUD();
+            }
+
+            queueDirection(dirObj) {
+                if (!dirObj) return;
+                this.pan.nextDir = dirObj;
+
+                // If Pan can immediately reverse along his current axis, allow instant reversal!
+                if (this.pan.dir.x === -dirObj.x && this.pan.dir.y === -dirObj.y) {
+                    this.pan.dir = dirObj;
+                }
+            }
+
+            bindEvents() {
+                // 1. Keyboard Controls (Arrow Keys + WASD + Space/P)
+                window.addEventListener('keydown', (e) => {
+                    const key = e.key.toLowerCase();
+                    if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' '].includes(key)) {
+                        e.preventDefault();
+                    }
+
+                    if (key === 'arrowup' || key === 'w') this.queueDirection(DIRS.UP);
+                    else if (key === 'arrowdown' || key === 's') this.queueDirection(DIRS.DOWN);
+                    else if (key === 'arrowleft' || key === 'a') this.queueDirection(DIRS.LEFT);
+                    else if (key === 'arrowright' || key === 'd') this.queueDirection(DIRS.RIGHT);
+                    else if (key === 'p' || key === ' ') {
+                        if (this.state === 'PLAYING' || this.state === 'PAUSED') {
+                            this.togglePause();
+                        } else if (this.state === 'START' || this.state === 'GAME_OVER') {
+                            this.startNewGame();
+                        }
+                    }
+                });
+
+                // 2. Direct Canvas Tap Steering + Full-Screen Swipe Gesture Support
+                let pointerDownPos = null;
+
+                const steerTowardCanvasPoint = (clientX, clientY) => {
+                    const rect = this.canvas.getBoundingClientRect();
+                    const scaleX = this.canvas.width / rect.width;
+                    const scaleY = this.canvas.height / rect.height;
+
+                    const canvasX = (clientX - rect.left) * scaleX;
+                    const canvasY = (clientY - rect.top) * scaleY;
+
+                    const panPixelX = (this.pan.x + 0.5) * TILE_SIZE;
+                    const panPixelY = (this.pan.y + 0.5) * TILE_SIZE;
+
+                    const dx = canvasX - panPixelX;
+                    const dy = canvasY - panPixelY;
+
+                    let chosenDir = DIRS.NONE;
+                    if (Math.abs(dx) > Math.abs(dy)) {
+                        chosenDir = dx > 0 ? DIRS.RIGHT : DIRS.LEFT;
+                    } else {
+                        chosenDir = dy > 0 ? DIRS.DOWN : DIRS.UP;
+                    }
+
+                    this.queueDirection(chosenDir);
+
+                    // Add visual tap ripple on the maze
+                    this.tapRipples.push({
+                        x: canvasX,
+                        y: canvasY,
+                        radius: 6,
+                        alpha: 0.9,
+                        dirName: chosenDir.name
+                    });
+                };
+
+                this.canvas.addEventListener('pointerdown', (e) => {
+                    e.preventDefault();
+                    sfx.init();
+                    if (this.state === 'START' || this.state === 'GAME_OVER') {
+                        this.startNewGame();
+                        return;
+                    }
+                    if (this.state === 'PAUSED') {
+                        this.togglePause();
+                        return;
+                    }
+                    pointerDownPos = { x: e.clientX, y: e.clientY };
+                    steerTowardCanvasPoint(e.clientX, e.clientY);
+                });
+
+                // Allow quick swipes anywhere on the screen
+                window.addEventListener('pointerdown', (e) => {
+                    if (e.target === this.canvas || e.target.closest('button')) return;
+                    pointerDownPos = { x: e.clientX, y: e.clientY };
+                });
+
+                window.addEventListener('pointermove', (e) => {
+                    if (!pointerDownPos || this.state !== 'PLAYING') return;
+                    const sx = e.clientX - pointerDownPos.x;
+                    const sy = e.clientY - pointerDownPos.y;
+                    if (Math.hypot(sx, sy) > 20) {
+                        if (Math.abs(sx) > Math.abs(sy)) {
+                            this.queueDirection(sx > 0 ? DIRS.RIGHT : DIRS.LEFT);
+                        } else {
+                            this.queueDirection(sy > 0 ? DIRS.DOWN : DIRS.UP);
+                        }
+                        pointerDownPos = { x: e.clientX, y: e.clientY };
+                    }
+                });
+
+                window.addEventListener('pointerup', () => {
+                    pointerDownPos = null;
+                });
+
+                // 3. On-Screen Thumb D-Pad Buttons
+                document.querySelectorAll('.dpad-btn').forEach(btn => {
+                    const dirKey = btn.getAttribute('data-dir');
+                    const triggerDir = (e) => {
+                        e.preventDefault();
+                        sfx.init();
+                        if (this.state === 'START' || this.state === 'GAME_OVER') {
+                            this.startNewGame();
+                        }
+                        this.queueDirection(DIRS[dirKey]);
+                        btn.classList.add('pressed');
+                        setTimeout(() => btn.classList.remove('pressed'), 140);
+                    };
+                    btn.addEventListener('pointerdown', triggerDir);
+                });
+
+                // 4. UI Action Buttons
+                document.getElementById('overlayActionBtn').addEventListener('click', () => {
+                    if (this.state === 'PAUSED') {
+                        this.togglePause();
+                    } else {
+                        this.startNewGame();
+                    }
+                });
+
+                document.getElementById('pauseBtn').addEventListener('click', () => {
+                    if (this.state === 'PLAYING' || this.state === 'PAUSED') {
+                        this.togglePause();
+                    }
+                });
+
+                document.getElementById('muteBtn').addEventListener('click', () => {
+                    sfx.muted = !sfx.muted;
+                    document.getElementById('muteBtnText').textContent = sfx.muted ? '🔇 OFF' : '🔊 ON';
+                });
+
+                document.getElementById('restartBtn').addEventListener('click', () => {
+                    this.startNewGame();
+                });
+
+                document.getElementById('downloadOfflineBtn').addEventListener('click', () => {
+                    this.downloadSelfContainedHTML();
+                });
+            }
+
+            togglePause() {
+                if (this.state === 'PLAYING') {
+                    this.state = 'PAUSED';
+                    document.getElementById('pauseBtnText').textContent = '▶ Resume';
+                    this.showOverlay(
+                        'GAME PAUSED',
+                        'Pan and Lyra are taking a quick water bowl break!',
+                        '▶ Resume Walkies'
+                    );
+                } else if (this.state === 'PAUSED') {
+                    this.state = 'PLAYING';
+                    document.getElementById('pauseBtnText').textContent = '⏸ Pause';
+                    this.hideOverlay();
+                }
+            }
+
+            showOverlay(title, message, btnLabel) {
+                document.getElementById('overlayTitle').textContent = title;
+                document.getElementById('overlayMessage').innerHTML = message;
+                document.getElementById('overlayActionBtn').textContent = btnLabel;
+                document.getElementById('canvasOverlay').classList.remove('hidden');
+            }
+
+            hideOverlay() {
+                document.getElementById('canvasOverlay').classList.add('hidden');
+            }
+
+            downloadSelfContainedHTML() {
+                const htmlSource = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+                const blob = new Blob([htmlSource], { type: 'text/html;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'pans-kibble-caper-offline.html';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+
+            // --- 5. MOVEMENT & MAZE COLLISION HELPERS ---
+            isTileWalkableForPan(tx, ty) {
+                // Wrap around tunnel horizontally
+                const wrappedX = (tx + GRID_SIZE) % GRID_SIZE;
+                if (ty < 0 || ty >= GRID_SIZE) return false;
+                const cell = this.grid[ty][wrappedX];
+                // Pan cannot enter walls (1) or the doghouse door/interior (4, 5)
+                return cell !== 1 && cell !== 4 && cell !== 5;
+            }
+
+            isTileWalkableForLyra(tx, ty, lyraState, inDoghouse) {
+                const wrappedX = (tx + GRID_SIZE) % GRID_SIZE;
+                if (ty < 0 || ty >= GRID_SIZE) return false;
+                const cell = this.grid[ty][wrappedX];
+                if (cell === 1) return false;
+                // Lyra can pass through the doghouse door (4) when leaving the doghouse or returning after being booped
+                if (cell === 4 || cell === 5) {
+                    return inDoghouse || lyraState === 'EATEN';
+                }
+                return true;
+            }
+
+            /**
+             * Triggers an immediate 180-degree direction reversal on all active Lyras
+             * (classic Pac-Man behavior whenever Scatter <-> Chase mode switches or Frightened begins).
+             */
+            reverseAllActiveLyras() {
+                this.lyras.forEach(lyra => {
+                    const cx = Math.round(lyra.x);
+                    const cy = Math.round(lyra.y);
+                    const inDoghouse = (cy >= 9 && cy <= 11 && cx >= 9 && cx <= 11);
+                    if (!inDoghouse && lyra.state !== 'EATEN') {
+                        const revDir = { x: -lyra.dir.x, y: -lyra.dir.y, name: '' };
+                        if (this.isTileWalkableForLyra(cx + revDir.x, cy + revDir.y, lyra.state, false)) {
+                            lyra.dir = revDir;
+                            // Allow re-evaluation at the next tile center
+                            lyra.lastDecisionTileX = -1;
+                            lyra.lastDecisionTileY = -1;
+                        }
+                    }
+                });
+            }
+
+            update(dt) {
+                // Animate tap ripples and score popups regardless of state
+                this.tapRipples.forEach(r => {
+                    r.radius += dt * 55;
+                    r.alpha -= dt * 1.9;
+                });
+                this.tapRipples = this.tapRipples.filter(r => r.alpha > 0);
+
+                this.popups.forEach(p => {
+                    p.y -= dt * 26;
+                    p.life -= dt;
+                });
+                this.popups = this.popups.filter(p => p.life > 0);
+
+                if (this.state === 'LIFE_LOST') {
+                    this.stateTimer -= dt;
+                    if (this.stateTimer <= 0) {
+                        if (this.lives <= 0) {
+                            this.state = 'GAME_OVER';
+                            this.showOverlay(
+                                'NAP TIME! GAME OVER',
+                                `Pan crunched his way to <strong>${this.score.toLocaleString()} points</strong> on Park Level ${this.level}! Ready for another round?`,
+                                '🐾 Play Again!'
+                            );
+                        } else {
+                            this.resetPositions();
+                            this.state = 'PLAYING';
+                        }
+                    }
+                    return;
+                }
+
+                if (this.state === 'LEVEL_CLEAR') {
+                    this.stateTimer -= dt;
+                    if (this.stateTimer <= 0) {
+                        this.nextLevel();
+                    }
+                    return;
+                }
+
+                if (this.state !== 'PLAYING') return;
+
+                // Update Scared / Bone Treat Power Mode Timer (pauses Scatter/Chase wave timer while active)
+                if (this.scaredTimer > 0) {
+                    this.scaredTimer -= dt;
+                    const pct = Math.max(0, (this.scaredTimer / this.scaredDuration) * 100);
+                    document.getElementById('powerBarFill').style.width = `${pct}%`;
+
+                    if (this.scaredTimer <= 0) {
+                        this.scaredTimer = 0;
+                        document.getElementById('powerMeterWrap').classList.remove('active');
+                        this.lyras.forEach(l => {
+                            if (l.state === 'SCARED') l.state = 'NORMAL';
+                        });
+                        this.updateHUD();
+                    }
+                } else {
+                    // Advance Classic Pac-Man Scatter / Chase Wave Schedule
+                    this.waveTimer -= dt;
+                    if (this.waveTimer <= 0 && this.waveIndex < WAVE_SCHEDULE.length - 1) {
+                        this.waveIndex++;
+                        this.waveTimer = WAVE_SCHEDULE[this.waveIndex].duration;
+                        const nextMode = WAVE_SCHEDULE[this.waveIndex].mode;
+
+                        if (nextMode !== this.globalGhostMode) {
+                            this.globalGhostMode = nextMode;
+                            // Classic Pac-Man rule: Ghosts immediately reverse 180 degrees on Scatter/Chase transitions
+                            this.lyras.forEach(lyra => {
+                                const inDoghouse = (Math.round(lyra.y) >= 9 && Math.round(lyra.y) <= 11 && Math.round(lyra.x) >= 9 && Math.round(lyra.x) <= 11);
+                                if (lyra.state === 'NORMAL' && !inDoghouse && lyra.releaseDelay <= 0) {
+                                    lyra.dir = { x: -lyra.dir.x, y: -lyra.dir.y, name: '' };
+                                    lyra.lastDecisionTile = null;
+                                }
+                            });
+                            this.updateHUD();
+                        }
+                    }
+                }
+
+                // Update Bonus Banana Slice Timer
+                if (this.banana.active) {
+                    this.banana.timer -= dt;
+                    if (this.banana.timer <= 0) {
+                        this.banana.active = false;
+                    }
+                } else {
+                    // Spawn Banana Slice at 30% and 70% kibble eaten
+                    const progress = this.kibbleEaten / Math.max(1, this.totalKibble);
+                    if (
+                        (this.banana.spawnedCount === 0 && progress >= 0.30) ||
+                        (this.banana.spawnedCount === 1 && progress >= 0.70)
+                    ) {
+                        this.banana.active = true;
+                        this.banana.timer = 9.5;
+                        this.banana.spawnedCount++;
+                    }
+                }
+
+                this.updatePan(dt);
+                this.updateLyras(dt);
+                this.checkCollisions();
+            }
+
+            updatePan(dt) {
+                const p = this.pan;
+                const moveStep = p.speed * dt;
+
+                // Check if we can turn into queued nextDir near tile center
+                const centerX = Math.round(p.x);
+                const centerY = Math.round(p.y);
+                const distToCenter = Math.hypot(p.x - centerX, p.y - centerY);
+
+                if (p.nextDir !== p.dir && distToCenter < 0.28) {
+                    if (this.isTileWalkableForPan(centerX + p.nextDir.x, centerY + p.nextDir.y)) {
+                        p.x = centerX;
+                        p.y = centerY;
+                        p.dir = p.nextDir;
+                    }
+                }
+
+                // Advance along current direction if walkable
+                const nextTileX = centerX + p.dir.x;
+                const nextTileY = centerY + p.dir.y;
+
+                const nextX = p.x + p.dir.x * moveStep;
+                const nextY = p.y + p.dir.y * moveStep;
+
+                // Check if moving past center into a wall
+                const movingPastCenter =
+                    (p.dir.x > 0 && nextX > centerX) ||
+                    (p.dir.x < 0 && nextX < centerX) ||
+                    (p.dir.y > 0 && nextY > centerY) ||
+                    (p.dir.y < 0 && nextY < centerY);
+
+                if (movingPastCenter && !this.isTileWalkableForPan(nextTileX, nextTileY)) {
+                    p.x = centerX;
+                    p.y = centerY;
+                } else {
+                    p.x = (nextX + GRID_SIZE) % GRID_SIZE;
+                    p.y = nextY;
+                    p.mouthPhase += dt * 15;
+                }
+
+                // Check Kibble & Bone Treat consumption at Pan's current tile
+                const curTileX = Math.round(p.x) % GRID_SIZE;
+                const curTileY = Math.round(p.y);
+                const tileVal = this.grid[curTileY][curTileX];
+
+                if (tileVal === 0) {
+                    // Crunchy Kibble!
+                    this.grid[curTileY][curTileX] = 3;
+                    this.kibbleEaten++;
+                    this.addScore(10);
+                    sfx.playCrunch();
+                } else if (tileVal === 2) {
+                    // Dog Bone Treat!
+                    this.grid[curTileY][curTileX] = 3;
+                    this.kibbleEaten++;
+                    this.addScore(50);
+                    this.activateBonePower();
+                    sfx.playBoneTreat();
+                    this.addPopup(curTileX, curTileY, 'BONE POWER!', '#38bdf8');
+                }
+
+                // Check Bonus Banana Slice consumption
+                if (this.banana.active && Math.hypot(p.x - this.banana.x, p.y - this.banana.y) < 0.65) {
+                    this.banana.active = false;
+                    const bananaPts = 100 + (this.level - 1) * 100;
+                    this.addScore(bananaPts);
+                    sfx.playBananaSlice();
+                    this.addPopup(this.banana.x, this.banana.y, `🍌 +${bananaPts}`, '#fde047');
+                }
+
+                // Check Level Clear
+                if (this.kibbleEaten >= this.totalKibble) {
+                    this.state = 'LEVEL_CLEAR';
+                    this.stateTimer = 2.0;
+                    sfx.playLevelClear();
+                    this.addPopup(p.x, p.y - 0.6, 'PARK CLEARED!', '#4ade80');
+                }
+            }
+
+            activateBonePower() {
+                this.scaredTimer = this.scaredDuration;
+                this.lyraCombo = 0;
+                document.getElementById('powerMeterWrap').classList.add('active');
+                document.getElementById('powerBarFill').style.width = '100%';
+
+                this.lyras.forEach(lyra => {
+                    if (lyra.state !== 'EATEN') {
+                        lyra.state = 'SCARED';
+                        // Classic 180-degree immediate reversal when entering Frightened mode
+                        lyra.dir = { x: -lyra.dir.x, y: -lyra.dir.y, name: '' };
+                        lyra.lastDecisionTile = null;
+                    }
+                });
+                this.updateHUD();
+            }
+
+            updateLyras(dt) {
+                const kibbleRemaining = this.totalKibble - this.kibbleEaten;
+                const isCruiseElroy = kibbleRemaining <= Math.ceil(this.totalKibble * 0.25);
+
+                this.lyras.forEach(lyra => {
+                    if (lyra.releaseDelay > 0) {
+                        lyra.releaseDelay -= dt;
+                        return;
+                    }
+
+                    // Determine speed based on state, level, tunnel, and Red Lyra "Cruise Elroy" boost
+                    let speed = 4.5 + Math.min(1.2, (this.level - 1) * 0.18);
+                    if (lyra.behavior === 'CHASER' && isCruiseElroy && lyra.state === 'NORMAL') {
+                        speed *= 1.12; // Classic "Cruise Elroy" acceleration for Red Lyra
+                    }
+                    if (lyra.state === 'SCARED') speed = 2.85;
+                    else if (lyra.state === 'EATEN') speed = 10.0;
+
+                    const centerX = Math.round(lyra.x);
+                    const centerY = Math.round(lyra.y);
+                    // Slow down slightly in warp tunnels (row 10, edges)
+                    if (lyra.state !== 'EATEN' && centerY === 10 && (centerX <= 3 || centerX >= 17)) {
+                        speed *= 0.65;
+                    }
+
+                    const prevX = lyra.x;
+                    const prevY = lyra.y;
+
+                    const step = speed * dt;
+                    const nextX = lyra.x + lyra.dir.x * step;
+                    const nextY = lyra.y + lyra.dir.y * step;
+
+                    const crossedCenter =
+                        (Math.hypot(prevX - centerX, prevY - centerY) < 0.08) ||
+                        ((prevX - centerX) * (nextX - centerX) <= 0 && (prevY - centerY) * (nextY - centerY) <= 0);
+
+                    const inDoghouse = (centerY >= 9 && centerY <= 11 && centerX >= 9 && centerX <= 11);
+                    const tileKey = `${centerX},${centerY}`;
+
+                    if (crossedCenter && lyra.lastDecisionTile !== tileKey) {
+                        lyra.x = centerX;
+                        lyra.y = centerY;
+                        lyra.lastDecisionTile = tileKey;
+
+                        // If EATEN and reached Doghouse interior, regenerate immediately!
+                        if (lyra.state === 'EATEN' && centerX === 10 && (centerY === 9 || centerY === 10)) {
+                            lyra.state = 'NORMAL';
+                            lyra.dir = DIRS.UP;
+                        }
+
+                        // Evaluate turn strictly once per tile center using classic Pac-Man priority
+                        lyra.dir = this.chooseLyraDirection(lyra, centerX, centerY, inDoghouse, isCruiseElroy);
+                        lyra.x = (lyra.x + lyra.dir.x * (step * 0.5) + GRID_SIZE) % GRID_SIZE;
+                        lyra.y += lyra.dir.y * (step * 0.5);
+                    } else {
+                        lyra.x = (nextX + GRID_SIZE) % GRID_SIZE;
+                        lyra.y = nextY;
+                    }
+                });
+            }
+
+            chooseLyraDirection(lyra, cx, cy, inDoghouse, isCruiseElroy) {
+                // Classic Pac-Man tie-breaker priority order: UP > LEFT > DOWN > RIGHT
+                const orderedDirs = [DIRS.UP, DIRS.LEFT, DIRS.DOWN, DIRS.RIGHT];
+                const candidates = orderedDirs.filter(d => {
+                    // Never reverse 180 degrees during normal tile decisions
+                    if (d.x === -lyra.dir.x && d.y === -lyra.dir.y) return false;
+                    return this.isTileWalkableForLyra(cx + d.x, cy + d.y, lyra.state, inDoghouse);
+                });
+
+                if (candidates.length === 0) {
+                    const rev = { x: -lyra.dir.x, y: -lyra.dir.y, name: '' };
+                    if (this.isTileWalkableForLyra(cx + rev.x, cy + rev.y, lyra.state, inDoghouse)) {
+                        return rev;
+                    }
+                    return DIRS.UP;
+                }
+
+                // 1. Inside Doghouse and healthy: exit UP out the doghouse door (10, 7)
+                if (inDoghouse && lyra.state !== 'EATEN') {
+                    return this.pickClosestCandidate(candidates, cx, cy, 10, 7);
+                }
+
+                // 2. EATEN state: eyes scurry directly back to the doghouse door (10, 9)
+                if (lyra.state === 'EATEN') {
+                    return this.pickClosestCandidate(candidates, cx, cy, 10, 9);
+                }
+
+                // 3. SCARED (Frightened) state: pseudo-random turn at intersections (classic Pac-Man PRNG behavior)
+                if (lyra.state === 'SCARED') {
+                    return candidates[Math.floor(Math.random() * candidates.length)];
+                }
+
+                // 4. SCATTER Mode: target each Lyra's assigned corner (unless Red Lyra is in Cruise Elroy mode)
+                if (this.globalGhostMode === 'SCATTER' && !(lyra.behavior === 'CHASER' && isCruiseElroy)) {
+                    return this.pickClosestCandidate(candidates, cx, cy, lyra.scatterX, lyra.scatterY);
+                }
+
+                // 5. CLASSIC PAC-MAN CHASE PERSONALITIES
+                let targetX = this.pan.x;
+                let targetY = this.pan.y;
+
+                if (lyra.behavior === 'CHASER') {
+                    // Red Collar (Shadow / Blinky): Directly targets Pan's current tile
+                    targetX = this.pan.x;
+                    targetY = this.pan.y;
+                } else if (lyra.behavior === 'AMBUSHER') {
+                    // Pink Collar (Speedy / Pinky): Targets 4 tiles ahead of Pan's current direction
+                    targetX = this.pan.x + this.pan.dir.x * 4;
+                    targetY = this.pan.y + this.pan.dir.y * 4;
+                } else if (lyra.behavior === 'FLANKER') {
+                    // Cyan Collar (Bashful / Inky): Takes tile 2 spaces ahead of Pan and doubles vector from Red Lyra
+                    const pivotX = this.pan.x + this.pan.dir.x * 2;
+                    const pivotY = this.pan.y + this.pan.dir.y * 2;
+                    const blinky = this.lyras[0];
+                    targetX = pivotX + (pivotX - blinky.x);
+                    targetY = pivotY + (pivotY - blinky.y);
+                } else if (lyra.behavior === 'SNEAKY') {
+                    // Orange Collar (Pokey / Clyde): Chases Pan when > 8 tiles away; retreats to bottom-left corner when <= 8 tiles
+                    const distToPan = Math.hypot(cx - this.pan.x, cy - this.pan.y);
+                    if (distToPan <= 8.0) {
+                        targetX = lyra.scatterX;
+                        targetY = lyra.scatterY;
+                    } else {
+                        targetX = this.pan.x;
+                        targetY = this.pan.y;
+                    }
+                }
+
+                return this.pickClosestCandidate(candidates, cx, cy, targetX, targetY);
+            }
+
+            pickClosestCandidate(candidates, cx, cy, targetX, targetY) {
+                let bestDir = candidates[0];
+                let minDist = Infinity;
+                // Because candidates are ordered UP, LEFT, DOWN, RIGHT and we use strict '<', ties break in classic order!
+                candidates.forEach(d => {
+                    const dist = Math.hypot((cx + d.x) - targetX, (cy + d.y) - targetY);
+                    if (dist < minDist) {
+                        minDist = dist;
+                        bestDir = d;
+                    }
+                });
+                return bestDir;
+            }
+
+            checkCollisions() {
+                for (const lyra of this.lyras) {
+                    const dist = Math.hypot(this.pan.x - lyra.x, this.pan.y - lyra.y);
+                    if (dist < 0.66) {
+                        if (lyra.state === 'SCARED') {
+                            // Pan boops Lyra!
+                            lyra.state = 'EATEN';
+                            this.lyraCombo++;
+                            const pts = 200 * Math.pow(2, this.lyraCombo - 1);
+                            this.addScore(pts);
+                            sfx.playBoopLyra();
+                            this.addPopup(lyra.x, lyra.y, `BOOP! +${pts}`, '#38bdf8');
+                        } else if (lyra.state === 'NORMAL') {
+                            // Lyra tags Pan!
+                            this.lives--;
+                            this.updateHUD();
+                            sfx.playLoseLife();
+                            this.state = 'LIFE_LOST';
+                            this.stateTimer = 1.4;
+                            this.addPopup(this.pan.x, this.pan.y, 'RUFF!', '#fb7185');
+                            break;
+                        }
+                    }
+                }
+            }
+
+            addScore(pts) {
+                this.score += pts;
+                if (this.score > this.highScore) {
+                    this.highScore = this.score;
+                    localStorage.setItem('pan_kibble_high_score', String(this.highScore));
+                }
+                this.updateHUD();
+            }
+
+            addPopup(tileX, tileY, text, color) {
+                this.popups.push({
+                    x: (tileX + 0.5) * TILE_SIZE,
+                    y: (tileY + 0.3) * TILE_SIZE,
+                    text,
+                    color,
+                    life: 1.0
+                });
+            }
+
+            updateHUD() {
+                document.getElementById('scoreValue').textContent = this.score.toLocaleString();
+                document.getElementById('highScoreValue').textContent = this.highScore.toLocaleString();
+                document.getElementById('levelValue').textContent = this.level;
+
+                // Update Classic Ghost Mode Badge
+                const modeBadge = document.getElementById('modeBadge');
+                if (modeBadge) {
+                    if (this.scaredTimer > 0) {
+                        modeBadge.textContent = 'ZOOMIES';
+                        modeBadge.className = 'mode-badge mode-fright';
+                    } else if (this.globalGhostMode === 'CHASE') {
+                        modeBadge.textContent = 'CHASE';
+                        modeBadge.className = 'mode-badge mode-chase';
+                    } else {
+                        modeBadge.textContent = 'SCATTER';
+                        modeBadge.className = 'mode-badge mode-scatter';
+                    }
+                }
+
+                // Draw Lives as Mini Pan Poodle Heads
+                const livesCanvas = document.getElementById('livesCanvas');
+                const lctx = livesCanvas.getContext('2d');
+                lctx.clearRect(0, 0, livesCanvas.width, livesCanvas.height);
+
+                for (let i = 0; i < this.lives; i++) {
+                    ArtRenderer.drawPan(lctx, 14 + i * 26, 11, 8.5, 1, 0, 0.3, 0);
+                }
+            }
+
+            // --- 6. RENDERING PIPELINE ---
+            draw(timestamp) {
+                const ctx = this.ctx;
+                ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+                // Subtle dark park background grid
+                ctx.fillStyle = '#090a16';
+                ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+                // Draw Maze Walls, Doghouse Door, Kibble, and Bone Treats
+                for (let r = 0; r < GRID_SIZE; r++) {
+                    for (let c = 0; c < GRID_SIZE; c++) {
+                        const cell = this.grid[r][c];
+                        const px = c * TILE_SIZE;
+                        const py = r * TILE_SIZE;
+                        const cx = px + TILE_SIZE / 2;
+                        const cy = py + TILE_SIZE / 2;
+
+                        if (cell === 1) {
+                            // Stylized Rounded Park Hedge / Arcade Wall
+                            ctx.fillStyle = '#1e295b';
+                            ctx.strokeStyle = '#4f6bfd';
+                            ctx.lineWidth = 2;
+                            ctx.beginPath();
+                            ctx.roundRect(px + 2, py + 2, TILE_SIZE - 4, TILE_SIZE - 4, 6);
+                            ctx.fill();
+                            ctx.stroke();
+
+                            // Subtle inner bevel highlight
+                            ctx.fillStyle = 'rgba(147, 197, 253, 0.12)';
+                            ctx.fillRect(px + 5, py + 5, TILE_SIZE - 10, 4);
+                        } else if (cell === 4) {
+                            // Doghouse Gate
+                            ctx.fillStyle = '#f472b6';
+                            ctx.fillRect(px, py + TILE_SIZE * 0.38, TILE_SIZE, TILE_SIZE * 0.24);
+                        } else if (cell === 0) {
+                            // Crunchy Dog Kibble
+                            ArtRenderer.drawKibble(ctx, cx, cy, 3.8);
+                        } else if (cell === 2) {
+                            // Stereotypical Cartoon Dog Bone Treat
+                            ArtRenderer.drawBoneTreat(ctx, cx, cy, 0.92, timestamp);
+                        }
+                    }
+                }
+
+                // Draw "LYRA'S DEN" Sign on the Center Doghouse
+                ctx.save();
+                ctx.fillStyle = 'rgba(15, 23, 42, 0.78)';
+                ctx.fillRect(9 * TILE_SIZE + 2, 11 * TILE_SIZE + 5, 3 * TILE_SIZE - 4, 16);
+                ctx.fillStyle = '#fde68a';
+                ctx.font = '900 9px Inter, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText("LYRA'S DOGHOUSE", 10.5 * TILE_SIZE, 11 * TILE_SIZE + 16);
+                ctx.restore();
+
+                // Draw Bonus Banana Slice if active
+                if (this.banana.active) {
+                    const bx = (this.banana.x + 0.5) * TILE_SIZE;
+                    const by = (this.banana.y + 0.5) * TILE_SIZE;
+                    ArtRenderer.drawBananaSlice(ctx, bx, by, 10.5, timestamp);
+                }
+
+                // Draw Touch Tap Feedback Ripples
+                this.tapRipples.forEach(rip => {
+                    ctx.save();
+                    ctx.strokeStyle = `rgba(251, 191, 36, ${rip.alpha})`;
+                    ctx.lineWidth = 2.5;
+                    ctx.beginPath();
+                    ctx.arc(rip.x, rip.y, rip.radius, 0, Math.PI * 2);
+                    ctx.stroke();
+                    ctx.restore();
+                });
+
+                // Draw Pan (Black & Brown Miniature Poodle)
+                const panX = (this.pan.x + 0.5) * TILE_SIZE;
+                const panY = (this.pan.y + 0.5) * TILE_SIZE;
+                ArtRenderer.drawPan(
+                    ctx,
+                    panX,
+                    panY,
+                    12.5,
+                    this.pan.dir.x,
+                    this.pan.dir.y,
+                    this.pan.mouthPhase,
+                    timestamp
+                );
+
+                // Draw All 4 Lyras (Grey, Brown & Black Miniature Poodle Pack)
+                this.lyras.forEach(lyra => {
+                    const lx = (lyra.x + 0.5) * TILE_SIZE;
+                    const ly = (lyra.y + 0.5) * TILE_SIZE;
+                    ArtRenderer.drawLyra(
+                        ctx,
+                        lx,
+                        ly,
+                        12.2,
+                        lyra.dir.x,
+                        lyra.dir.y,
+                        lyra.state,
+                        lyra.collar,
+                        this.scaredTimer,
+                        timestamp
+                    );
+                });
+
+                // Draw Floating Score Popups
+                this.popups.forEach(p => {
+                    ctx.save();
+                    ctx.font = '900 13px Inter, sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillStyle = '#000000';
+                    ctx.fillText(p.text, p.x + 1, p.y + 1);
+                    ctx.fillStyle = p.color;
+                    ctx.fillText(p.text, p.x, p.y);
+                    ctx.restore();
+                });
+            }
+
+            renderStaticLegends() {
+                // Header Mini Logo
+                const logoCtx = document.getElementById('headerLogoCanvas').getContext('2d');
+                ArtRenderer.drawPan(logoCtx, 18, 19, 12, 1, 0, 0.6, 0);
+
+                // Overlay Hero Illustration (Pan + Bone + Banana + Topknot-free Lyra)
+                const heroCtx = document.getElementById('overlayHeroCanvas').getContext('2d');
+                ArtRenderer.drawPan(heroCtx, 38, 42, 20, 1, 0, 0.8, 0);
+                ArtRenderer.drawBoneTreat(heroCtx, 90, 26, 1.1, 0);
+                ArtRenderer.drawBananaSlice(heroCtx, 90, 56, 10.5, 0);
+                ArtRenderer.drawLyra(heroCtx, 142, 42, 19.5, -1, 0, 'NORMAL', '#f43f5e', 0, 0);
+            }
+
+            loop(timestamp) {
+                const dt = Math.min(0.05, (timestamp - this.lastTime) / 1000);
+                this.lastTime = timestamp;
+
+                this.update(dt);
+                this.draw(timestamp);
+
+                requestAnimationFrame((t) => this.loop(t));
+            }
+        }
+
+        // Start the game once DOM is ready
+        window.addEventListener('load', () => {
+            new PoodlePacmanGame();
+        });
+    </script>
+</body>
+</html>
