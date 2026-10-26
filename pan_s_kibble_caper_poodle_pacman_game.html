@@ -399,6 +399,9 @@
             </div>
 
             <div class="top-actions">
+                <button id="tiltBtn" class="arcade-btn" title="Toggle Phone Tilt Steering">
+                    <span id="tiltBtnText">📱 Tilt: OFF</span>
+                </button>
                 <button id="pauseBtn" class="arcade-btn" title="Pause or Resume Game (P / Space)">
                     <span id="pauseBtnText">⏸ Pause</span>
                 </button>
@@ -867,12 +870,40 @@
                 ctx.ellipse(0, r * 0.5, r * 0.42, r * 0.28, 0, 0, Math.PI * 2);
                 ctx.fill();
 
-                // Prominent Rust Paws extending forward (matching photo pose)
-                ctx.fillStyle = rustBrown;
-                ctx.beginPath();
-                ctx.ellipse(-r * 0.36, r * 0.76, r * 0.22, r * 0.16, 0.2, 0, Math.PI * 2);
-                ctx.ellipse(r * 0.36, r * 0.76, r * 0.22, r * 0.16, -0.2, 0, Math.PI * 2);
-                ctx.fill();
+                // Prominent Furry Rust Front Feet / Paws (matching photo with alternating step animation)
+                const leftStep = Math.sin(timestamp * 0.02 + x * 0.3) * (r * 0.08);
+                const rightStep = -leftStep;
+                [-1, 1].forEach(side => {
+                    const stepOffset = side < 0 ? leftStep : rightStep;
+                    const footX = side * r * 0.42;
+                    const footY = r * 0.78 + stepOffset;
+
+                    // Foreleg connect
+                    ctx.fillStyle = rustBrown;
+                    ctx.beginPath();
+                    ctx.ellipse(footX * 0.85, r * 0.62 + stepOffset * 0.5, r * 0.18, r * 0.2, side * -0.15, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Main paw pad base
+                    ctx.fillStyle = rustBrown;
+                    ctx.beginPath();
+                    ctx.ellipse(footX, footY, r * 0.25, r * 0.17, side * -0.15, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Curly lighter rust toe puffs (3 toes per foot)
+                    ctx.fillStyle = lightRust;
+                    [-1, 0, 1].forEach(toe => {
+                        ctx.beginPath();
+                        ctx.arc(
+                            footX + toe * (r * 0.09) + side * (r * 0.02),
+                            footY + r * 0.06 + (toe === 0 ? r * 0.03 : 0),
+                            r * 0.085,
+                            0,
+                            Math.PI * 2
+                        );
+                        ctx.fill();
+                    });
+                });
 
                 // Signature Colored Collar with Golden Tag
                 ctx.fillStyle = collarColor || '#f43f5e';
@@ -911,11 +942,26 @@
                 ctx.arc(0, -r * 0.14, r * 0.52, 0, Math.PI * 2);
                 ctx.fill();
 
-                // Distinctive Warm Rust Muzzle & Cheeks (matching photo)
+                // Curly silver-grey forehead locks (natural flat crown from photo, no topknot)
+                ctx.fillStyle = whiteHighlight;
+                [-0.26, 0, 0.26].forEach((offsetX, idx) => {
+                    ctx.beginPath();
+                    ctx.arc(r * offsetX, -r * (0.42 + (idx === 1 ? 0.04 : 0)), r * 0.16, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+
+                // Distinctive Warm Rust Muzzle & Beard (matching photo)
                 ctx.fillStyle = rustBrown;
                 ctx.beginPath();
                 ctx.ellipse(0, r * 0.1, r * 0.48, r * 0.3, 0, 0, Math.PI * 2);
                 ctx.fill();
+
+                // Fluffy rust beard puffs around chin and cheeks
+                [-0.28, -0.14, 0, 0.14, 0.28].forEach(bx => {
+                    ctx.beginPath();
+                    ctx.arc(r * bx, r * 0.26, r * 0.14, 0, Math.PI * 2);
+                    ctx.fill();
+                });
 
                 ctx.fillStyle = lightRust;
                 ctx.beginPath();
@@ -1125,24 +1171,24 @@
         // 5 = Doghouse Interior
         const MAZE_TEMPLATE = [
             [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-            [1,2,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,2,1],
+            [1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,1],
             [1,0,1,1,1,0,1,1,1,0,1,0,1,1,1,0,1,1,1,0,1],
             [1,0,1,1,1,0,1,1,1,0,1,0,1,1,1,0,1,1,1,0,1],
             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,1,1,1,0,1,0,1,1,3,1,1,0,1,0,1,1,1,0,1],
-            [1,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,1],
+            [1,0,1,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,1,0,1],
+            [1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,1],
             [1,1,1,1,1,0,1,1,1,3,1,3,1,1,1,0,1,1,1,1,1],
-            [3,3,3,3,1,0,1,3,3,3,3,3,3,3,1,0,1,3,3,3,3],
+            [1,1,1,1,1,0,1,3,3,3,3,3,3,3,1,0,1,1,1,1,1],
             [1,1,1,1,1,0,1,3,1,1,4,1,1,3,1,0,1,1,1,1,1],
             [3,3,3,3,3,0,3,3,1,5,5,5,1,3,3,0,3,3,3,3,3],
             [1,1,1,1,1,0,1,3,1,1,1,1,1,3,1,0,1,1,1,1,1],
-            [3,3,3,3,1,0,1,3,3,3,3,3,3,3,1,0,1,3,3,3,3],
+            [1,1,1,1,1,0,1,3,3,3,3,3,3,3,1,0,1,1,1,1,1],
             [1,1,1,1,1,0,1,3,1,1,1,1,1,3,1,0,1,1,1,1,1],
-            [1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
             [1,0,1,1,1,0,1,1,1,0,1,0,1,1,1,0,1,1,1,0,1],
             [1,2,0,0,1,0,0,0,0,0,3,0,0,0,0,0,1,0,0,2,1],
-            [1,0,1,0,1,0,1,0,1,1,3,1,1,0,1,0,1,0,1,0,1],
-            [1,0,1,0,1,0,1,0,1,1,0,1,1,0,1,0,1,0,1,0,1],
+            [1,0,1,0,1,0,1,1,1,0,1,0,1,1,1,0,1,0,1,0,1],
+            [1,0,1,0,1,0,1,1,1,0,1,0,1,1,1,0,1,0,1,0,1],
             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
             [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
         ];
@@ -1473,23 +1519,91 @@
                 });
 
                 // 3. On-Screen Thumb D-Pad Buttons
-                document.querySelectorAll('.dpad-btn').forEach(btn => {
-                    const dirKey = btn.getAttribute('data-dir');
-                    const triggerDir = (e) => {
-                        e.preventDefault();
-                        sfx.init();
-                        if (this.state === 'START' || this.state === 'GAME_OVER') {
-                            this.startNewGame();
-                        }
-                        this.queueDirection(DIRS[dirKey]);
-                        btn.classList.add('pressed');
-                        setTimeout(() => btn.classList.remove('pressed'), 140);
-                    };
-                    btn.addEventListener('pointerdown', triggerDir);
-                });
+            document.querySelectorAll('.dpad-btn').forEach(btn => {
+                const dirKey = btn.getAttribute('data-dir');
+                const triggerDir = (e) => {
+                    e.preventDefault();
+                    sfx.init();
+                    if (this.state === 'START' || this.state === 'GAME_OVER') {
+                        this.startNewGame();
+                    }
+                    this.queueDirection(DIRS[dirKey]);
+                    btn.classList.add('pressed');
+                    setTimeout(() => btn.classList.remove('pressed'), 140);
+                };
+                btn.addEventListener('pointerdown', triggerDir);
+            });
 
-                // 4. UI Action Buttons
-                document.getElementById('overlayActionBtn').addEventListener('click', () => {
+            // 5. Mobile Tilt Steering Support (DeviceOrientation)
+            let tiltEnabled = false;
+            let tiltBaselineBeta = null;
+            let tiltBaselineGamma = null;
+            const tiltBtn = document.getElementById('tiltBtn');
+            const tiltBtnText = document.getElementById('tiltBtnText');
+
+            tiltBtn.addEventListener('click', async () => {
+                sfx.init();
+                if (!tiltEnabled) {
+                    // Request permission on iOS 13+ devices if required
+                    if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+                        try {
+                            const response = await DeviceOrientationEvent.requestPermission();
+                            if (response !== 'granted') {
+                                tiltBtnText.textContent = '📱 Tilt: Blocked';
+                                this.addPopup(this.pan.x, this.pan.y - 1, 'TILT PERMISSION DENIED', '#fb7185');
+                                return;
+                            }
+                        } catch (err) {
+                            console.error(err);
+                        }
+                    }
+                    tiltEnabled = true;
+                    tiltBaselineBeta = null;
+                    tiltBaselineGamma = null;
+                    tiltBtnText.textContent = '📱 Tilt: ON';
+                    tiltBtn.style.borderColor = '#38bdf8';
+                    this.addPopup(this.pan.x, this.pan.y - 1, 'TILT STEERING ON!', '#38bdf8');
+                } else {
+                    tiltEnabled = false;
+                    tiltBaselineBeta = null;
+                    tiltBaselineGamma = null;
+                    tiltBtnText.textContent = '📱 Tilt: OFF';
+                    tiltBtn.style.borderColor = '#475569';
+                }
+            });
+
+            window.addEventListener('deviceorientation', (e) => {
+                if (!tiltEnabled || this.state !== 'PLAYING') return;
+                if (e.beta === null || e.gamma === null) return;
+
+                // Auto-calibrate neutral resting angle when tilt is activated
+                if (tiltBaselineBeta === null || tiltBaselineGamma === null) {
+                    tiltBaselineBeta = e.beta;
+                    tiltBaselineGamma = e.gamma;
+                }
+
+                // Calculate tilt delta relative to comfortable holding angle
+                const deltaBeta = e.beta - tiltBaselineBeta;
+                const deltaGamma = e.gamma - tiltBaselineGamma;
+
+                const threshold = 9; // responsive deadzone in degrees
+                if (Math.abs(deltaGamma) > Math.abs(deltaBeta)) {
+                    if (deltaGamma > threshold) {
+                        this.queueDirection(DIRS.RIGHT);
+                    } else if (deltaGamma < -threshold) {
+                        this.queueDirection(DIRS.LEFT);
+                    }
+                } else {
+                    if (deltaBeta > threshold) {
+                        this.queueDirection(DIRS.DOWN);
+                    } else if (deltaBeta < -threshold) {
+                        this.queueDirection(DIRS.UP);
+                    }
+                }
+            });
+
+            // 4. UI Action Buttons
+            document.getElementById('overlayActionBtn').addEventListener('click', () => {
                     if (this.state === 'PAUSED') {
                         this.togglePause();
                     } else {
