@@ -5,3 +5,5 @@
 [Poodle Pacman](https://htmlpreview.github.io/?https://github.com/alfuric-games/games/blob/main/pan_s_kibble_caper_poodle_pacman_game.html)
 
 [Parrot Pal](https://htmlpreview.github.io/?https://github.com/alfuric-games/games/blob/main/ParrotPal.html)
+
+[Ion Dust Rally](https://htmlpreview.github.io/?https://github.com/alfuric-games/games/blob/main/ion-dust-rally.html)
