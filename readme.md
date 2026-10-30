@@ -8,7 +8,7 @@
 
 [Ion Dust Rally](https://htmlpreview.github.io/?https://github.com/alfuric-games/games/blob/main/ion-dust-rally.html)
 
-[Featherdew Farm](https://htmlpreview.github.io/?https://github.com/alfuric-games/games/blob/main/ion-dust-rally.html](https://github.com/alfuric-games/games/blob/main/featherdew_farm_parrot_sanctuary.html)
+[Featherdew Farm](https://htmlpreview.github.io/?https://github.com/alfuric-games/games/blob/main/featherdew_farm_parrot_sanctuary.html)
 
-[Ion Dust Rally](https://htmlpreview.github.io/?https://htmlpreview.github.io/?https://github.com/alfuric-games/games/blob/main/ion-dust-rally.html](https://github.com/alfuric-games/games/blob/main/neon_drifter.html)
+[Ion Dust Rally](https://htmlpreview.github.io/?https://github.com/alfuric-games/games/blob/main/neon_drifter.html)
 
