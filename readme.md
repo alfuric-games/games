@@ -4,11 +4,13 @@
 
 [Poodle Pacman](https://htmlpreview.github.io/?https://github.com/alfuric-games/games/blob/main/pan_s_kibble_caper_poodle_pacman_game.html)
 
-[Parrot Pal](https://htmlpreview.github.io/?https://github.com/alfuric-games/games/blob/main/ParrotPal.html)
-
 [Ion Dust Rally](https://htmlpreview.github.io/?https://github.com/alfuric-games/games/blob/main/ion-dust-rally.html)
+
+Below are more experimental:
+
+[Parrot Pal](https://htmlpreview.github.io/?https://github.com/alfuric-games/games/blob/main/ParrotPal.html)
 
 [Featherdew Farm](https://htmlpreview.github.io/?https://github.com/alfuric-games/games/blob/main/featherdew_farm_parrot_sanctuary.html)
 
-[Ion Dust Rally](https://htmlpreview.github.io/?https://github.com/alfuric-games/games/blob/main/neon_drifter.html)
+[Neon Drifter](https://htmlpreview.github.io/?https://github.com/alfuric-games/games/blob/main/neon_drifter.html)
 
