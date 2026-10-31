@@ -270,22 +270,22 @@ function addPit(x, w){
 var PAT = [
   { len:60,  w:function(d){ return 5; },
     go:function(s){ addObs('hydrant', s); if (Math.random()<0.55) addTreat(s+15*U*4, GY-64*U); } },
-  { len:120, w:function(d){ return 2+6*d; },
-    go:function(s){ addPit(s, 90*U); arc(s+45*U, 1); } },
-  { len:160, w:function(d){ return 1+8*d; },
-    go:function(s){ addPit(s, 140*U); arc(s+70*U, 2); } },
-  { len:60, hang:1, w:function(d){ return 3+4*d; },
+  { len:130, w:function(d){ return 2+6*d; },
+    go:function(s){ addPit(s, 120*U); arc(s+60*U, 1); } },
+  { len:190, w:function(d){ return 1+8*d; },
+    go:function(s){ addPit(s, 170*U); arc(s+85*U, 2); } },
+  { len:60, hang:1, w:function(d){ return 5+6*d; },
     go:function(s){ addObs(Math.random() < 0.5 ? 'branch' : 'banner', s); } },
-  { len:600, hang:1, w:function(d){ return 1+7*d; },
+  { len:600, hang:1, w:function(d){ return 4+8*d; },
     go:function(s){ addObs('hurdle', s); addObs('branch', s+560*U); } },
-  { len:260, hang:1, w:function(d){ return 1+7*d; },
+  { len:260, hang:1, w:function(d){ return 4+8*d; },
     go:function(s){ addObs('banner', s); addObs('hydrant', s+130*U); } },
   { len:300, w:function(d){ return 7*d; },
     go:function(s){ var st = 66*U; addObs('hydrant', s); addObs('hydrant', s+st*2); addObs('hydrant', s+st*4); } },
-  { len:280, w:function(d){ return 5*d; },
-    go:function(s){ addPit(s, 90*U); addPit(s+170*U, 90*U); arc(s+45*U,1); arc(s+215*U,1); } },
-  { len:700, hang:1, w:function(d){ return 4*d; },
-    go:function(s){ addPit(s, 100*U); addObs('branch', s+620*U); arc(s+50*U,1); } },
+  { len:380, w:function(d){ return 5*d; },
+    go:function(s){ addPit(s, 120*U); addPit(s+220*U, 120*U); arc(s+60*U,1); arc(s+280*U,1); } },
+  { len:700, hang:1, w:function(d){ return 2+6*d; },
+    go:function(s){ addPit(s, 130*U); addObs('branch', s+620*U); arc(s+65*U,1); } },
   { len:120, w:function(d){ return 4-2*d; },
     go:function(s){ var y = GY - (34+Math.random()*40)*U; lineTreats(s, 5, 46*U, y); } },
   { len:200, w:function(d){ return 3-1.5*d; },
@@ -420,7 +420,9 @@ function update(dt){
   if (!pan.grounded){ pan.airT += dt; pan.tilt = lerp(pan.tilt, -0.12, 0.2); }
   else { pan.tilt = lerp(pan.tilt, 0.10, 0.25); }
 
-  if (pan.feet > GY + 90*U){ die(); return; }
+  /* stepping into a pit means sinking and losing — the only safe crossing
+     is a hop that stays over solid ground */
+  if (pan.feet > GY + 90*U || (!sup && pan.feet > GY + 10*U)){ die(); return; }
 
   /* --- collisions --- */
   var top = pan.feet - (pan.sliding ? 28 : 46) * U;
@@ -443,6 +445,15 @@ function update(dt){
     if (dx*dx + dy*dy < (30*U)*(30*U)){
       trs.splice(k, 1); treatsGot++; sndTreat();
       puff(t.x - camX, t.y, 6, GOLD, 130*U, 120*U);
+    }
+    else {
+      /* Lyra trails 118 units back on the same arc, so she scoops up the
+         biscuits Pan missed along her side of the path */
+      var ex = t.x - (pan.x + camX - 118*U), ey = t.y - (pan.feet - 24*U);
+      if (ex*ex + ey*ey < (28*U)*(28*U)){
+        trs.splice(k, 1); treatsGot++; sndTreat();
+        puff(t.x - camX, t.y, 6, GOLD, 130*U, 120*U);
+      }
     }
   }
 
