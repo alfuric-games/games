@@ -6,6 +6,8 @@
 
 [Ion Dust Rally](https://htmlpreview.github.io/?https://github.com/alfuric-games/games/blob/main/ion-dust-rally.html)
 
+[Poodle Run](https://htmlpreview.github.io/?https://github.com/alfuric-games/games/blob/main/poodle-run.html)
+
 Below are more experimental:
 
 [Parrot Pal](https://htmlpreview.github.io/?https://github.com/alfuric-games/games/blob/main/ParrotPal.html)
